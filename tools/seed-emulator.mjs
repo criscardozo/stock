@@ -34,14 +34,21 @@ const PEOPLE = [
 async function ensureAccount({ email, displayName }) {
   const body = { email, password: PASSWORD, displayName, returnSecureToken: true }
   for (const action of ['accounts:signUp', 'accounts:signInWithPassword']) {
-    const response = await fetch(`${AUTH}/${action}?key=fake-api-key`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
+    let response
+    try {
+      response = await fetch(`${AUTH}/${action}?key=fake-api-key`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+    } catch {
+      // A bare "fetch failed" here is always the same thing, and saying so
+      // beats making the next person read this file to find out.
+      throw new Error('No hay nadie en 127.0.0.1:9099 — arrancá `pnpm emulators` primero.')
+    }
     if (response.ok) return (await response.json()).localId
   }
-  throw new Error(`No pude crear ni entrar como ${email} — ¿está corriendo el emulador de Auth?`)
+  throw new Error(`No pude crear ni entrar como ${email} — ¿el emulador de Auth está sano?`)
 }
 
 function keyById(rows) {

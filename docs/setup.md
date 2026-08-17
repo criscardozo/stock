@@ -10,29 +10,35 @@ quema las lecturas de la otra app. La config de cliente es pública por diseño 
 la frontera de seguridad es `firebase/firestore.rules`, nunca el secreto de la
 config.
 
-## 1. Consola de Firebase ⏳
+## 1. Consola de Firebase
 
-1. **Crear el proyecto** — ✅ hecho (`qcris-stock`).
-2. **Firestore**: crear la base en **modo nativo**, sobre la base **`(default)`**
-   (el free tier de Spark aplica sólo a ella). Ubicación: `australia-southeast1`.
-   Empezar en **production mode** — las reglas reales se deployan desde el repo.
-3. **Auth** → Authentication → Sign-in method → habilitar **Google**. Es el único
-   proveedor, en las dos plataformas (ver PLAN §9).
-4. **App web** ⏳: Project settings → Your apps → Web → registrar la app y pasar
-   el objeto `firebaseConfig`. Los valores entran como variables
-   `NEXT_PUBLIC_FIREBASE_*` (ver `apps/web/src/lib/firebase/config.ts`), que es
-   lo único que falta para que la app hable con el proyecto real en vez del
-   emulador.
-5. **App iOS**: Your apps → iOS → bundle ID `dev.cardozo.stock`. Descargar
-   `GoogleService-Info.plist` a `apps/ios/Stock/Resources/`, y mantener
+1. **Crear el proyecto** — ✅ hecho (`qcris-stock`, número 176221729478).
+2. **App web** — ✅ hecha. Su `firebaseConfig` está committeado en
+   `apps/web/src/lib/firebase/config.ts`: esos valores son **públicos por
+   diseño** (viajan dentro del bundle de cualquier build), así que esconderlos
+   en variables de entorno no protegería nada y ataría el deploy al estado de un
+   dashboard. La frontera de seguridad son las reglas.
+3. **Firestore** ⏳ — **todavía no existe**: `firestore:databases:list` devuelve
+   403 porque la API ni siquiera está habilitada. Consola → Firestore Database →
+   *Crear base de datos*, en **modo nativo**, base **`(default)`** (el free tier
+   de Spark aplica sólo a ella), ubicación `australia-southeast1`, empezando en
+   **production mode** — las reglas de verdad se deployan desde el repo en el
+   paso siguiente. **Sin esto la app no tiene dónde escribir.**
+4. **Auth** ⏳ → Authentication → Sign-in method → habilitar **Google**. Es el
+   único proveedor, en las dos plataformas (ver PLAN §9).
+5. **App iOS** (cuando exista): Your apps → iOS → bundle ID `dev.cardozo.stock`.
+   Descargar `GoogleService-Info.plist` a `apps/ios/Stock/Resources/`, y mantener
    `CLIENT_ID` / `REVERSED_CLIENT_ID` en sync con el `GIDClientID` y el URL
    scheme de `apps/ios/project.yml` (re-correr `xcodegen` después de tocarlo).
 
-Después, desde el repo:
+Con la base ya creada, desde el repo:
 
 ```sh
 firebase deploy --only firestore:rules,firestore:indexes --config firebase/firebase.json --project qcris-stock
 ```
+
+Ese deploy es lo que le pone dueño a los datos: hasta que corra, la base queda
+con las reglas por defecto de la consola.
 
 ## 2. Restringir las API keys (recomendado, gratis, 5 minutos) ⏳
 
@@ -49,13 +55,24 @@ Credentials** del proyecto:
 
 ## 3. Vercel (web) ⏳
 
-1. Importar el repo de GitHub en Vercel; **Root Directory** = `apps/web`
-   (framework Next.js; el install command autodetecta pnpm).
-2. La config de Firebase va committeada en `apps/web/src/lib/firebase/config.ts`;
-   opcionalmente se puede pisar con variables `NEXT_PUBLIC_FIREBASE_*`.
-3. Agregar el dominio de producción (`*.vercel.app` y el custom) a Firebase Auth
+Es un **monorepo pnpm**, y eso cambia dos cosas respecto de una importación
+normal:
+
+1. Importar el repo `criscardozo/stock` en Vercel y poner **Root Directory** =
+   `apps/web` (framework: Next.js).
+2. **Dejar activado "Include source files outside of the Root Directory"** — en
+   Vercel viene así al detectar un monorepo, pero no es opcional: el build
+   importa `shared/*.json` desde fuera de `apps/web` (categorías semilla,
+   ubicaciones) y sin esos archivos no compila.
+3. **No hace falta configurar ninguna variable de entorno.** El config de
+   Firebase está committeado; `NEXT_PUBLIC_FIREBASE_*` existe sólo para apuntar
+   un build a otro proyecto.
+4. Agregar el dominio de producción (`*.vercel.app` y el custom) a Firebase Auth
    → Settings → **Authorized domains**, o el sign-in con Google falla con
    `auth/unauthorized-domain`.
+
+**El orden importa**: sin el paso 1 (Firestore creada, reglas deployadas, Google
+habilitado), la web deploya perfecto y después no deja entrar a nadie.
 
 ### Dominio `stock.cardozo.dev`
 
