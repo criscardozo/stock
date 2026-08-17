@@ -18,27 +18,25 @@ config.
    diseño** (viajan dentro del bundle de cualquier build), así que esconderlos
    en variables de entorno no protegería nada y ataría el deploy al estado de un
    dashboard. La frontera de seguridad son las reglas.
-3. **Firestore** ⏳ — **todavía no existe**: `firestore:databases:list` devuelve
-   403 porque la API ni siquiera está habilitada. Consola → Firestore Database →
-   *Crear base de datos*, en **modo nativo**, base **`(default)`** (el free tier
-   de Spark aplica sólo a ella), ubicación `australia-southeast1`, empezando en
-   **production mode** — las reglas de verdad se deployan desde el repo en el
-   paso siguiente. **Sin esto la app no tiene dónde escribir.**
-4. **Auth** ⏳ → Authentication → Sign-in method → habilitar **Google**. Es el
-   único proveedor, en las dos plataformas (ver PLAN §9).
-5. **App iOS** (cuando exista): Your apps → iOS → bundle ID `dev.cardozo.stock`.
-   Descargar `GoogleService-Info.plist` a `apps/ios/Stock/Resources/`, y mantener
-   `CLIENT_ID` / `REVERSED_CLIENT_ID` en sync con el `GIDClientID` y el URL
-   scheme de `apps/ios/project.yml` (re-correr `xcodegen` después de tocarlo).
+3. **Firestore** — ✅ creada, modo nativo, base `(default)`.
+4. **Auth** — ✅ proveedor **Google** habilitado. Es el único, en las dos
+   plataformas (ver PLAN §9).
+5. **App iOS** — ✅ registrada con bundle `dev.cardozo.stock`. Su
+   `GoogleService-Info.plist` está en `apps/ios/Stock/Resources/`, y su
+   `REVERSED_CLIENT_ID` está copiado en `GOOGLE_REVERSED_CLIENT_ID` de
+   `apps/ios/project.yml`. **Los dos tienen que coincidir**: ese es el URL
+   scheme por el que Google devuelve el login, y si no matchean el sign-in se
+   va y no vuelve. Si alguna vez se re-descarga el plist, actualizar los dos y
+   re-correr `xcodegen`.
 
-Con la base ya creada, desde el repo:
+**Reglas e índices** — ✅ deployados. Para volver a hacerlo tras un cambio:
 
 ```sh
 firebase deploy --only firestore:rules,firestore:indexes --config firebase/firebase.json --project qcris-stock
 ```
 
-Ese deploy es lo que le pone dueño a los datos: hasta que corra, la base queda
-con las reglas por defecto de la consola.
+Eso es lo que le pone dueño a los datos. Comprobado después de deployar: una
+lectura anónima a `households/…` responde 403.
 
 ## 2. Restringir las API keys (recomendado, gratis, 5 minutos) ⏳
 
@@ -167,9 +165,28 @@ open Stock.xcodeproj
   regla es que Actions no cueste nada, así que se compila y testea local antes de
   cada cambio:
   `xcodebuild test -project Stock.xcodeproj -scheme Stock -destination 'platform=iOS Simulator,name=<iPhone>' -only-testing:StockTests`.
-- **Firma**: equipo personal (gratis) → certificado de 7 días; re-deploy semanal
-  desde Xcode a cada teléfono. Es el camino $0 hasta la decisión del Apple
-  Developer Program (PLAN Fase 5).
+- **Firma**: equipo personal gratuito `FA737M2U79` (el mismo de Gastos
+  Diarios), fijado en `project.yml` para que Xcode no reescriba el proyecto
+  generado en cada apertura. Certificado de **7 días**: pasada esa semana la
+  app deja de abrir y hay que reinstalarla. Es el camino $0 hasta la decisión
+  del Apple Developer Program (PLAN Fase 5).
+
+### Instalar en un iPhone (sideload)
+
+Con el teléfono pareado por USB o Wi-Fi:
+
+```sh
+cd apps/ios
+xcodebuild build -project Stock.xcodeproj -scheme Stock \
+  -destination 'platform=iOS,name=<nombre del teléfono>' \
+  -allowProvisioningUpdates -derivedDataPath build-device
+xcrun devicectl device install app --device '<nombre del teléfono>' \
+  build-device/Build/Products/Debug-iphoneos/Stock.app
+```
+
+`xcrun devicectl list devices` lista los nombres. La primera vez, el teléfono
+pide confiar en el certificado: Ajustes → General → VPN y gestión de
+dispositivos.
 - Para apuntar al emulador, setear `USE_FIREBASE_EMULATORS=1` en el scheme o
   pasar `-useEmulators` como launch argument.
 

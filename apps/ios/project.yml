@@ -5,6 +5,18 @@ options:
     iOS: '17.0'
   createIntermediateGroups: true
 
+settings:
+  base:
+    SWIFT_VERSION: '5.10'
+    IPHONEOS_DEPLOYMENT_TARGET: '17.0'
+    ENABLE_USER_SCRIPT_SANDBOXING: 'NO'
+    CODE_SIGN_STYLE: Automatic
+    # Cristian's free personal team, the same one Gastos Diarios uses. Baked in
+    # so xcodegen persists it and Xcode stops rewriting the generated project on
+    # every open. Free team = 7-day signing, which is the $0 distribution path
+    # until the Apple Developer Program decision (PLAN Phase 5).
+    DEVELOPMENT_TEAM: FA737M2U79
+
 packages:
   Firebase:
     url: https://github.com/firebase/firebase-ios-sdk
@@ -50,8 +62,10 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: dev.cardozo.stock
         MARKETING_VERSION: '0.1'
         SWIFT_VERSION: '5.10'
-        # Filled from GoogleService-Info.plist; see docs/setup.md §1.
-        GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.placeholder
+        # Must match REVERSED_CLIENT_ID in GoogleService-Info.plist: it is the
+        # URL scheme Google calls back on, and a mismatch means the sign-in
+        # leaves and never returns.
+        GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.176221729478-irdlooa4ls67ocn58vm5o0crvmkdtu2p
     dependencies:
       - package: Firebase
         product: FirebaseAuth
