@@ -1,0 +1,94 @@
+name: Stock
+options:
+  bundleIdPrefix: dev.cardozo
+  deploymentTarget:
+    iOS: '17.0'
+  createIntermediateGroups: true
+
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: 11.0.0
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS
+    from: 8.0.0
+
+targets:
+  Stock:
+    type: application
+    platform: iOS
+    sources:
+      - path: Stock
+      # The seed data the web writes too. XcodeGen puts resources in `sources`
+      # with an explicit buildPhase; a folder reference would nest them under
+      # shared/ inside the bundle, where Bundle.url(forResource:) can't see them.
+      - path: ../../shared/categories.json
+        buildPhase: resources
+      - path: ../../shared/locations.json
+        buildPhase: resources
+      - path: ../../shared/units.json
+        buildPhase: resources
+    info:
+      path: Stock/Info.plist
+      properties:
+        CFBundleDisplayName: Stock
+        CFBundleShortVersionString: '0.1'
+        CFBundleVersion: '1'
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        # The scanner is the only hardware this app asks for, and the string
+        # says what it does with it.
+        NSCameraUsageDescription: Para escanear el código de barras de un producto y cargarlo sin tipear.
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - $(GOOGLE_REVERSED_CLIENT_ID)
+          - CFBundleURLSchemes:
+              - stock
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cardozo.stock
+        MARKETING_VERSION: '0.1'
+        SWIFT_VERSION: '5.10'
+        # Filled from GoogleService-Info.plist; see docs/setup.md §1.
+        GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.placeholder
+    dependencies:
+      - package: Firebase
+        product: FirebaseAuth
+      - package: Firebase
+        product: FirebaseFirestore
+      - package: GoogleSignIn
+        product: GoogleSignIn
+      - package: GoogleSignIn
+        product: GoogleSignInSwift
+
+  # Domain tests compile the pure-logic files directly instead of depending on
+  # the app target: the shared vectors don't need Firebase, and making them wait
+  # for an SDK download to prove that calendar arithmetic works would be silly.
+  StockTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: StockTests
+      - path: Stock/Domain
+      - path: ../../shared/plan-period-vectors.json
+        buildPhase: resources
+      - path: ../../shared/shopping-vectors.json
+        buildPhase: resources
+    settings:
+      base:
+        SWIFT_VERSION: '5.10'
+        GENERATE_INFOPLIST_FILE: 'YES'
+
+schemes:
+  Stock:
+    build:
+      targets:
+        Stock: all
+        StockTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - StockTests

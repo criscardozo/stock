@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PLACEHOLDER — not the real project.
+
+  No iOS app is registered in Firebase yet (docs/setup.md §1 step 5). This file
+  exists so the app boots against the EMULATORS, where none of these values are
+  used: auth and Firestore are redirected to localhost before any of them
+  matter. Google Sign-In will not work with it, by construction.
+
+  To point the app at qcris-stock: register the iOS app with bundle id
+  dev.cardozo.stock, download the real plist over this one, and put its
+  REVERSED_CLIENT_ID into project.yml's GOOGLE_REVERSED_CLIENT_ID before
+  re-running xcodegen — the URL scheme has to match or the sign-in callback
+  never comes back.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>demo-api-key</string>
+	<key>GCM_SENDER_ID</key>
+	<string>000000000000</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>dev.cardozo.stock</string>
+	<key>PROJECT_ID</key>
+	<string>demo-stock</string>
+	<key>STORAGE_BUCKET</key>
+	<string>demo-stock.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<false/>
+	<key>IS_GCM_ENABLED</key>
+	<false/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:000000000000:ios:0000000000000000000000</string>
+	<key>CLIENT_ID</key>
+	<string>000000000000-placeholder.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.000000000000-placeholder</string>
+</dict>
+</plist>

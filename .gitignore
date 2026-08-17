@@ -49,3 +49,6 @@ apps/web/tsconfig.tsbuildinfo
 # Emulator debug logs written where the command runs
 firebase/rules-tests/*-debug.log
 firebase/rules-tests/firebase-debug.log
+
+# XcodeGen output — project.yml is the source
+apps/ios/Stock.xcodeproj/
