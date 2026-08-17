@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Outfit } from 'next/font/google'
 import './globals.css'
 import { AppShell } from '@/components/AppShell'
+import { ServiceWorker } from '@/components/ServiceWorker'
 
 // Self-hosted through next/font so the type doesn't depend on Google being up.
 const outfit = Outfit({
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#F3F4EE',
+  themeColor: '#2E9E5B',
   viewportFit: 'cover',
 }
 
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-dvh bg-ground font-sans text-ink antialiased">
         <AppShell>{children}</AppShell>
+        <ServiceWorker />
       </body>
     </html>
   )

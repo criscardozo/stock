@@ -1,11 +1,11 @@
 {
   "$comment": "Seed categories written into households.categories when a household is created. Names are Spanish literals (the UI is Spanish only, so there is no translation key). `icon` is a Material Symbols Rounded ligature and `hue` a palette name from docs/design/tokens.md — never a raw colour, so the palette stays in one place. kind: only 'food' categories are offered when linking a recipe ingredient.",
   "categories": [
-    { "id": "frutas-verduras", "name": "Frutas y verduras", "icon": "nutrition", "hue": "olive", "kind": "food", "sortOrder": 10 },
+    { "id": "frutas-verduras", "name": "Verdulería", "icon": "nutrition", "hue": "olive", "kind": "food", "sortOrder": 10 },
     { "id": "carniceria", "name": "Carnicería", "icon": "kebab_dining", "hue": "wine", "kind": "food", "sortOrder": 20 },
     { "id": "pescaderia", "name": "Pescadería", "icon": "set_meal", "hue": "blue", "kind": "food", "sortOrder": 30 },
     { "id": "lacteos-huevos", "name": "Lácteos y huevos", "icon": "egg", "hue": "amber", "kind": "food", "sortOrder": 40 },
-    { "id": "panaderia", "name": "Panadería", "icon": "bakery_dining", "hue": "amber", "kind": "food", "sortOrder": 50 },
+    { "id": "panaderia", "name": "Panadería", "icon": "bakery_dining", "hue": "brown", "kind": "food", "sortOrder": 50 },
     { "id": "almacen", "name": "Almacén", "icon": "local_dining", "hue": "violet", "kind": "food", "sortOrder": 60 },
     { "id": "congelados", "name": "Congelados", "icon": "ac_unit", "hue": "blue", "kind": "food", "sortOrder": 70 },
     { "id": "desayuno", "name": "Café, té y yerba", "icon": "coffee", "hue": "brown", "kind": "food", "sortOrder": 80 },

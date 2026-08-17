@@ -1,6 +1,12 @@
 /**
- * The app mark: a container with its fill level — the whole product in one
- * glyph. Taken from the design's SVG, not redrawn.
+ * The app mark: a paper bag with its zigzag top.
+ *
+ * This is the reduced version on purpose. The full mark has the shopping
+ * sticking out — a baguette, an apple, a broccoli — but the design's own rule is
+ * that at 32 px and under the produce falls away and the bag with its zigzag is
+ * all that has to read. Every place this component is used is at or near that
+ * size, so it draws the bag; `public/icons/` carries the full art for the sizes
+ * that can hold it.
  */
 export function AppMark({ size = 34, radius = 11 }: { size?: number; radius?: number }) {
   return (
@@ -9,25 +15,14 @@ export function AppMark({ size = 34, radius = 11 }: { size?: number; radius?: nu
       style={{ width: size, height: size, borderRadius: radius }}
     >
       <svg
-        width={size * 0.65}
-        height={size * 0.65}
-        viewBox="0 0 64 64"
+        width={size * 0.68}
+        height={size * 0.68}
+        viewBox="12 24 40 36"
         aria-hidden="true"
         role="presentation"
       >
-        <rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8" />
-        <rect
-          x="16.5"
-          y="18.5"
-          width="31"
-          height="36"
-          rx="7"
-          fill="none"
-          stroke="#FCFCF8"
-          strokeWidth="4"
-        />
         <path
-          d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z"
+          d="M15 31.5 19.25 27.5 23.5 31.5 27.75 27.5 32 31.5 36.25 27.5 40.5 31.5 44.75 27.5 49 31.5V53q0 4-4 4H19q-4 0-4-4Z"
           fill="#FCFCF8"
         />
       </svg>
