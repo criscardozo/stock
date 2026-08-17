@@ -7,9 +7,11 @@ Next.js web app for everything you sit down to do on a Friday night, both talkin
 directly to Firebase (Auth + Firestore, Spark free tier), with no custom backend
 and **$0 infrastructure**.
 
-> **Status:** the web app is built and runs against the Firebase emulators —
-> stock, shopping list, meal plan, recipes and settings, on the delivered
-> design. Not deployed yet, and the iOS app hasn't started.
+> **Status:** both clients are built. The web is live at
+> [stock.cardozo.dev](https://stock.cardozo.dev); the iOS app runs in the
+> Simulator against the emulators. Still pending: deploying the Firestore
+> rules, whitelisting the domain for Google sign-in, and registering the iOS
+> app in Firebase — see [`docs/setup.md`](docs/setup.md).
 > [`docs/PLAN.md`](docs/PLAN.md) has the architecture and the phase order.
 
 | | |
@@ -170,6 +172,16 @@ pnpm emulators      # Auth 9099, Firestore 8085, UI 4000
 pnpm seed           # a household that looks real, in the emulator
 NEXT_PUBLIC_USE_EMULATORS=1 pnpm dev      # then use the "Emulador" sign-in buttons
 pnpm test           # domain vectors + Firestore rules (needs Java)
+```
+
+iOS, against the same emulators:
+
+```sh
+cd apps/ios && xcodegen && open Stock.xcodeproj
+xcodebuild test -project Stock.xcodeproj -scheme Stock \
+  -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:StockTests
+# Launch straight into a screen, signed in, no Google account needed:
+xcrun simctl launch booted dev.cardozo.stock -useEmulators -devSignIn -tab falta
 ```
 
 One-time console setup (Firebase project, Vercel, domain): [`docs/setup.md`](docs/setup.md).

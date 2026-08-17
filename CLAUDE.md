@@ -4,8 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-The **web app is built** (stock, shopping list, plan, recipes, settings) and runs
-against the emulators; nothing is deployed and `apps/ios/` doesn't exist yet.
+**Both clients are built.** The web is live at `stock.cardozo.dev` (Vercel, from
+`main`); the iOS app builds and runs in the Simulator against the emulators.
+What is NOT done: the Firestore rules are not deployed to `qcris-stock`, the
+domain isn't in Firebase Auth's authorized list, and no iOS app is registered
+(so its `GoogleService-Info.plist` is a placeholder and Google sign-in on iOS
+cannot work yet). All three are console steps in `docs/setup.md`.
 `README.md` is the specification, [`docs/PLAN.md`](docs/PLAN.md) holds the
 architecture decisions and the phase order.
 
@@ -114,6 +118,11 @@ contracts in `shared/`.
   the usual 8080 because Cristian's own Docker stack (`ecko`/`holocron`) lives there.
 - iOS: `cd apps/ios && xcodegen && open Stock.xcodeproj`. CLI tests:
   `xcodebuild test -project Stock.xcodeproj -scheme Stock -destination 'platform=iOS Simulator,name=<iPhone>' -only-testing:StockTests`.
+  `StockTests` compiles `Stock/Domain` directly rather than depending on the app
+  target — the shared vectors don't need Firebase, and shouldn't wait for it.
+- Driving the iOS app without a Google account:
+  `xcrun simctl launch booted dev.cardozo.stock -useEmulators -devSignIn -tab falta`
+  (`-devSignIn` and `-tab` only exist when pointed at the emulators).
 - Deploy rules: `firebase deploy --only firestore:rules,firestore:indexes --config firebase/firebase.json --project qcris-stock`.
 - One-time console setup (Firebase project creation, Google provider, Vercel, domain):
   `docs/setup.md`.

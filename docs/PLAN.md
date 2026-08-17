@@ -365,7 +365,16 @@ son la frontera**. Inicializar Firebase solo en componentes cliente y esperar la
 
 ## Fases de implementación
 
-### Fase 0 — Fundaciones (quemar el riesgo primero)
+> **Estado (17/8/2026):** fases 0 a 3 hechas. La web está viva en
+> `stock.cardozo.dev` y la app iOS corre en el simulador contra los emuladores.
+> La 4 (PWA) está a medias: manifest, íconos y service worker con arranque
+> offline verificado; falta el widget. La 5 sigue sin decidirse.
+>
+> Lo que **no** está hecho y no es código: deployar las reglas a `qcris-stock`,
+> whitelistear el dominio en Firebase Auth y registrar la app iOS. Ver
+> `docs/setup.md`.
+
+### Fase 0 — Fundaciones (quemar el riesgo primero) ✅
 
 Scaffold del repo con la estructura de arriba, `LICENSE` (MIT), `.gitignore` (Xcode + Node),
 este plan, `shared/schema.md` y los JSON semilla (categorías, ubicaciones, unidades), y los
@@ -377,7 +386,7 @@ validación de forma de `items` (tracking coherente con los campos presentes).
 *Salida: tests de rules en verde — el único riesgo de diseño novedoso retirado antes de que
 exista UI.*
 
-### Fase 1 — MVP Web: stock y lista
+### Fase 1 — MVP Web: stock y lista ✅
 
 Auth con Google, alta/unión de hogar, CRUD de ítems con los dos modos de medición, ubicaciones
 y categorías, pantalla **Stock** con búsqueda y filtros, pantalla **Falta comprar** con la lista
@@ -388,7 +397,7 @@ deploy en Vercel + dominio.
 porque valida modelo y rules sin la fricción de firma de Xcode — aunque el uso principal después
 sea el teléfono.
 
-### Fase 2 — Recetas y plan de comidas
+### Fase 2 — Recetas y plan de comidas ✅
 
 CRUD de recetas con ingredientes linkeados a ítems, semáforo de disponibilidad, pantalla **Plan**
 (un slot por día, semanal/quincenal), marcar cocinada con la hoja de descuento, y las sugerencias
@@ -397,7 +406,7 @@ contra los vectores compartidos.
 
 *Salida: el ciclo completo del viernes — planeo, veo qué falta, compro, cocino, el stock baja.*
 
-### Fase 3 — App iOS
+### Fase 3 — App iOS ✅
 
 App SwiftUI, Google Sign-In, **Stock** con ajuste rápido, **Falta comprar** en modo supermercado,
 **Hoy**, recetas en modo lectura, persistencia offline, lógica de períodos y de sugerencias en Swift
