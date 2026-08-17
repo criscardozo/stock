@@ -1,11 +1,11 @@
 {
-  "$comment": "Seed locations written into households.locations when a household is created. Editable afterwards — this is only the starting set.",
+  "$comment": "Seed locations written into households.locations when a household is created. Editable afterwards — this is only the starting set. `icon` is a Material Symbols Rounded ligature; `hue` names a palette entry from docs/design/tokens.md.",
   "locations": [
-    { "id": "heladera", "name": "Heladera", "icon": "🧊", "sortOrder": 10 },
-    { "id": "freezer", "name": "Freezer", "icon": "❄️", "sortOrder": 20 },
-    { "id": "alacena", "name": "Alacena", "icon": "🚪", "sortOrder": 30 },
-    { "id": "bajo-mesada", "name": "Bajo mesada", "icon": "🧴", "sortOrder": 40 },
-    { "id": "bano", "name": "Baño", "icon": "🚿", "sortOrder": 50 },
-    { "id": "otro", "name": "Otro", "icon": "📦", "sortOrder": 60 }
+    { "id": "heladera", "name": "Heladera", "icon": "kitchen", "hue": "blue", "sortOrder": 10 },
+    { "id": "freezer", "name": "Freezer", "icon": "ac_unit", "hue": "blue", "sortOrder": 20 },
+    { "id": "alacena", "name": "Alacena", "icon": "shelves", "hue": "brown", "sortOrder": 30 },
+    { "id": "lavadero", "name": "Lavadero", "icon": "local_laundry_service", "hue": "teal", "sortOrder": 40 },
+    { "id": "bano", "name": "Baño", "icon": "shower", "hue": "magenta", "sortOrder": 50 },
+    { "id": "otro", "name": "Otro", "icon": "inventory_2", "hue": "violet", "sortOrder": 60 }
   ]
 }

@@ -4,7 +4,7 @@
   "$rules": [
     "An item is skipped entirely when: its id already has a row in the list (listItemIds), or snoozedUntil >= today.",
     "planNeed = sum of `quantity` over NON-optional ingredients linked to this item, taken from days whose status is 'planned' AND whose date >= today. Days already cooked or skipped, and days in the past, contribute nothing.",
-    "tracking 'quantity': threshold = minQuantity + planNeed. Suggest when quantity <= threshold. The suggested amount is threshold - quantity, omitted when it is 0 (you are exactly at the trigger point, so the amount is the user's call).",
+    "tracking 'quantity': threshold = minQuantity + planNeed. Suggest when the item is not 'ok' (out or at/below its own minimum) OR quantity < threshold. Zero always suggests, even with a minimum of 0 — being out is the strongest signal there is, and silencing it is what snooze is for. The suggested amount is threshold - quantity, omitted when that is 0 (you are exactly at the trigger point, so the amount is the user's call).",
     "tracking 'level': suggest when level <= minLevel. NEVER a numeric amount — an ingredient quantity against a level-tracked item is ignored, because inventing '250 g of oil' is worse than saying nothing.",
     "source is 'min' when the item is at or below its own minimum, otherwise 'plan'. planRefs is filled either way, so the UI can say why beyond the number.",
     "planRefs lists {recipeId, date} for every planned day that uses the item, in date order. The UI turns that into the frozen `reason` text when the row is added.",
@@ -55,6 +55,17 @@
         "listItemIds": []
       },
       "expected": []
+    },
+    {
+      "name": "out of stock with no minimum at all is still out of stock",
+      "input": {
+        "today": "2026-08-17",
+        "items": [{ "id": "queso", "tracking": "quantity", "unit": "g", "quantity": 0, "minQuantity": 0 }],
+        "plan": null,
+        "recipes": [],
+        "listItemIds": []
+      },
+      "expected": [{ "itemId": "queso", "source": "min", "planRefs": [] }]
     },
     {
       "name": "level item at or below its minimum, never a number",
@@ -144,7 +155,7 @@
       "name": "optional ingredients never create a shortfall",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "queso", "tracking": "quantity", "unit": "g", "quantity": 0, "minQuantity": 0 }],
+        "items": [{ "id": "queso", "tracking": "quantity", "unit": "g", "quantity": 100, "minQuantity": 0 }],
         "plan": { "days": { "2026-08-19": { "recipeId": "bolo", "status": "planned" } } },
         "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "queso", "quantity": 100, "unit": "g", "optional": true }] }],
         "listItemIds": []

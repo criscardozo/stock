@@ -17,13 +17,20 @@ service cloud.firestore {
     }
 
     function household(hid) {
-      return get(/databases/$(database)/documents/households/$(hid)).data;
+      return get(/databases/$(database)/documents/households/$(hid));
     }
 
-    // The get() is cached per request, so repeating this across rules in one
-    // evaluation costs a single read.
+    /**
+     * The get() is cached per request, so repeating this across rules in one
+     * evaluation costs a single read.
+     *
+     * The null check is not decoration: a listener left pointing at a household
+     * that no longer exists makes get() return null, and reaching for
+     * `.data.memberIds` on that raises an evaluation error instead of a plain
+     * deny — which surfaces to the client as a cryptic "Null value error".
+     */
     function isMember(hid) {
-      return isSignedIn() && uid() in household(hid).memberIds;
+      return isSignedIn() && household(hid) != null && uid() in household(hid).data.memberIds;
     }
 
     function isDate(v) {
@@ -189,7 +196,7 @@ service cloud.firestore {
         function validRecipe(d) {
           return d.keys().hasAll(['title', 'servings', 'ingredients', 'tags', 'timesCooked',
                                   'createdAt', 'updatedAt'])
-            && d.keys().hasOnly(['title', 'servings', 'steps', 'ingredients', 'tags',
+            && d.keys().hasOnly(['title', 'servings', 'steps', 'ingredients', 'tags', 'icon',
                                  'timesCooked', 'lastCookedAt', 'createdAt', 'updatedAt'])
             && d.title is string && d.title.size() > 0 && d.title.size() <= 120
             && d.servings is int && d.servings >= 1
@@ -197,7 +204,8 @@ service cloud.firestore {
             && d.tags is list
             && d.timesCooked is int && d.timesCooked >= 0
             && (!('steps' in d) || d.steps is string)
-            && (!('lastCookedAt' in d) || isDate(d.lastCookedAt));
+            && (!('lastCookedAt' in d) || isDate(d.lastCookedAt))
+            && (!('icon' in d) || d.icon is string);
         }
 
         allow read: if isMember(hid);

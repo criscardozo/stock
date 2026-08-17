@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,1,0&amp;display=block" rel="stylesheet">
+<style>
+  body { margin:0; background:#F0EBE2; font-family:'Outfit',system-ui,sans-serif; }
+  a { color:#241A10; }
+  a:hover { color:#000; }
+  .ms { font-family:'Material Symbols Rounded'; font-weight:400; font-style:normal; line-height:1; }
+</style>
+</helmet>
+
+<div style="min-height:100%; padding:44px 44px 110px; display:flex; flex-direction:column; gap:34px; color:#241A10;">
+
+  <div style="display:flex; flex-direction:column; gap:8px; max-width:860px;">
+    <h2 style="margin:0; font-size:28px; font-weight:700; letter-spacing:-0.02em;">Stock con el lenguaje de Gastos Diarios</h2>
+    <p style="margin:0; font-size:14.5px; line-height:1.65; color:rgba(36,26,16,.62);">Misma gramática: Outfit, Material Symbols Rounded, fondo crema, tarjetas blancas con hairline al 8 %, radios 20-24, píldoras de 999 y números tabulares. Cambia el color principal — y con él el fondo y la tinta, que se corren apenas para acompañarlo. Tres direcciones, la misma pantalla en las tres.</p>
+    <p style="margin:6px 0 0; font-size:13px; line-height:1.6; color:rgba(36,26,16,.5);">Los círculos de categoría quedan neutros a propósito: el acento se reserva para la acción principal, la nav activa, el dial de nivel y el estado <em>Poco</em> — así el color se puede juzgar sin ruido.</p>
+  </div>
+
+  <section style="display:flex; flex-direction:column; gap:22px;">
+    <div style="display:flex; flex-wrap:wrap; gap:30px; align-items:flex-start;">
+
+      <!-- ─────────── 1a · VERDE ─────────── -->
+      <div id="1a" style="--ac:#2E9E5B; --acd:#1D7A43; --act:rgba(46,158,91,.13); --ink:#1B2119; --mut:#7C8578; --dim:#AFB6AA; --hair:rgba(27,33,25,.09); --bg:#F3F4EE; --card:#FCFCF8; scroll-margin-top:20px; display:flex; flex-direction:column; gap:14px; width:430px;">
+        <div style="display:flex; align-items:baseline; gap:9px;">
+          <a href="#1a" style="font:700 10.5px ui-monospace,Menlo,monospace; padding:3px 7px; background:#241A10; color:#fff; border-radius:5px; text-decoration:none;">1a</a>
+          <span style="font-size:15px; font-weight:700;">Verde albahaca</span>
+        </div>
+        <p style="margin:-6px 0 0; font-size:12.5px; line-height:1.6; color:rgba(36,26,16,.58);">Lo obvio para una app de comida, y por eso funciona: el verde ya significa «hay». Fondo crema apenas más frío y tinta verde-negra. El acento aguanta texto blanco, así que el botón sólido se lee igual que el coral de Gastos Diarios.</p>
+        <div style="display:flex; gap:7px;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#2E9E5B;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#2E9E5B</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#1D7A43;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#1D7A43</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#1B2119;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#1B2119</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#F3F4EE; box-shadow:inset 0 0 0 1px rgba(27,33,25,.12);"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#F3F4EE</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#FCFCF8; box-shadow:inset 0 0 0 1px rgba(27,33,25,.12);"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#FCFCF8</span></div>
+        </div>
+
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+          <div style="position:absolute; inset:0; background:var(--bg); display:flex; flex-direction:column; padding:74px 0 0; box-sizing:border-box; font-family:'Outfit',sans-serif; overflow:hidden;">
+            <div style="padding:0 20px 14px; display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; flex-direction:column; gap:2px;">
+                <span style="font-size:19px; font-weight:700; color:var(--ink);">Stock</span>
+                <span style="font-size:12.5px; color:var(--mut);">24 ítems · 3 faltan · 6 poco</span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <div style="width:38px; height:38px; border-radius:19px; background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:var(--mut);">qr_code_scanner</span></div>
+                <div style="width:38px; height:38px; border-radius:19px; background:var(--ac); display:grid; place-items:center; box-shadow:0 6px 14px rgba(46,158,91,.32);"><span class="ms" style="font-size:21px; color:#fff;">add</span></div>
+              </div>
+            </div>
+            <div style="padding:0 20px 12px;">
+              <div style="display:flex; align-items:center; gap:8px; background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:10px 14px;">
+                <span class="ms" style="font-size:19px; color:var(--dim);">search</span>
+                <span style="font-size:14px; color:var(--dim);">Buscar en la casa</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:6px; padding:0 20px 14px;">
+              <span style="font-size:12.5px; font-weight:700; color:#fff; background:var(--ac); border-radius:999px; padding:6px 13px;">Todo</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Heladera</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Freezer</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Alacena</span>
+            </div>
+            <div style="flex:1; padding:0 20px; overflow:hidden;">
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Frutas y verduras</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(27,33,25,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Bolsa de espinacas</span><span style="font-size:12px; color:#C0353A; display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">error</span>Falta · mínimo 1</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--dim); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">0 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(27,33,25,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Frutillas</span><span style="font-size:12px; color:var(--mut); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">schedule</span>Vence mañana</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">1 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(27,33,25,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">shelves</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Papas</span><span style="font-size:12px; color:var(--dim);">Alacena · granel</span></div>
+                  <div style="display:flex; align-items:center; gap:8px;"><div style="display:flex; gap:3px;"><span style="width:13px; height:8px; border-radius:3px; background:var(--ac);"></span><span style="width:13px; height:8px; border-radius:3px; background:var(--ac);"></span><span style="width:13px; height:8px; border-radius:3px; background:rgba(27,33,25,.11);"></span><span style="width:13px; height:8px; border-radius:3px; background:rgba(27,33,25,.11);"></span></div><span style="font-size:12px; font-weight:600; color:var(--mut); width:36px;">medio</span></div>
+                </div>
+              </div>
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Carnicería</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(27,33,25,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Carne picada</span><span style="font-size:12px; color:var(--dim);">Freezer · mínimo 500 g</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">1,5 kg</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(27,33,25,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Patas de pollo</span><span style="font-size:12px; color:#C0353A; display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">error</span>Falta · mínimo 4</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--dim); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">0 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(27,33,25,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Milanesas</span><span style="font-size:12px; color:var(--dim);">Freezer · mínimo 4</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">6 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+              </div>
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Lácteos y huevos</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(27,33,25,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">egg</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Huevos</span><span style="font-size:12px; font-weight:600; color:var(--acd); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">arrow_downward</span>Poco · mínimo 6</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">3 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(27,33,25,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">water_drop</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Leche</span><span style="font-size:12px; color:var(--mut);">Heladera · vence en 2 días</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">2 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:auto; background:var(--card); box-shadow:0 -8px 24px rgba(27,33,25,.06); border-top:1px solid var(--hair); padding:9px 12px 30px; display:flex; justify-content:space-around;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--ac);">inventory_2</span><span style="font-size:10.5px; font-weight:700; color:var(--acd);">Stock</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px; position:relative;"><span class="ms" style="font-size:23px; color:var(--dim);">shopping_cart</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Falta</span><span style="position:absolute; top:-3px; right:9px; min-width:17px; height:17px; padding:0 4px; border-radius:9px; background:#E5484D; color:#fff; font-size:10px; font-weight:700; display:grid; place-items:center;">9</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">local_dining</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Hoy</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">menu_book</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Recetas</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">settings</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Ajustes</span></div>
+            </div>
+          </div>
+        </x-import>
+
+        <div style="background:var(--bg); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:12px; box-shadow:inset 0 0 0 1px var(--hair);">
+          <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim);">Web · falta comprar</span>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; flex-direction:column;"><span style="font-size:19px; font-weight:700; color:var(--ink);">9 cosas</span><span style="font-size:12.5px; color:var(--mut);">6 por mínimo · 2 por el plan · 1 a mano</span></div>
+            <div style="display:flex; align-items:center; gap:7px; background:var(--ac); border-radius:999px; padding:9px 16px; box-shadow:0 6px 16px rgba(46,158,91,.3);"><span class="ms" style="font-size:18px; color:#fff;">add</span><span style="font-size:13.5px; font-weight:700; color:#fff;">Agregar</span></div>
+          </div>
+          <div style="height:10px; border-radius:5px; background:rgba(27,33,25,.09); overflow:hidden;"><div style="width:33%; height:100%; border-radius:5px; background:var(--ac);"></div></div>
+          <div style="background:var(--card); border-radius:16px; box-shadow:inset 0 0 0 1px var(--hair); padding:4px 14px;">
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--hair);"><span style="width:22px; height:22px; border-radius:7px; box-shadow:inset 0 0 0 2px rgba(27,33,25,.18);"></span><div style="flex:1; display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:600; color:var(--ink);">Patas de pollo</span><span style="font-size:12px; color:var(--mut);">quedan 0, mínimo 4</span></div><span style="font-size:13px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums;">4 u</span></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--hair);"><span style="width:22px; height:22px; border-radius:7px; box-shadow:inset 0 0 0 2px rgba(27,33,25,.18);"></span><div style="flex:1; display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:600; color:var(--ink);">Carne picada</span><span style="font-size:12px; font-weight:600; color:var(--acd); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">local_dining</span>Pastel de papa, domingo</span></div><span style="font-size:13px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums;">500 g</span></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; opacity:.45;"><span style="width:22px; height:22px; border-radius:7px; background:var(--ac); display:grid; place-items:center;"><span class="ms" style="font-size:15px; color:#fff;">check</span></span><div style="flex:1;"><span style="font-size:14px; font-weight:600; color:var(--ink); text-decoration:line-through;">Huevos</span></div><span style="font-size:13px; font-weight:600; color:var(--mut);">12 u</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────────── 1b · AMARILLO ─────────── -->
+      <div id="1b" style="--ac:#F2B10C; --acd:#8A5D00; --act:rgba(242,177,12,.18); --ink:#241C0E; --mut:#8A7F6C; --dim:#B5AC98; --hair:rgba(36,28,14,.09); --bg:#FBF6E9; --card:#FFFDF7; scroll-margin-top:20px; display:flex; flex-direction:column; gap:14px; width:430px;">
+        <div style="display:flex; align-items:baseline; gap:9px;">
+          <a href="#1b" style="font:700 10.5px ui-monospace,Menlo,monospace; padding:3px 7px; background:#241A10; color:#fff; border-radius:5px; text-decoration:none;">1b</a>
+          <span style="font-size:15px; font-weight:700;">Amarillo maíz</span>
+        </div>
+        <p style="margin:-6px 0 0; font-size:12.5px; line-height:1.6; color:rgba(36,26,16,.58);">El más luminoso y el más distinto del coral. El amarillo no aguanta texto blanco, así que el botón principal lleva la tinta encima — eso lo vuelve un objeto distinto, no un coral repintado. Cuidado: el amarillo no puede además significar «vence pronto».</p>
+        <div style="display:flex; gap:7px;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#F2B10C;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#F2B10C</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#8A5D00;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#8A5D00</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#241C0E;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#241C0E</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#FBF6E9; box-shadow:inset 0 0 0 1px rgba(36,28,14,.12);"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#FBF6E9</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#FFFDF7; box-shadow:inset 0 0 0 1px rgba(36,28,14,.12);"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#FFFDF7</span></div>
+        </div>
+
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+          <div style="position:absolute; inset:0; background:var(--bg); display:flex; flex-direction:column; padding:74px 0 0; box-sizing:border-box; font-family:'Outfit',sans-serif; overflow:hidden;">
+            <div style="padding:0 20px 14px; display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; flex-direction:column; gap:2px;">
+                <span style="font-size:19px; font-weight:700; color:var(--ink);">Stock</span>
+                <span style="font-size:12.5px; color:var(--mut);">24 ítems · 3 faltan · 6 poco</span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <div style="width:38px; height:38px; border-radius:19px; background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:var(--mut);">qr_code_scanner</span></div>
+                <div style="width:38px; height:38px; border-radius:19px; background:var(--ac); display:grid; place-items:center; box-shadow:0 6px 14px rgba(242,177,12,.4);"><span class="ms" style="font-size:21px; color:var(--ink);">add</span></div>
+              </div>
+            </div>
+            <div style="padding:0 20px 12px;">
+              <div style="display:flex; align-items:center; gap:8px; background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:10px 14px;">
+                <span class="ms" style="font-size:19px; color:var(--dim);">search</span>
+                <span style="font-size:14px; color:var(--dim);">Buscar en la casa</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:6px; padding:0 20px 14px;">
+              <span style="font-size:12.5px; font-weight:700; color:var(--ink); background:var(--ac); border-radius:999px; padding:6px 13px;">Todo</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Heladera</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Freezer</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Alacena</span>
+            </div>
+            <div style="flex:1; padding:0 20px; overflow:hidden;">
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Frutas y verduras</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(36,28,14,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Bolsa de espinacas</span><span style="font-size:12px; color:#C0353A; display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">error</span>Falta · mínimo 1</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--dim); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">0 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(36,28,14,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Frutillas</span><span style="font-size:12px; color:var(--mut); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">schedule</span>Vence mañana</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">1 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(36,28,14,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">shelves</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Papas</span><span style="font-size:12px; color:var(--dim);">Alacena · granel</span></div>
+                  <div style="display:flex; align-items:center; gap:8px;"><div style="display:flex; gap:3px;"><span style="width:13px; height:8px; border-radius:3px; background:var(--ac);"></span><span style="width:13px; height:8px; border-radius:3px; background:var(--ac);"></span><span style="width:13px; height:8px; border-radius:3px; background:rgba(36,28,14,.11);"></span><span style="width:13px; height:8px; border-radius:3px; background:rgba(36,28,14,.11);"></span></div><span style="font-size:12px; font-weight:600; color:var(--mut); width:36px;">medio</span></div>
+                </div>
+              </div>
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Carnicería</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(36,28,14,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Carne picada</span><span style="font-size:12px; color:var(--dim);">Freezer · mínimo 500 g</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">1,5 kg</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(36,28,14,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Patas de pollo</span><span style="font-size:12px; color:#C0353A; display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">error</span>Falta · mínimo 4</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--dim); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">0 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(36,28,14,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Milanesas</span><span style="font-size:12px; color:var(--dim);">Freezer · mínimo 4</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">6 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+              </div>
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Lácteos y huevos</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(36,28,14,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">egg</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Huevos</span><span style="font-size:12px; font-weight:600; color:var(--acd); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">arrow_downward</span>Poco · mínimo 6</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">3 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(36,28,14,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">water_drop</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Leche</span><span style="font-size:12px; color:var(--mut);">Heladera · vence en 2 días</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">2 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:auto; background:var(--card); box-shadow:0 -8px 24px rgba(36,28,14,.06); border-top:1px solid var(--hair); padding:9px 12px 30px; display:flex; justify-content:space-around;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--acd);">inventory_2</span><span style="font-size:10.5px; font-weight:700; color:var(--acd);">Stock</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px; position:relative;"><span class="ms" style="font-size:23px; color:var(--dim);">shopping_cart</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Falta</span><span style="position:absolute; top:-3px; right:9px; min-width:17px; height:17px; padding:0 4px; border-radius:9px; background:#E5484D; color:#fff; font-size:10px; font-weight:700; display:grid; place-items:center;">9</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">local_dining</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Hoy</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">menu_book</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Recetas</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">settings</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Ajustes</span></div>
+            </div>
+          </div>
+        </x-import>
+
+        <div style="background:var(--bg); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:12px; box-shadow:inset 0 0 0 1px var(--hair);">
+          <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim);">Web · falta comprar</span>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; flex-direction:column;"><span style="font-size:19px; font-weight:700; color:var(--ink);">9 cosas</span><span style="font-size:12.5px; color:var(--mut);">6 por mínimo · 2 por el plan · 1 a mano</span></div>
+            <div style="display:flex; align-items:center; gap:7px; background:var(--ac); border-radius:999px; padding:9px 16px; box-shadow:0 6px 16px rgba(242,177,12,.38);"><span class="ms" style="font-size:18px; color:var(--ink);">add</span><span style="font-size:13.5px; font-weight:700; color:var(--ink);">Agregar</span></div>
+          </div>
+          <div style="height:10px; border-radius:5px; background:rgba(36,28,14,.09); overflow:hidden;"><div style="width:33%; height:100%; border-radius:5px; background:var(--ac);"></div></div>
+          <div style="background:var(--card); border-radius:16px; box-shadow:inset 0 0 0 1px var(--hair); padding:4px 14px;">
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--hair);"><span style="width:22px; height:22px; border-radius:7px; box-shadow:inset 0 0 0 2px rgba(36,28,14,.18);"></span><div style="flex:1; display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:600; color:var(--ink);">Patas de pollo</span><span style="font-size:12px; color:var(--mut);">quedan 0, mínimo 4</span></div><span style="font-size:13px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums;">4 u</span></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--hair);"><span style="width:22px; height:22px; border-radius:7px; box-shadow:inset 0 0 0 2px rgba(36,28,14,.18);"></span><div style="flex:1; display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:600; color:var(--ink);">Carne picada</span><span style="font-size:12px; font-weight:600; color:var(--acd); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">local_dining</span>Pastel de papa, domingo</span></div><span style="font-size:13px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums;">500 g</span></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; opacity:.45;"><span style="width:22px; height:22px; border-radius:7px; background:var(--ac); display:grid; place-items:center;"><span class="ms" style="font-size:15px; color:var(--ink);">check</span></span><div style="flex:1;"><span style="font-size:14px; font-weight:600; color:var(--ink); text-decoration:line-through;">Huevos</span></div><span style="font-size:13px; font-weight:600; color:var(--mut);">12 u</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─────────── 1c · NARANJA CALABAZA ─────────── -->
+      <div id="1c" style="--ac:#E07C16; --acd:#A2560A; --act:rgba(224,124,22,.15); --ink:#251A12; --mut:#8C7C6D; --dim:#B8A897; --hair:rgba(37,26,18,.09); --bg:#FAF4EC; --card:#FFFCF7; scroll-margin-top:20px; display:flex; flex-direction:column; gap:14px; width:430px;">
+        <div style="display:flex; align-items:baseline; gap:9px;">
+          <a href="#1c" style="font:700 10.5px ui-monospace,Menlo,monospace; padding:3px 7px; background:#241A10; color:#fff; border-radius:5px; text-decoration:none;">1c</a>
+          <span style="font-size:15px; font-weight:700;">Naranja calabaza</span>
+        </div>
+        <p style="margin:-6px 0 0; font-size:12.5px; line-height:1.6; color:rgba(36,26,16,.58);">La continuidad más obvia con Gastos Diarios: familia de las dos apps, sin ser el mismo color. Más terroso y menos rojo que el coral, así que en el teléfono no se confunden. El riesgo es justamente ese — puede leerse como la misma app.</p>
+        <div style="display:flex; gap:7px;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#E07C16;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#E07C16</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#A2560A;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#A2560A</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#251A12;"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#251A12</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#FAF4EC; box-shadow:inset 0 0 0 1px rgba(37,26,18,.12);"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#FAF4EC</span></div>
+          <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><div style="height:44px; border-radius:12px; background:#FFFCF7; box-shadow:inset 0 0 0 1px rgba(37,26,18,.12);"></div><span style="font:600 10px ui-monospace,Menlo,monospace; color:rgba(36,26,16,.5);">#FFFCF7</span></div>
+        </div>
+
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+          <div style="position:absolute; inset:0; background:var(--bg); display:flex; flex-direction:column; padding:74px 0 0; box-sizing:border-box; font-family:'Outfit',sans-serif; overflow:hidden;">
+            <div style="padding:0 20px 14px; display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; flex-direction:column; gap:2px;">
+                <span style="font-size:19px; font-weight:700; color:var(--ink);">Stock</span>
+                <span style="font-size:12.5px; color:var(--mut);">24 ítems · 3 faltan · 6 poco</span>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <div style="width:38px; height:38px; border-radius:19px; background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:var(--mut);">qr_code_scanner</span></div>
+                <div style="width:38px; height:38px; border-radius:19px; background:var(--ac); display:grid; place-items:center; box-shadow:0 6px 14px rgba(224,124,22,.36);"><span class="ms" style="font-size:21px; color:#fff;">add</span></div>
+              </div>
+            </div>
+            <div style="padding:0 20px 12px;">
+              <div style="display:flex; align-items:center; gap:8px; background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:10px 14px;">
+                <span class="ms" style="font-size:19px; color:var(--dim);">search</span>
+                <span style="font-size:14px; color:var(--dim);">Buscar en la casa</span>
+              </div>
+            </div>
+            <div style="display:flex; gap:6px; padding:0 20px 14px;">
+              <span style="font-size:12.5px; font-weight:700; color:#fff; background:var(--ac); border-radius:999px; padding:6px 13px;">Todo</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Heladera</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Freezer</span>
+              <span style="font-size:12.5px; font-weight:600; color:var(--mut); background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:999px; padding:6px 13px;">Alacena</span>
+            </div>
+            <div style="flex:1; padding:0 20px; overflow:hidden;">
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Frutas y verduras</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(37,26,18,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Bolsa de espinacas</span><span style="font-size:12px; color:#C0353A; display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">error</span>Falta · mínimo 1</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--dim); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">0 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(37,26,18,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Frutillas</span><span style="font-size:12px; color:var(--mut); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">schedule</span>Vence mañana</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">1 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(37,26,18,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">shelves</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Papas</span><span style="font-size:12px; color:var(--dim);">Alacena · granel</span></div>
+                  <div style="display:flex; align-items:center; gap:8px;"><div style="display:flex; gap:3px;"><span style="width:13px; height:8px; border-radius:3px; background:var(--ac);"></span><span style="width:13px; height:8px; border-radius:3px; background:var(--ac);"></span><span style="width:13px; height:8px; border-radius:3px; background:rgba(37,26,18,.11);"></span><span style="width:13px; height:8px; border-radius:3px; background:rgba(37,26,18,.11);"></span></div><span style="font-size:12px; font-weight:600; color:var(--mut); width:36px;">medio</span></div>
+                </div>
+              </div>
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Carnicería</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(37,26,18,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Carne picada</span><span style="font-size:12px; color:var(--dim);">Freezer · mínimo 500 g</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">1,5 kg</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(37,26,18,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Patas de pollo</span><span style="font-size:12px; color:#C0353A; display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">error</span>Falta · mínimo 4</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--dim); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">0 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(37,26,18,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Milanesas</span><span style="font-size:12px; color:var(--dim);">Freezer · mínimo 4</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">6 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+              </div>
+              <div style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim); margin:0 4px 8px;">Lácteos y huevos</div>
+              <div style="background:var(--card); box-shadow:inset 0 0 0 1px var(--hair); border-radius:20px; padding:4px 14px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0; border-bottom:1px solid var(--hair);">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(37,26,18,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">egg</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Huevos</span><span style="font-size:12px; font-weight:600; color:var(--acd); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">arrow_downward</span>Poco · mínimo 6</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">3 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:11px; padding:10px 0;">
+                  <div style="width:38px; height:38px; border-radius:19px; background:rgba(37,26,18,.06); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:var(--mut);">water_drop</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:1px; min-width:0;"><span style="font-size:14.5px; font-weight:600; color:var(--ink);">Leche</span><span style="font-size:12px; color:var(--mut);">Heladera · vence en 2 días</span></div>
+                  <div style="display:flex; align-items:center; background:var(--bg); border-radius:999px; padding:3px;"><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; color:var(--ink); min-width:36px; text-align:center; font-variant-numeric:tabular-nums;">2 u</span><span class="ms" style="font-size:18px; color:var(--mut); width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:auto; background:var(--card); box-shadow:0 -8px 24px rgba(37,26,18,.06); border-top:1px solid var(--hair); padding:9px 12px 30px; display:flex; justify-content:space-around;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--ac);">inventory_2</span><span style="font-size:10.5px; font-weight:700; color:var(--acd);">Stock</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px; position:relative;"><span class="ms" style="font-size:23px; color:var(--dim);">shopping_cart</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Falta</span><span style="position:absolute; top:-3px; right:9px; min-width:17px; height:17px; padding:0 4px; border-radius:9px; background:#E5484D; color:#fff; font-size:10px; font-weight:700; display:grid; place-items:center;">9</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">local_dining</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Hoy</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">menu_book</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Recetas</span></div>
+              <div style="display:flex; flex-direction:column; align-items:center; gap:2px; width:60px;"><span class="ms" style="font-size:23px; color:var(--dim);">settings</span><span style="font-size:10.5px; font-weight:600; color:var(--dim);">Ajustes</span></div>
+            </div>
+          </div>
+        </x-import>
+
+        <div style="background:var(--bg); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:12px; box-shadow:inset 0 0 0 1px var(--hair);">
+          <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--dim);">Web · falta comprar</span>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; flex-direction:column;"><span style="font-size:19px; font-weight:700; color:var(--ink);">9 cosas</span><span style="font-size:12.5px; color:var(--mut);">6 por mínimo · 2 por el plan · 1 a mano</span></div>
+            <div style="display:flex; align-items:center; gap:7px; background:var(--ac); border-radius:999px; padding:9px 16px; box-shadow:0 6px 16px rgba(224,124,22,.32);"><span class="ms" style="font-size:18px; color:#fff;">add</span><span style="font-size:13.5px; font-weight:700; color:#fff;">Agregar</span></div>
+          </div>
+          <div style="height:10px; border-radius:5px; background:rgba(37,26,18,.09); overflow:hidden;"><div style="width:33%; height:100%; border-radius:5px; background:var(--ac);"></div></div>
+          <div style="background:var(--card); border-radius:16px; box-shadow:inset 0 0 0 1px var(--hair); padding:4px 14px;">
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--hair);"><span style="width:22px; height:22px; border-radius:7px; box-shadow:inset 0 0 0 2px rgba(37,26,18,.18);"></span><div style="flex:1; display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:600; color:var(--ink);">Patas de pollo</span><span style="font-size:12px; color:var(--mut);">quedan 0, mínimo 4</span></div><span style="font-size:13px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums;">4 u</span></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--hair);"><span style="width:22px; height:22px; border-radius:7px; box-shadow:inset 0 0 0 2px rgba(37,26,18,.18);"></span><div style="flex:1; display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:600; color:var(--ink);">Carne picada</span><span style="font-size:12px; font-weight:600; color:var(--acd); display:flex; align-items:center; gap:4px;"><span class="ms" style="font-size:13px;">local_dining</span>Pastel de papa, domingo</span></div><span style="font-size:13px; font-weight:700; color:var(--ink); font-variant-numeric:tabular-nums;">500 g</span></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 0; opacity:.45;"><span style="width:22px; height:22px; border-radius:7px; background:var(--ac); display:grid; place-items:center;"><span class="ms" style="font-size:15px; color:#fff;">check</span></span><div style="flex:1;"><span style="font-size:14px; font-weight:600; color:var(--ink); text-decoration:line-through;">Huevos</span></div><span style="font-size:13px; font-weight:600; color:var(--mut);">12 u</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="display:flex; gap:26px; flex-wrap:wrap; padding-top:8px; border-top:1px solid rgba(36,26,16,.1);">
+      <div style="display:flex; flex-direction:column; gap:6px; width:430px;">
+        <span style="font-size:12.5px; font-weight:700; color:#241A10;">Lo que comparten las tres</span>
+        <p style="margin:0; font-size:12.5px; line-height:1.65; color:rgba(36,26,16,.6);">Outfit 400/600/700, Material Symbols Rounded, tarjeta blanca sobre crema, hairline al 8-9 %, radios 20 en listas y 999 en píldoras, cantidades en números tabulares dentro de una píldora, y el dial de nivel como cuatro pastillas. <em>Falta</em> siempre es el rojo <code style="font-size:11.5px;">#E5484D</code> y <em>Vence</em> siempre es tinta apagada con reloj: el acento no se usa para alarmas.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; width:430px;">
+        <span style="font-size:12.5px; font-weight:700; color:#241A10;">Mi recomendación</span>
+        <p style="margin:0; font-size:12.5px; line-height:1.65; color:rgba(36,26,16,.6);"><a href="#1a">1a</a>, el verde. Es la única de las tres donde el color <em>dice algo</em> sobre lo que la app hace, aguanta texto blanco sin pelear con nada, y a un metro de distancia no se confunde con Gastos Diarios en el dock — que es la prueba real cuando las dos apps viven en el mismo teléfono.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; width:430px;">
+        <span style="font-size:12.5px; font-weight:700; color:#241A10;">Si querés mezclar</span>
+        <p style="margin:0; font-size:12.5px; line-height:1.65; color:rgba(36,26,16,.6);">Se puede tomar el fondo y la tinta de una y el acento de otra — por ejemplo el crema cálido de <a href="#1c">1c</a> con el verde de <a href="#1a">1a</a>. Decime la combinación y la armo antes de repintar las 21 pantallas.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}"></script>
+</body>
+</html>

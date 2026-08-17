@@ -42,13 +42,19 @@ config, the categories and the locations, so a single listener covers all of it.
 | `currency` | string | `"AUD"`. Only used to format the optional reference price |
 | `memberIds` | string[] | **max 2**, enforced in the rules. The authorisation boundary |
 | `members` | map | `{ [uid]: { displayName, photoURL? } }` — denormalised for display, so showing "agregado por Cris" costs no extra read. Keys must match `memberIds` |
-| `locations` | map | `{ [id]: { name, icon, sortOrder } }` |
-| `categories` | map | `{ [id]: { name, icon, color, kind, sortOrder } }`, `kind: "food" \| "household"` — only `food` categories are offered as recipe ingredients |
+| `locations` | map | `{ [id]: { name, icon, hue, sortOrder } }` |
+| `categories` | map | `{ [id]: { name, icon, hue, kind, sortOrder } }`, `kind: "food" \| "household"` — only `food` categories are offered as recipe ingredients |
 | `planConfig` | map | `{ length: "weekly" \| "fortnightly", startWeekday: 0-6 }` where **0 = Sunday** (JS convention). Default `6` (Saturday): the plan is written on Friday and shopped on the weekend |
 | `createdAt`, `updatedAt` | timestamp | server |
 
 Categories and locations are **maps keyed by id, not arrays**: updating one entry
 of an array of maps in Firestore means rewriting the whole array.
+
+`icon` is a Material Symbols Rounded ligature (`nutrition`, `kebab_dining`, …)
+and `hue` names an entry in the palette (`olive`, `wine`, `blue`, `amber`,
+`violet`, `teal`, `magenta`, `brown`, `green`) rather than a raw colour — so
+restyling the palette is one edit in `docs/design/tokens.md` and its CSS, not a
+data migration.
 
 ## `households/{hid}/items/{itemId}`
 
@@ -89,6 +95,7 @@ fields that already determine them.
 | `servings` | int ≥ 1 | stored but **not used to scale** in the MVP — the recipe is cooked as written |
 | `steps?` | string | free text |
 | `tags` | string[] | e.g. `["rápido", "vegetariano"]` |
+| `icon?` | string | Material Symbols ligature for the card (`ramen_dining`, `oven_gen`, …). Defaults to `restaurant` |
 | `ingredients` | array of maps | see below |
 | `timesCooked` | int ≥ 0 | |
 | `lastCookedAt?` | date | |

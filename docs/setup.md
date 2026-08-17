@@ -1,8 +1,8 @@
 # Puesta a punto manual (una sola vez, todo free tier)
 
-Todo lo de esta guía está **pendiente**: el proyecto arranca de cero. Los pasos
-marcados ⏳ los tiene que hacer Cristian en una consola web; el resto se hace
-desde el repo.
+Los pasos marcados ⏳ los tiene que hacer Cristian en una consola web; el resto
+se hace desde el repo. El desarrollo local **no necesita nada de esto**: corre
+entero contra los emuladores (§5).
 
 El proyecto de Firebase va a ser **`qcris-stock`**, separado del de Gastos
 Diarios a propósito: cuota, reglas y Auth propios, así un bug de listeners acá no
@@ -12,15 +12,17 @@ config.
 
 ## 1. Consola de Firebase ⏳
 
-1. **Crear el proyecto** en [console.firebase.google.com](https://console.firebase.google.com):
-   nombre `qcris-stock`. Google Analytics: **no** (no hace falta y suma consentimientos).
+1. **Crear el proyecto** — ✅ hecho (`qcris-stock`).
 2. **Firestore**: crear la base en **modo nativo**, sobre la base **`(default)`**
    (el free tier de Spark aplica sólo a ella). Ubicación: `australia-southeast1`.
    Empezar en **production mode** — las reglas reales se deployan desde el repo.
 3. **Auth** → Authentication → Sign-in method → habilitar **Google**. Es el único
    proveedor, en las dos plataformas (ver PLAN §9).
-4. **App web**: Project settings → Your apps → Web → registrar la app. Copiar el
-   objeto `firebaseConfig` (va a `apps/web/src/lib/firebase/config.ts`).
+4. **App web** ⏳: Project settings → Your apps → Web → registrar la app y pasar
+   el objeto `firebaseConfig`. Los valores entran como variables
+   `NEXT_PUBLIC_FIREBASE_*` (ver `apps/web/src/lib/firebase/config.ts`), que es
+   lo único que falta para que la app hable con el proyecto real en vez del
+   emulador.
 5. **App iOS**: Your apps → iOS → bundle ID `dev.cardozo.stock`. Descargar
    `GoogleService-Info.plist` a `apps/ios/Stock/Resources/`, y mantener
    `CLIENT_ID` / `REVERSED_CLIENT_ID` en sync con el `GIDClientID` y el URL
@@ -120,6 +122,7 @@ Las dos leen los mismos datos, así que se usan indistintamente.
 ```sh
 pnpm install
 pnpm emulators          # Auth 9099, Firestore 8085, UI 4000
+pnpm seed               # un hogar de mentira pero realista, en el emulador
 pnpm dev                # Next.js en :3000 — NEXT_PUBLIC_USE_EMULATORS=1 para apuntar al emulador
 pnpm test:rules         # tests de security rules (levanta su propio emulador, necesita Java)
 pnpm test:web           # unit tests, incluidos los vectores compartidos
@@ -128,6 +131,11 @@ pnpm test               # todo
 
 El emulador de Firestore escucha en **8085**, no en el 8080 habitual, justamente
 para no competir nunca con el stack de Docker propio (`ecko`/`holocron`).
+
+Con `NEXT_PUBLIC_USE_EMULATORS=1`, la pantalla de login muestra además dos
+botones de "Entrar como…" que firman contra el emulador de Auth: existen sólo
+en ese modo, así que no hay camino hacia ellos en un build deployado. Es lo que
+permite mirar las pantallas sin una cuenta de Google de verdad.
 
 ## 6. iOS
 

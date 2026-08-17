@@ -4,11 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-**Design stage — no code yet.** `README.md` is the specification and
-[`docs/PLAN.md`](docs/PLAN.md) holds the architecture decisions and the phased
-build order; read both before writing anything. The UI will be implemented
-against the design system in `docs/design/` once it exists — use those tokens,
-don't invent colours.
+The **web app is built** (stock, shopping list, plan, recipes, settings) and runs
+against the emulators; nothing is deployed and `apps/ios/` doesn't exist yet.
+`README.md` is the specification, [`docs/PLAN.md`](docs/PLAN.md) holds the
+architecture decisions and the phase order.
+
+The UI is implemented against the design system in
+[`docs/design/tokens.md`](docs/design/tokens.md), whose raw Claude Design export
+is in `docs/design/reference/`. **Use those tokens — don't invent colours.** The
+delivered design is light-only; a dark palette has to be designed, not guessed.
 
 ## What this is
 
@@ -97,9 +101,11 @@ contracts in `shared/`.
 
 ## Commands
 
-Nothing is scaffolded yet — Phase 0 in `docs/PLAN.md` creates it. The intended shape:
-
-- `pnpm dev` — Next.js dev server (`apps/web`).
+- `pnpm dev` — Next.js dev server (`apps/web`). Point it at the emulators with
+  `NEXT_PUBLIC_USE_EMULATORS=1`, which also turns on the emulator-only sign-in
+  buttons so screens can be driven without a Google account.
+- `pnpm seed` — fills the emulators with a household that looks real (24 items, 5
+  recipes, a plan, a half-ticked list). Needs `pnpm emulators` running.
 - `pnpm typecheck && pnpm lint && pnpm build` — web checks.
 - `pnpm test:web` — vitest, includes the shared vector tests.
 - `pnpm test:rules` — Firestore rules tests (spins up the emulator via `firebase emulators:exec`;

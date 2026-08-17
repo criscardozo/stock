@@ -62,6 +62,17 @@ describe('items: access', () => {
   })
 })
 
+describe('items: a household that is not there', () => {
+  it('denies cleanly, without an evaluation error, without an evaluation error', async () => {
+    // A listener left pointing at a deleted household makes the membership
+    // get() return null. Reaching into it raises "Null value error" instead of
+    // denying, which reaches the client as a cryptic permission failure.
+    const ghost = doc(db(ALICE), 'households/does-not-exist/items/x')
+    await assertFails(setDoc(ghost, countedItem(ALICE)))
+    await assertFails(getDocs(collection(db(ALICE), 'households/does-not-exist/items')))
+  })
+})
+
 describe('items: the hybrid measurement is enforced', () => {
   it('accepts a counted item and a level item', async () => {
     await assertSucceeds(setDoc(item(ALICE, 'huevos'), countedItem(ALICE)))

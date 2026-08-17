@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,1,0&amp;display=block" rel="stylesheet">
+<style>
+  body { margin:0; background:#E9EBE2; font-family:'Outfit',system-ui,sans-serif; }
+  a { color:#1D7A43; }
+  a:hover { color:#2E9E5B; }
+  .ms { font-family:'Material Symbols Rounded'; font-weight:400; font-style:normal; line-height:1; }
+  .fr { display:flex; flex-direction:column; gap:14px; }
+  .frh { display:flex; align-items:baseline; gap:11px; }
+  .frb { font:700 10.5px ui-monospace,Menlo,monospace; padding:3px 7px; background:#1B2119; color:#fff; border-radius:5px; }
+  .frn { font-size:15px; font-weight:700; color:#1B2119; }
+  .frd { font-size:13px; color:rgba(27,33,25,.55); }
+</style>
+</helmet>
+
+<div style="min-height:100%; padding:48px 48px 120px; display:flex; flex-direction:column; gap:60px; color:#1B2119;">
+
+  <div style="display:flex; flex-direction:column; gap:10px; max-width:880px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="width:40px; height:40px; border-radius:13px; background:#2E9E5B; display:grid; place-items:center;">
+        <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8"/><rect x="16.5" y="18.5" width="31" height="36" rx="7" fill="none" stroke="#FCFCF8" stroke-width="4"/><path d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z" fill="#FCFCF8"/></svg>
+      </div>
+      <h2 style="margin:0; font-size:28px; font-weight:700; letter-spacing:-0.02em;">Stock — Web</h2>
+    </div>
+    <p style="margin:0; font-size:14.5px; line-height:1.65; color:rgba(27,33,25,.6);">Next.js en <code style="font-size:13px; background:rgba(27,33,25,.06); padding:2px 6px; border-radius:5px;">stock.cardozo.dev</code>, sidebar fija, verde albahaca sobre crema. Nueve pantallas, tres hojas y los estados vacío / error / offline. UI en español, datos reales de la casa.</p>
+  </div>
+
+  <!-- ══ W1 · INGRESAR ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W1</span><span class="frn">Ingresar</span><span class="frd">Google es el único proveedor — mezclar Apple crea dos UIDs para la misma persona.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H }}" url="stock.cardozo.dev" tabs="{{ tabs }}" hint-size="1360px,900px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:grid; grid-template-columns:1.15fr 1fr; font-family:'Outfit',sans-serif; box-sizing:border-box;">
+        <div style="padding:80px 76px; display:flex; flex-direction:column; justify-content:center; gap:26px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:46px; height:46px; border-radius:15px; background:#2E9E5B; display:grid; place-items:center;"><svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8"/><rect x="16.5" y="18.5" width="31" height="36" rx="7" fill="none" stroke="#FCFCF8" stroke-width="4"/><path d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z" fill="#FCFCF8"/></svg></div>
+            <span style="font-size:22px; font-weight:700;">Stock</span>
+          </div>
+          <h1 style="margin:0; font-size:52px; font-weight:700; line-height:1.05; letter-spacing:-0.03em; max-width:13ch;">Qué hay en casa, qué falta, qué se cocina.</h1>
+          <p style="margin:0; font-size:16.5px; line-height:1.6; color:#7C8578; max-width:42ch;">El inventario de la casa y el plan de comidas de la quincena, compartidos entre los dos, en tiempo real.</p>
+          <div style="display:flex; flex-direction:column; gap:12px; align-items:flex-start; margin-top:6px;">
+            <div style="display:flex; align-items:center; gap:10px; background:#2E9E5B; border-radius:999px; padding:13px 24px; box-shadow:0 8px 20px rgba(46,158,91,.32);"><span class="ms" style="font-size:20px; color:#fff;">login</span><span style="font-size:15.5px; font-weight:700; color:#fff;">Continuar con Google</span></div>
+            <span style="font-size:12.5px; color:#AFB6AA; max-width:44ch; line-height:1.5;">Se guarda la sesión en este navegador. Instalable como app desde el menú — así es como queda en el teléfono para siempre.</span>
+          </div>
+        </div>
+        <div style="border-left:1px solid rgba(27,33,25,.09); display:flex; flex-direction:column; justify-content:center; gap:16px; padding:80px 64px;">
+          <span style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#AFB6AA;">Hoy en casa</span>
+          <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:24px; display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; align-items:baseline; gap:10px;">
+              <span style="font-size:56px; font-weight:700; line-height:1; letter-spacing:-0.03em; font-variant-numeric:tabular-nums;">9</span>
+              <span style="font-size:14px; font-weight:600; color:#7C8578;">cosas para comprar</span>
+            </div>
+            <div style="height:10px; border-radius:5px; background:rgba(27,33,25,.08); overflow:hidden;"><div style="width:38%; height:100%; border-radius:5px; background:#2E9E5B;"></div></div>
+            <div style="display:flex; align-items:center; gap:10px; padding-top:4px;">
+              <div style="width:34px; height:34px; border-radius:17px; background:rgba(46,158,91,.13); display:grid; place-items:center;"><span class="ms" style="font-size:18px; color:#1D7A43;">local_dining</span></div>
+              <div style="display:flex; flex-direction:column;"><span style="font-size:14px; font-weight:600;">Pastel de papa</span><span style="font-size:12px; color:#AFB6AA;">se cocina hoy · faltan 500 g</span></div>
+            </div>
+          </div>
+          <span style="font-size:12.5px; color:#AFB6AA;">3 ítems vencen esta semana · 24 en el catálogo</span>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W2 · HOGAR ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W2</span><span class="frn">Crear o unirse a un hogar</span><span class="frd">El código de invitación <em>es</em> el ID del documento. Tope duro: 2 miembros.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H2 }}" url="stock.cardozo.dev/hogar" tabs="{{ tabs }}" hint-size="1360px,660px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px; padding:56px; box-sizing:border-box; font-family:'Outfit',sans-serif;">
+        <div style="display:flex; flex-direction:column; gap:6px; align-items:center; text-align:center;">
+          <h2 style="margin:0; font-size:30px; font-weight:700; letter-spacing:-0.02em;">Hola, Cristian</h2>
+          <p style="margin:0; font-size:15px; color:#7C8578;">Todavía no estás en ningún hogar. Creá uno o entrá con el código de tu casa.</p>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; width:100%; max-width:800px;">
+          <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:24px; display:flex; flex-direction:column; gap:14px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#1D7A43;">Empezar de cero</span>
+            <span style="font-size:19px; font-weight:700;">Crear un hogar</span>
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Nombre</span><div style="background:#F3F4EE; border:1px solid rgba(27,33,25,.09); border-radius:14px; padding:11px 14px; font-size:15px; font-weight:500;">Casa Cardozo</div></div>
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Zona horaria</span><div style="background:#F3F4EE; border:1px solid rgba(27,33,25,.09); border-radius:14px; padding:11px 14px; font-size:15px; font-weight:500; display:flex; align-items:center; justify-content:space-between;">Australia/Sydney<span class="ms" style="font-size:19px; color:#AFB6AA;">expand_more</span></div></div>
+            <span style="font-size:11.5px; color:#AFB6AA; line-height:1.5;">Las fechas del plan se calculan en esta zona, no en la del dispositivo.</span>
+            <div style="height:48px; border-radius:24px; background:#2E9E5B; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#fff; box-shadow:0 6px 16px rgba(46,158,91,.3);">Crear hogar</div>
+          </div>
+          <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:24px; display:flex; flex-direction:column; gap:14px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#AFB6AA;">Ya tienen uno</span>
+            <span style="font-size:19px; font-weight:700;">Unirme con un código</span>
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Código de invitación</span><div style="background:#F3F4EE; border:1px solid rgba(27,33,25,.09); border-radius:14px; padding:11px 14px; font:600 18px ui-monospace,Menlo,monospace; letter-spacing:.18em;">K7QP-2M9XVD</div></div>
+            <span style="font-size:11.5px; color:#AFB6AA; line-height:1.5;">Te lo pasa la otra persona desde Ajustes. Conocer el código <em>es</em> el permiso: se puede leer pero no listar.</span>
+            <div style="flex:1;"></div>
+            <div style="height:48px; border-radius:24px; background:#FCFCF8; border:1.5px solid rgba(27,33,25,.14); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#1B2119;">Unirme</div>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W3 · STOCK ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W3</span><span class="frn">Stock — el catálogo</span><span class="frd">Home. Un ítem, una fila: el catálogo y la existencia son el mismo documento.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H }}" url="stock.cardozo.dev/stock" tabs="{{ tabs }}" hint-size="1360px,900px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:flex; font-family:'Outfit',sans-serif; box-sizing:border-box;">
+
+        <div style="width:232px; flex:none; border-right:1px solid rgba(27,33,25,.09); display:flex; flex-direction:column; padding:22px 16px; box-sizing:border-box; gap:5px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:0 8px; margin-bottom:22px;">
+            <div style="width:34px; height:34px; border-radius:11px; background:#2E9E5B; display:grid; place-items:center;"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8"/><rect x="16.5" y="18.5" width="31" height="36" rx="7" fill="none" stroke="#FCFCF8" stroke-width="4"/><path d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z" fill="#FCFCF8"/></svg></div>
+            <div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:15.5px; font-weight:700;">Stock</span><span style="font-size:11px; color:#AFB6AA;">Casa Cardozo</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(46,158,91,.13);"><span class="ms" style="font-size:19px; color:#1D7A43;">inventory_2</span><span style="font-size:14px; font-weight:700; color:#1D7A43;">Stock</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">shopping_cart</span><span style="font-size:14px; font-weight:600; color:#7C8578; flex:1;">Falta comprar</span><span style="min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:#E5484D; color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center;">9</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">calendar_month</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Plan</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">menu_book</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Recetas</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">settings</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Ajustes</span></div>
+          <div style="margin-top:auto; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09);">
+              <div style="display:flex;">
+                <div style="width:28px; height:28px; border-radius:14px; background:#2A6FDB; border:2px solid #FCFCF8; display:grid; place-items:center; font-size:12px; font-weight:700; color:#fff;">C</div>
+                <div style="width:28px; height:28px; border-radius:14px; background:#E0447C; border:2px solid #FCFCF8; display:grid; place-items:center; font-size:12px; font-weight:700; color:#fff; margin-left:-8px;">M</div>
+              </div>
+              <div style="display:flex; flex-direction:column; line-height:1.25;"><span style="font-size:12.5px; font-weight:700;">Cristian y Meli</span><span style="font-size:11px; color:#AFB6AA;">Hogar compartido</span></div>
+            </div>
+            <span style="display:flex; align-items:center; gap:6px; padding:0 12px; font-size:11px; font-weight:600; color:#AFB6AA;"><span class="ms" style="font-size:15px;">cloud_done</span>Sincronizado</span>
+          </div>
+        </div>
+
+        <div style="flex:1; display:flex; flex-direction:column; padding:24px 28px 0; box-sizing:border-box; overflow:hidden;">
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:16px;">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="font-size:23px; font-weight:700; letter-spacing:-0.02em;">Stock</span>
+              <span style="font-size:13px; color:#7C8578;">24 ítems · 3 faltan · 6 poco · 2 vencen esta semana</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:9px;">
+              <div style="display:flex; align-items:center; gap:7px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:9px 15px;"><span class="ms" style="font-size:18px; color:#7C8578;">tune</span><span style="font-size:13.5px; font-weight:600; color:#7C8578;">Vista</span></div>
+              <div style="display:flex; align-items:center; gap:7px; background:#2E9E5B; border-radius:999px; padding:10px 18px; box-shadow:0 6px 16px rgba(46,158,91,.3);"><span class="ms" style="font-size:18px; color:#fff;">add</span><span style="font-size:14px; font-weight:700; color:#fff;">Nuevo ítem</span></div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:9px; margin-bottom:16px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:8px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:9px 16px; width:250px;"><span class="ms" style="font-size:18px; color:#AFB6AA;">search</span><span style="font-size:13.5px; color:#AFB6AA;">Buscar por nombre o marca</span></div>
+            <div style="display:flex; gap:5px;">
+              <span style="font-size:12.5px; font-weight:700; color:#fff; background:#1B2119; border-radius:999px; padding:7px 14px;">Todas</span>
+              <span style="font-size:12.5px; font-weight:600; color:#7C8578; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:7px 14px;">Heladera</span>
+              <span style="font-size:12.5px; font-weight:600; color:#7C8578; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:7px 14px;">Freezer</span>
+              <span style="font-size:12.5px; font-weight:600; color:#7C8578; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:7px 14px;">Alacena</span>
+              <span style="font-size:12.5px; font-weight:600; color:#7C8578; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:7px 14px;">Lavadero</span>
+            </div>
+            <div style="width:1px; height:22px; background:rgba(27,33,25,.12);"></div>
+            <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:7px 13px;"><span class="ms" style="font-size:15px;">error</span>Falta<span style="font-weight:600; opacity:.65;">3</span></span>
+            <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#7C8578; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:7px 13px;"><span class="ms" style="font-size:15px;">arrow_downward</span>Poco<span style="opacity:.6;">6</span></span>
+            <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#7C8578; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:7px 13px;"><span class="ms" style="font-size:15px;">schedule</span>Vence pronto<span style="opacity:.6;">2</span></span>
+          </div>
+
+          <div style="flex:1; overflow:hidden; display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px;">Frutas y verduras</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(138,155,35,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#6E7C1C;">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Bolsa de espinacas</span><span style="font-size:12px; color:#AFB6AA;">Baby · 200 g · Heladera</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#CFD3C9; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">0 u</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 1 u</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#CFD3C9;">—</span>
+                  <span style="width:132px; display:flex; justify-content:flex-end;"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#fff; background:#E5484D; border-radius:999px; padding:4px 11px;"><span class="ms" style="font-size:14px;">error</span>Falta</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(138,155,35,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#6E7C1C;">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Frutillas</span><span style="font-size:12px; color:#AFB6AA;">Caja 250 g · Heladera</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">1 u</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 1 u</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; font-weight:600; color:#1B2119;">18 ago</span>
+                  <span style="width:132px; display:flex; justify-content:flex-end;"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.07); border-radius:999px; padding:4px 11px;"><span class="ms" style="font-size:14px;">schedule</span>Vence en 1 d</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(138,155,35,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#6E7C1C;">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Kiwis</span><span style="font-size:12px; color:#AFB6AA;">Sueltos · Heladera</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">4 u</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 4 u</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#CFD3C9;">—</span>
+                  <span style="width:132px; display:flex; justify-content:flex-end;"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#1D7A43; background:rgba(46,158,91,.13); border-radius:999px; padding:4px 11px;"><span class="ms" style="font-size:14px;">arrow_downward</span>Poco</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0;">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(138,155,35,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#6E7C1C;">shelves</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Papas</span><span style="font-size:12px; color:#AFB6AA;">Granel · Alacena</span></div>
+                  <div style="display:flex; align-items:center; gap:9px; flex:none;"><div style="display:flex; gap:3px;"><span style="width:14px; height:8px; border-radius:3px; background:#2E9E5B;"></span><span style="width:14px; height:8px; border-radius:3px; background:#2E9E5B;"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.11);"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.11);"></span></div><span style="font-size:12.5px; font-weight:600; color:#7C8578; width:38px;">medio</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín poco</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#CFD3C9;">—</span>
+                  <span style="width:132px;"></span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px;">Carnicería y pescadería</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(180,72,95,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#9E3E53;">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Carne picada</span><span style="font-size:12px; color:#AFB6AA;">Especial · Freezer</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">1,5 kg</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 500 g</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#CFD3C9;">—</span>
+                  <span style="width:132px; display:flex; justify-content:flex-end;"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.07); border-radius:999px; padding:4px 11px;"><span class="ms" style="font-size:14px;">local_dining</span>Lo pide el plan</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(180,72,95,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#9E3E53;">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Patas de pollo</span><span style="font-size:12px; color:#AFB6AA;">Bandeja · Freezer</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#CFD3C9; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">0 u</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 4 u</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#CFD3C9;">—</span>
+                  <span style="width:132px; display:flex; justify-content:flex-end;"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#fff; background:#E5484D; border-radius:999px; padding:4px 11px;"><span class="ms" style="font-size:14px;">error</span>Falta</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(180,72,95,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#9E3E53;">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Milanesas</span><span style="font-size:12px; color:#AFB6AA;">De carne · Freezer</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">6 u</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 4 u</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#CFD3C9;">—</span>
+                  <span style="width:132px;"></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0;">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(46,127,168,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#286D91;">set_meal</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Salmón</span><span style="font-size:12px; color:#AFB6AA;">Filete · 2×180 g · Freezer</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">2 u</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 0 u</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#AFB6AA;">30 sep</span>
+                  <span style="width:132px;"></span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px;">Lácteos y huevos</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(201,138,18,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#996A0C;">egg</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Huevos</span><span style="font-size:12px; color:#AFB6AA;">Maple × 12 · Heladera</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">3 u</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 6 u</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#CFD3C9;">—</span>
+                  <span style="width:132px; display:flex; justify-content:flex-end;"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#1D7A43; background:rgba(46,158,91,.13); border-radius:999px; padding:4px 11px;"><span class="ms" style="font-size:14px;">arrow_downward</span>Poco</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(201,138,18,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#996A0C;">water_drop</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Queso crema</span><span style="font-size:12px; color:#AFB6AA;">Pote 290 g · Heladera</span></div>
+                  <div style="display:flex; align-items:center; background:#F3F4EE; border-radius:999px; padding:3px; flex:none;"><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">remove</span><span style="font-size:14px; font-weight:700; min-width:52px; text-align:center; font-variant-numeric:tabular-nums;">1 u</span><span class="ms" style="font-size:18px; color:#7C8578; width:26px; height:26px; display:grid; place-items:center;">add</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín 1 u</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; font-weight:700; color:#C0353A;">16 ago</span>
+                  <span style="width:132px; display:flex; justify-content:flex-end;"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#fff; background:#C0353A; border-radius:999px; padding:4px 11px;"><span class="ms" style="font-size:14px;">dangerous</span>Vencido</span></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:13px; padding:11px 0;">
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(201,138,18,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#996A0C;">bakery_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3; min-width:0;"><span style="font-size:14.5px; font-weight:600;">Queso rallado</span><span style="font-size:12px; color:#AFB6AA;">Granel · Heladera</span></div>
+                  <div style="display:flex; align-items:center; gap:9px; flex:none;"><div style="display:flex; gap:3px;"><span style="width:14px; height:8px; border-radius:3px; background:#2E9E5B;"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.11);"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.11);"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.11);"></span></div><span style="font-size:12.5px; font-weight:600; color:#7C8578; width:38px;">poco</span></div>
+                  <span style="width:66px; text-align:right; font-size:12.5px; color:#AFB6AA;">mín poco</span>
+                  <span style="width:74px; text-align:right; font-size:12.5px; color:#CFD3C9;">—</span>
+                  <span style="width:132px; display:flex; justify-content:flex-end;"><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#1D7A43; background:rgba(46,158,91,.13); border-radius:999px; padding:4px 11px;"><span class="ms" style="font-size:14px;">arrow_downward</span>Poco</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0 14px; margin-top:10px; border-top:1px solid rgba(27,33,25,.09); font-size:12px; color:#AFB6AA;">
+            <span>Mostrando 11 de 24 ítems</span>
+            <span style="display:flex; align-items:center; gap:6px;"><span class="ms" style="font-size:15px;">history</span>Última compra: ayer 18:40, por Meli</span>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W4 · FALTA COMPRAR ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W4</span><span class="frn">Falta comprar</span><span class="frd">No se guarda: se deriva de mínimos + plan + extras, menos lo snoozeado. Cada fila dice por qué está.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H }}" url="stock.cardozo.dev/falta-comprar" tabs="{{ tabs }}" hint-size="1360px,900px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:flex; font-family:'Outfit',sans-serif; box-sizing:border-box;">
+
+        <div style="width:232px; flex:none; border-right:1px solid rgba(27,33,25,.09); display:flex; flex-direction:column; padding:22px 16px; box-sizing:border-box; gap:5px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:0 8px; margin-bottom:22px;">
+            <div style="width:34px; height:34px; border-radius:11px; background:#2E9E5B; display:grid; place-items:center;"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8"/><rect x="16.5" y="18.5" width="31" height="36" rx="7" fill="none" stroke="#FCFCF8" stroke-width="4"/><path d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z" fill="#FCFCF8"/></svg></div>
+            <div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:15.5px; font-weight:700;">Stock</span><span style="font-size:11px; color:#AFB6AA;">Casa Cardozo</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">inventory_2</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Stock</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(46,158,91,.13);"><span class="ms" style="font-size:19px; color:#1D7A43;">shopping_cart</span><span style="font-size:14px; font-weight:700; color:#1D7A43; flex:1;">Falta comprar</span><span style="min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:#E5484D; color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center;">9</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">calendar_month</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Plan</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">menu_book</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Recetas</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">settings</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Ajustes</span></div>
+          <div style="margin-top:auto; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09);">
+              <div style="display:flex;">
+                <div style="width:28px; height:28px; border-radius:14px; background:#2A6FDB; border:2px solid #FCFCF8; display:grid; place-items:center; font-size:12px; font-weight:700; color:#fff;">C</div>
+                <div style="width:28px; height:28px; border-radius:14px; background:#E0447C; border:2px solid #FCFCF8; display:grid; place-items:center; font-size:12px; font-weight:700; color:#fff; margin-left:-8px;">M</div>
+              </div>
+              <div style="display:flex; flex-direction:column; line-height:1.25;"><span style="font-size:12.5px; font-weight:700;">Cristian y Meli</span><span style="font-size:11px; color:#AFB6AA;">Hogar compartido</span></div>
+            </div>
+            <span style="display:flex; align-items:center; gap:6px; padding:0 12px; font-size:11px; font-weight:600; color:#AFB6AA;"><span class="ms" style="font-size:15px;">cloud_done</span>Sincronizado</span>
+          </div>
+        </div>
+
+        <div style="flex:1; display:flex; flex-direction:column; padding:24px 28px 0; box-sizing:border-box; overflow:hidden;">
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:16px;">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span style="font-size:23px; font-weight:700; letter-spacing:-0.02em;">Falta comprar</span>
+              <span style="font-size:13px; color:#7C8578;">9 cosas · 6 por mínimo · 2 por el plan · 1 agregada a mano</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:9px;">
+              <div style="display:flex; align-items:center; gap:7px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:9px 15px;"><span class="ms" style="font-size:18px; color:#7C8578;">content_copy</span><span style="font-size:13.5px; font-weight:600; color:#7C8578;">Copiar lista</span></div>
+              <div style="display:flex; align-items:center; gap:7px; background:#2E9E5B; border-radius:999px; padding:10px 18px; box-shadow:0 6px 16px rgba(46,158,91,.3);"><span class="ms" style="font-size:18px; color:#fff;">add</span><span style="font-size:14px; font-weight:700; color:#fff;">Agregar a mano</span></div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:14px 18px; margin-bottom:18px;">
+            <div style="display:flex; flex-direction:column; gap:6px; flex:1;">
+              <div style="display:flex; align-items:baseline; justify-content:space-between;"><span style="font-size:13px; font-weight:600; color:#7C8578;">En el changuito</span><span style="font-size:13px; color:#AFB6AA; font-variant-numeric:tabular-nums;">3 de 9</span></div>
+              <div style="height:10px; border-radius:5px; background:rgba(27,33,25,.08); overflow:hidden;"><div style="width:33%; height:100%; border-radius:5px; background:#2E9E5B;"></div></div>
+            </div>
+            <div style="width:1px; height:38px; background:rgba(27,33,25,.09);"></div>
+            <span style="display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:#7C8578;"><span class="ms" style="font-size:17px;">notifications_off</span>2 snoozeados hasta el 23 ago</span>
+          </div>
+
+          <div style="flex:1; overflow:hidden; display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px;">Frutas y verduras</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(138,155,35,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#6E7C1C;">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Bolsa de espinacas</span><span style="font-size:12.5px; color:#7C8578;">quedan 0, mínimo 1</span></div>
+                  <span style="font-size:13.5px; color:#7C8578;">sugerido <strong style="font-weight:700; color:#1B2119; font-variant-numeric:tabular-nums;">1 u</strong></span>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">notifications_off</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0;">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(138,155,35,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#6E7C1C;">nutrition</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Kiwis</span><span style="font-size:12.5px; color:#7C8578;">quedan 4, mínimo 4</span></div>
+                  <span style="font-size:13.5px; color:#7C8578;">sugerido <strong style="font-weight:700; color:#1B2119; font-variant-numeric:tabular-nums;">4 u</strong></span>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">notifications_off</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px;">Carnicería</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(180,72,95,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#9E3E53;">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Patas de pollo</span><span style="font-size:12.5px; color:#7C8578;">quedan 0, mínimo 4</span></div>
+                  <span style="font-size:13.5px; color:#7C8578;">sugerido <strong style="font-weight:700; color:#1B2119; font-variant-numeric:tabular-nums;">4 u</strong></span>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">notifications_off</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0;">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(180,72,95,.14); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#9E3E53;">kebab_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Carne picada</span><span style="font-size:12.5px; font-weight:600; color:#1D7A43; display:flex; align-items:center; gap:5px;"><span class="ms" style="font-size:14px;">local_dining</span>faltan 500 g para Pastel de papa, domingo</span></div>
+                  <span style="font-size:13.5px; color:#7C8578;">sugerido <strong style="font-weight:700; color:#1B2119; font-variant-numeric:tabular-nums;">500 g</strong></span>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">notifications_off</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px;">Lácteos y huevos</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(201,138,18,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#996A0C;">egg</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Huevos</span><span style="font-size:12.5px; color:#7C8578;">quedan 3, mínimo 6 · <span style="font-weight:600; color:#1D7A43;">6 más para Milanesas, jueves</span></span></div>
+                  <span style="font-size:13.5px; color:#7C8578;">sugerido <strong style="font-weight:700; color:#1B2119; font-variant-numeric:tabular-nums;">9 u</strong></span>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">notifications_off</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(201,138,18,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#996A0C;">water_drop</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Leche de soja</span><span style="font-size:12.5px; color:#7C8578;">queda 1, mínimo 2</span></div>
+                  <span style="font-size:13.5px; color:#7C8578;">sugerido <strong style="font-weight:700; color:#1B2119; font-variant-numeric:tabular-nums;">1 u</strong></span>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">notifications_off</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0;">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(201,138,18,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#996A0C;">bakery_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Queso rallado</span><span style="font-size:12.5px; color:#7C8578;">en <em style="font-style:normal; font-weight:600; color:#1D7A43;">poco</em> · lo pide Milanesas, jueves</span></div>
+                  <span style="font-size:13px; color:#AFB6AA;">sin cantidad</span>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">notifications_off</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px;">Almacén · y lo agregado a mano</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(139,111,190,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#6B54A0;">local_dining</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Salsa de tacos</span><span style="font-size:12.5px; color:#7C8578;">quedan 0, mínimo 1</span></div>
+                  <span style="font-size:13.5px; color:#7C8578;">sugerido <strong style="font-weight:700; color:#1B2119; font-variant-numeric:tabular-nums;">1 u</strong></span>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">notifications_off</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07); opacity:.5;">
+                  <span style="width:24px; height:24px; border-radius:8px; background:#2E9E5B; display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:17px; color:#fff;">check</span></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(139,111,190,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#6B54A0;">water_drop</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600; text-decoration:line-through;">Leche de coco</span><span style="font-size:12.5px; color:#7C8578;">para Comida thai, sábado — entraron 2 u</span></div>
+                  <span style="font-size:13px; font-weight:700; color:#1D7A43;">Deshacer</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);">
+                  <span style="width:24px; height:24px; border-radius:8px; border:2px solid rgba(27,33,25,.18); flex:none;"></span>
+                  <div style="width:36px; height:36px; border-radius:18px; background:rgba(192,103,155,.15); display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:19px; color:#A34E80;">soap</span></div>
+                  <div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Servilletas</span><span style="font-size:12.5px; color:#7C8578;">lo agregó Meli, ayer</span></div>
+                  <div style="width:22px; height:22px; border-radius:11px; background:#E0447C; display:grid; place-items:center; font-size:10.5px; font-weight:700; color:#fff;">M</div>
+                  <span class="ms" style="font-size:19px; color:#CFD3C9; width:32px; text-align:center;">delete</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:14px; padding:13px 0;">
+                  <span class="ms" style="font-size:20px; color:#AFB6AA; margin-left:2px;">add_circle</span>
+                  <span style="font-size:14px; color:#AFB6AA;">Agregar algo que no está en el catálogo…</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0 14px; margin-top:10px; border-top:1px solid rgba(27,33,25,.09); font-size:12px; color:#AFB6AA;">
+            <span>Tildar abre la hoja de reposición: cuánto entró, vencimiento y precio.</span>
+            <span style="display:flex; align-items:center; gap:6px;"><span class="ms" style="font-size:15px;">bolt</span>Comprar es un writeBatch — la UI no espera la confirmación del servidor.</span>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W5 · PLAN ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W5</span><span class="frn">Plan de la quincena</span><span class="frd">La pantalla del viernes. Un slot por día — la cena. Arranca sábado, en la hora de Sídney.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H }}" url="stock.cardozo.dev/plan" tabs="{{ tabs }}" hint-size="1360px,900px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:flex; font-family:'Outfit',sans-serif; box-sizing:border-box;">
+
+        <div style="width:232px; flex:none; border-right:1px solid rgba(27,33,25,.09); display:flex; flex-direction:column; padding:22px 16px; box-sizing:border-box; gap:5px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:0 8px; margin-bottom:22px;">
+            <div style="width:34px; height:34px; border-radius:11px; background:#2E9E5B; display:grid; place-items:center;"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8"/><rect x="16.5" y="18.5" width="31" height="36" rx="7" fill="none" stroke="#FCFCF8" stroke-width="4"/><path d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z" fill="#FCFCF8"/></svg></div>
+            <div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:15.5px; font-weight:700;">Stock</span><span style="font-size:11px; color:#AFB6AA;">Casa Cardozo</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">inventory_2</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Stock</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">shopping_cart</span><span style="font-size:14px; font-weight:600; color:#7C8578; flex:1;">Falta comprar</span><span style="min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:#E5484D; color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center;">9</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(46,158,91,.13);"><span class="ms" style="font-size:19px; color:#1D7A43;">calendar_month</span><span style="font-size:14px; font-weight:700; color:#1D7A43;">Plan</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">menu_book</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Recetas</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">settings</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Ajustes</span></div>
+          <div style="margin-top:auto; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09);">
+              <div style="display:flex;">
+                <div style="width:28px; height:28px; border-radius:14px; background:#2A6FDB; border:2px solid #FCFCF8; display:grid; place-items:center; font-size:12px; font-weight:700; color:#fff;">C</div>
+                <div style="width:28px; height:28px; border-radius:14px; background:#E0447C; border:2px solid #FCFCF8; display:grid; place-items:center; font-size:12px; font-weight:700; color:#fff; margin-left:-8px;">M</div>
+              </div>
+              <div style="display:flex; flex-direction:column; line-height:1.25;"><span style="font-size:12.5px; font-weight:700;">Cristian y Meli</span><span style="font-size:11px; color:#AFB6AA;">Hogar compartido</span></div>
+            </div>
+            <span style="display:flex; align-items:center; gap:6px; padding:0 12px; font-size:11px; font-weight:600; color:#AFB6AA;"><span class="ms" style="font-size:15px;">public</span>Australia/Sydney</span>
+          </div>
+        </div>
+
+        <div style="flex:1; display:flex; flex-direction:column; padding:24px 28px 0; box-sizing:border-box; overflow:hidden;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <span style="font-size:23px; font-weight:700; letter-spacing:-0.02em;">Plan</span>
+              <div style="display:flex; align-items:center; gap:2px; background:#FCFCF8; border:1px solid rgba(27,33,25,.1); border-radius:999px; padding:5px 8px;">
+                <span class="ms" style="font-size:18px; color:#7C8578; padding:2px;">chevron_left</span>
+                <span style="font-size:13.5px; font-weight:600; padding:0 6px;">16 – 29 de agosto</span>
+                <span class="ms" style="font-size:18px; color:#CFD3C9; padding:2px;">chevron_right</span>
+              </div>
+              <span style="font-size:12.5px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.06); border-radius:999px; padding:5px 12px;">Quincenal · arranca sábado</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:9px;">
+              <span style="font-size:13px; color:#7C8578;">9 planeados · 5 libres · 4 ingredientes faltan</span>
+              <div style="display:flex; align-items:center; gap:7px; background:#2E9E5B; border-radius:999px; padding:10px 18px; box-shadow:0 6px 16px rgba(46,158,91,.3);"><span class="ms" style="font-size:18px; color:#fff;">shopping_cart</span><span style="font-size:14px; font-weight:700; color:#fff;">Ver qué falta</span></div>
+            </div>
+          </div>
+
+          <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; gap:0 26px; align-content:start; overflow:hidden;">
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px; margin-bottom:2px;">Semana 1</span>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px; opacity:.6;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">sáb</span><span style="font-size:18px; font-weight:700;">16</span></div><span style="flex:1; font-size:15px; font-weight:600; text-decoration:line-through;">Milanesas</span><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.07); border-radius:999px; padding:5px 11px;"><span class="ms" style="font-size:14px;">check_circle</span>Cocinada</span></div>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1.5px solid #2E9E5B; border-radius:18px; padding:13px 16px; box-shadow:0 6px 18px rgba(46,158,91,.14);"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#1D7A43;">dom · hoy</span><span style="font-size:18px; font-weight:700;">17</span></div><div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Pastel de papa</span><span style="font-size:12px; color:#7C8578;">4 porciones · falta 1 ingrediente</span></div><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Falta 1</span><div style="display:flex; align-items:center; gap:6px; background:#2E9E5B; border-radius:999px; padding:8px 14px; box-shadow:0 5px 14px rgba(46,158,91,.3);"><span class="ms" style="font-size:16px; color:#fff;">local_dining</span><span style="font-size:13px; font-weight:700; color:#fff;">Cocinada</span></div></div>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">lun</span><span style="font-size:18px; font-weight:700;">18</span></div><span style="flex:1; font-size:15px; font-weight:500; color:#7C8578; font-style:italic;">Sobras</span><span class="ms" style="font-size:19px; color:#CFD3C9;">more_horiz</span></div>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">mar</span><span style="font-size:18px; font-weight:700;">19</span></div><div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Arroz con pollo</span><span style="font-size:12px; color:#7C8578;">4 porciones</span></div><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#1D7A43; background:rgba(46,158,91,.13); border-radius:999px; padding:5px 11px;"><span class="ms" style="font-size:14px;">check_circle</span>Todo</span></div>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">mié</span><span style="font-size:18px; font-weight:700;">20</span></div><div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Comida thai</span><span style="font-size:12px; color:#7C8578;">2 porciones · falta 1 ingrediente</span></div><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Falta 1</span></div>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">jue</span><span style="font-size:18px; font-weight:700;">21</span></div><div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Milanesas</span><span style="font-size:12px; color:#7C8578;">4 porciones · faltan 2 ingredientes</span></div><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Faltan 2</span></div>
+              <div style="display:flex; align-items:center; gap:14px; border:1.5px dashed rgba(27,33,25,.16); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#CFD3C9;">vie</span><span style="font-size:18px; font-weight:700; color:#AFB6AA;">22</span></div><span style="flex:1; font-size:14px; color:#AFB6AA;">Sin plan</span><span style="display:flex; align-items:center; gap:5px; font-size:13px; font-weight:700; color:#1D7A43;"><span class="ms" style="font-size:16px;">add</span>Elegir</span></div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:7px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; padding-left:4px; margin-bottom:2px;">Semana 2</span>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">sáb</span><span style="font-size:18px; font-weight:700;">23</span></div><span style="flex:1; font-size:15px; font-weight:500; color:#7C8578; font-style:italic;">Afuera</span><span class="ms" style="font-size:19px; color:#CFD3C9;">more_horiz</span></div>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">dom</span><span style="font-size:18px; font-weight:700;">24</span></div><div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Tacos</span><span style="font-size:12px; color:#7C8578;">2 porciones · falta 1 ingrediente</span></div><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Falta 1</span></div>
+              <div style="display:flex; align-items:center; gap:14px; border:1.5px dashed rgba(27,33,25,.16); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#CFD3C9;">lun</span><span style="font-size:18px; font-weight:700; color:#AFB6AA;">25</span></div><span style="flex:1; font-size:14px; color:#AFB6AA;">Sin plan</span><span style="display:flex; align-items:center; gap:5px; font-size:13px; font-weight:700; color:#1D7A43;"><span class="ms" style="font-size:16px;">add</span>Elegir</span></div>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">mar</span><span style="font-size:18px; font-weight:700;">26</span></div><div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Salmón al horno</span><span style="font-size:12px; color:#7C8578;">2 porciones</span></div><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#1D7A43; background:rgba(46,158,91,.13); border-radius:999px; padding:5px 11px;"><span class="ms" style="font-size:14px;">check_circle</span>Todo</span></div>
+              <div style="display:flex; align-items:center; gap:14px; border:1.5px dashed rgba(27,33,25,.16); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#CFD3C9;">mié</span><span style="font-size:18px; font-weight:700; color:#AFB6AA;">27</span></div><span style="flex:1; font-size:14px; color:#AFB6AA;">Sin plan</span><span style="display:flex; align-items:center; gap:5px; font-size:13px; font-weight:700; color:#1D7A43;"><span class="ms" style="font-size:16px;">add</span>Elegir</span></div>
+              <div style="display:flex; align-items:center; gap:14px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#AFB6AA;">jue</span><span style="font-size:18px; font-weight:700;">28</span></div><div style="flex:1; display:flex; flex-direction:column; line-height:1.3;"><span style="font-size:15px; font-weight:600;">Pastel de papa</span><span style="font-size:12px; color:#7C8578;">4 porciones · faltan 2 ingredientes</span></div><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Faltan 2</span></div>
+              <div style="display:flex; align-items:center; gap:14px; border:1.5px dashed rgba(27,33,25,.16); border-radius:18px; padding:13px 16px;"><div style="width:52px; display:flex; flex-direction:column; line-height:1.1;"><span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:#CFD3C9;">vie</span><span style="font-size:18px; font-weight:700; color:#AFB6AA;">29</span></div><span style="flex:1; font-size:14px; color:#AFB6AA;">Sin plan</span><span style="display:flex; align-items:center; gap:5px; font-size:13px; font-weight:700; color:#1D7A43;"><span class="ms" style="font-size:16px;">add</span>Elegir</span></div>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0 14px; margin-top:12px; border-top:1px solid rgba(27,33,25,.09); font-size:12px; color:#AFB6AA;">
+            <span>Cambiar el largo del período afecta las quincenas futuras; las ya armadas conservan sus límites.</span>
+            <span style="display:flex; align-items:center; gap:6px;"><span class="ms" style="font-size:15px;">bolt</span>El doc del plan se crea perezosamente, con ID determinístico</span>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W6 · RECETAS ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W6</span><span class="frn">Recetas — lista</span><span class="frd">Semáforo de disponibilidad calculado contra el stock, en cada tarjeta.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H2 }}" url="stock.cardozo.dev/recetas" tabs="{{ tabs }}" hint-size="1360px,660px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:flex; font-family:'Outfit',sans-serif; box-sizing:border-box;">
+        <div style="width:232px; flex:none; border-right:1px solid rgba(27,33,25,.09); display:flex; flex-direction:column; padding:22px 16px; box-sizing:border-box; gap:5px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:0 8px; margin-bottom:22px;">
+            <div style="width:34px; height:34px; border-radius:11px; background:#2E9E5B; display:grid; place-items:center;"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8"/><rect x="16.5" y="18.5" width="31" height="36" rx="7" fill="none" stroke="#FCFCF8" stroke-width="4"/><path d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z" fill="#FCFCF8"/></svg></div>
+            <div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:15.5px; font-weight:700;">Stock</span><span style="font-size:11px; color:#AFB6AA;">Casa Cardozo</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">inventory_2</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Stock</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">shopping_cart</span><span style="font-size:14px; font-weight:600; color:#7C8578; flex:1;">Falta comprar</span><span style="min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:#E5484D; color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center;">9</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">calendar_month</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Plan</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(46,158,91,.13);"><span class="ms" style="font-size:19px; color:#1D7A43;">menu_book</span><span style="font-size:14px; font-weight:700; color:#1D7A43;">Recetas</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">settings</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Ajustes</span></div>
+          <span style="margin-top:auto; display:flex; align-items:center; gap:6px; padding:0 12px; font-size:11px; font-weight:600; color:#AFB6AA;"><span class="ms" style="font-size:15px;">cloud_done</span>Sincronizado</span>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; padding:24px 28px; box-sizing:border-box; overflow:hidden;">
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:18px;">
+            <div style="display:flex; flex-direction:column; gap:2px;"><span style="font-size:23px; font-weight:700; letter-spacing:-0.02em;">Recetas</span><span style="font-size:13px; color:#7C8578;">6 recetas · 2 se pueden cocinar hoy con lo que hay</span></div>
+            <div style="display:flex; align-items:center; gap:9px;">
+              <div style="display:flex; align-items:center; gap:8px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:9px 16px; width:200px;"><span class="ms" style="font-size:18px; color:#AFB6AA;">search</span><span style="font-size:13.5px; color:#AFB6AA;">Buscar</span></div>
+              <div style="display:flex; align-items:center; gap:7px; background:#2E9E5B; border-radius:999px; padding:10px 18px; box-shadow:0 6px 16px rgba(46,158,91,.3);"><span class="ms" style="font-size:18px; color:#fff;">add</span><span style="font-size:14px; font-weight:700; color:#fff;">Nueva receta</span></div>
+            </div>
+          </div>
+          <div style="flex:1; display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; align-content:start;">
+            <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:11px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><div style="width:38px; height:38px; border-radius:19px; background:rgba(46,158,91,.13); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:#1D7A43;">rice_bowl</span></div><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#1D7A43; background:rgba(46,158,91,.13); border-radius:999px; padding:5px 11px;"><span class="ms" style="font-size:14px;">check_circle</span>Todo</span></div>
+              <span style="font-size:18px; font-weight:700;">Arroz con pollo</span>
+              <p style="margin:0; font-size:13px; line-height:1.55; color:#7C8578; flex:1;">Patas de pollo, arroz, cebolla, caldo.</p>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#AFB6AA;"><span class="ms" style="font-size:15px;">group</span>4 porciones<span style="opacity:.5;">·</span><span class="ms" style="font-size:15px;">schedule</span>45 min<span style="opacity:.5;">·</span>7 veces</div>
+            </div>
+            <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:11px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><div style="width:38px; height:38px; border-radius:19px; background:rgba(180,72,95,.14); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:#9E3E53;">kebab_dining</span></div><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Faltan 2</span></div>
+              <span style="font-size:18px; font-weight:700;">Milanesas</span>
+              <p style="margin:0; font-size:13px; line-height:1.55; color:#7C8578; flex:1;">Milanesas de carne, huevos, pan rallado, queso rallado.</p>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#AFB6AA;"><span class="ms" style="font-size:15px;">group</span>4 porciones<span style="opacity:.5;">·</span><span class="ms" style="font-size:15px;">schedule</span>40 min<span style="opacity:.5;">·</span>21 veces</div>
+            </div>
+            <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:11px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><div style="width:38px; height:38px; border-radius:19px; background:rgba(201,138,18,.15); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:#996A0C;">oven_gen</span></div><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Falta 1</span></div>
+              <span style="font-size:18px; font-weight:700;">Pastel de papa</span>
+              <p style="margin:0; font-size:13px; line-height:1.55; color:#7C8578; flex:1;">Carne picada, papas, manteca, queso rallado.</p>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#AFB6AA;"><span class="ms" style="font-size:15px;">group</span>4 porciones<span style="opacity:.5;">·</span><span class="ms" style="font-size:15px;">schedule</span>1 h 10<span style="opacity:.5;">·</span>12 veces</div>
+            </div>
+            <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:11px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><div style="width:38px; height:38px; border-radius:19px; background:rgba(46,155,168,.15); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:#25808B;">ramen_dining</span></div><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Falta 1</span></div>
+              <span style="font-size:18px; font-weight:700;">Comida thai</span>
+              <p style="margin:0; font-size:13px; line-height:1.55; color:#7C8578; flex:1;">Leche de coco, curry, espinacas, pollo, arroz jazmín.</p>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#AFB6AA;"><span class="ms" style="font-size:15px;">group</span>2 porciones<span style="opacity:.5;">·</span><span class="ms" style="font-size:15px;">schedule</span>25 min<span style="opacity:.5;">·</span>4 veces</div>
+            </div>
+            <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:11px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><div style="width:38px; height:38px; border-radius:19px; background:rgba(139,111,190,.15); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:#6B54A0;">lunch_dining</span></div><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#fff; background:#E5484D; border-radius:999px; padding:5px 11px;"><span class="ms" style="font-size:14px;">error</span>Falta la base</span></div>
+              <span style="font-size:18px; font-weight:700;">Tacos</span>
+              <p style="margin:0; font-size:13px; line-height:1.55; color:#7C8578; flex:1;">Tapas de taco, salsa, carne picada, queso, palta.</p>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#AFB6AA;"><span class="ms" style="font-size:15px;">group</span>2 porciones<span style="opacity:.5;">·</span><span class="ms" style="font-size:15px;">schedule</span>20 min<span style="opacity:.5;">·</span>9 veces</div>
+            </div>
+            <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:20px; display:flex; flex-direction:column; gap:11px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><div style="width:38px; height:38px; border-radius:19px; background:rgba(46,127,168,.14); display:grid; place-items:center;"><span class="ms" style="font-size:20px; color:#286D91;">set_meal</span></div><span style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:#1D7A43; background:rgba(46,158,91,.13); border-radius:999px; padding:5px 11px;"><span class="ms" style="font-size:14px;">check_circle</span>Todo</span></div>
+              <span style="font-size:18px; font-weight:700;">Salmón al horno</span>
+              <p style="margin:0; font-size:13px; line-height:1.55; color:#7C8578; flex:1;">Salmón, papas, espinacas, limón.</p>
+              <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#AFB6AA;"><span class="ms" style="font-size:15px;">group</span>2 porciones<span style="opacity:.5;">·</span><span class="ms" style="font-size:15px;">schedule</span>30 min<span style="opacity:.5;">·</span>3 veces</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W7 · RECETA DETALLE ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W7</span><span class="frn">Receta — detalle</span><span class="frd">Solo los ingredientes linkeados a un ítem entran al cálculo; el texto libre se muestra y no cuenta.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H }}" url="stock.cardozo.dev/recetas/pastel-de-papa" tabs="{{ tabs }}" hint-size="1360px,900px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:flex; font-family:'Outfit',sans-serif; box-sizing:border-box;">
+        <div style="width:232px; flex:none; border-right:1px solid rgba(27,33,25,.09); display:flex; flex-direction:column; padding:22px 16px; box-sizing:border-box; gap:5px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:0 8px; margin-bottom:22px;">
+            <div style="width:34px; height:34px; border-radius:11px; background:#2E9E5B; display:grid; place-items:center;"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8"/><rect x="16.5" y="18.5" width="31" height="36" rx="7" fill="none" stroke="#FCFCF8" stroke-width="4"/><path d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z" fill="#FCFCF8"/></svg></div>
+            <div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:15.5px; font-weight:700;">Stock</span><span style="font-size:11px; color:#AFB6AA;">Casa Cardozo</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">inventory_2</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Stock</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">shopping_cart</span><span style="font-size:14px; font-weight:600; color:#7C8578; flex:1;">Falta comprar</span><span style="min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:#E5484D; color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center;">9</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">calendar_month</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Plan</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(46,158,91,.13);"><span class="ms" style="font-size:19px; color:#1D7A43;">menu_book</span><span style="font-size:14px; font-weight:700; color:#1D7A43;">Recetas</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">settings</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Ajustes</span></div>
+          <span style="margin-top:auto; display:flex; align-items:center; gap:6px; padding:0 12px; font-size:11px; font-weight:600; color:#AFB6AA;"><span class="ms" style="font-size:15px;">cloud_done</span>Sincronizado</span>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; padding:20px 32px 26px; box-sizing:border-box; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:7px; font-size:13px; color:#AFB6AA; margin-bottom:14px;"><span style="color:#7C8578; font-weight:600;">Recetas</span><span class="ms" style="font-size:15px;">chevron_right</span><span>Pastel de papa</span></div>
+          <div style="flex:1; display:grid; grid-template-columns:1fr 400px; gap:28px; overflow:hidden;">
+            <div style="display:flex; flex-direction:column; gap:20px; overflow:hidden;">
+              <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:20px;">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <h2 style="margin:0; font-size:38px; font-weight:700; letter-spacing:-0.03em;">Pastel de papa</h2>
+                  <div style="display:flex; align-items:center; gap:14px; font-size:13px; color:#7C8578;"><span style="display:flex; align-items:center; gap:5px;"><span class="ms" style="font-size:16px;">group</span>4 porciones</span><span style="display:flex; align-items:center; gap:5px;"><span class="ms" style="font-size:16px;">schedule</span>1 h 10</span><span style="display:flex; align-items:center; gap:5px;"><span class="ms" style="font-size:16px;">restart_alt</span>12 veces · última 3 ago</span></div>
+                  <div style="display:flex; gap:6px;"><span style="font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.06); border-radius:999px; padding:5px 12px;">horno</span><span style="font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.06); border-radius:999px; padding:5px 12px;">carne</span><span style="font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.06); border-radius:999px; padding:5px 12px;">rinde</span></div>
+                </div>
+                <div style="display:flex; gap:9px; flex:none;">
+                  <div style="display:flex; align-items:center; gap:7px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:9px 15px;"><span class="ms" style="font-size:18px; color:#7C8578;">edit</span><span style="font-size:13.5px; font-weight:600; color:#7C8578;">Editar</span></div>
+                  <div style="display:flex; align-items:center; gap:7px; background:#2E9E5B; border-radius:999px; padding:10px 18px; box-shadow:0 6px 16px rgba(46,158,91,.3);"><span class="ms" style="font-size:18px; color:#fff;">event</span><span style="font-size:14px; font-weight:700; color:#fff;">Al plan</span></div>
+                </div>
+              </div>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; padding:22px 26px; display:flex; flex-direction:column; gap:14px;">
+                <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA;">Preparación</span>
+                <div style="display:flex; flex-direction:column; gap:14px;">
+                  <div style="display:flex; gap:14px;"><span style="width:26px; height:26px; flex:none; border-radius:13px; background:rgba(46,158,91,.13); color:#1D7A43; font-size:13px; font-weight:700; display:grid; place-items:center;">1</span><p style="margin:0; font-size:15px; line-height:1.6; color:#3A4237; max-width:60ch;">Hervir las papas en agua con sal, 20 min. Pisar con la manteca y un chorrito de leche.</p></div>
+                  <div style="display:flex; gap:14px;"><span style="width:26px; height:26px; flex:none; border-radius:13px; background:rgba(46,158,91,.13); color:#1D7A43; font-size:13px; font-weight:700; display:grid; place-items:center;">2</span><p style="margin:0; font-size:15px; line-height:1.6; color:#3A4237; max-width:60ch;">Rehogar la cebolla, sumar la carne picada y el ajo en polvo. Salpimentar.</p></div>
+                  <div style="display:flex; gap:14px;"><span style="width:26px; height:26px; flex:none; border-radius:13px; background:rgba(46,158,91,.13); color:#1D7A43; font-size:13px; font-weight:700; display:grid; place-items:center;">3</span><p style="margin:0; font-size:15px; line-height:1.6; color:#3A4237; max-width:60ch;">Armar en fuente: carne abajo, puré arriba, queso rallado y unos puntos de manteca.</p></div>
+                  <div style="display:flex; gap:14px;"><span style="width:26px; height:26px; flex:none; border-radius:13px; background:rgba(46,158,91,.13); color:#1D7A43; font-size:13px; font-weight:700; display:grid; place-items:center;">4</span><p style="margin:0; font-size:15px; line-height:1.6; color:#3A4237; max-width:60ch;">Horno fuerte 25 min hasta que gratine.</p></div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:12px; overflow:hidden;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA;">Ingredientes</span><span style="font-size:12px; font-weight:700; color:#C0353A; background:rgba(229,72,77,.13); border-radius:999px; padding:5px 11px;">Falta 1</span></div>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 16px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span class="ms" style="font-size:19px; color:#E5484D;">error</span><span style="flex:1; font-size:14.5px; font-weight:600;">Carne picada</span><span style="font-size:13px; color:#7C8578; font-variant-numeric:tabular-nums;">2 kg</span><span style="width:88px; text-align:right; font-size:12px; font-weight:700; color:#C0353A;">faltan 500 g</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span class="ms" style="font-size:19px; color:#2E9E5B;">check_circle</span><span style="flex:1; font-size:14.5px; font-weight:600;">Papas</span><span style="font-size:13px; color:#7C8578;">nivel</span><span style="width:88px; text-align:right; font-size:12px; color:#AFB6AA;">medio</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span class="ms" style="font-size:19px; color:#2E9E5B;">check_circle</span><span style="flex:1; font-size:14.5px; font-weight:600;">Manteca</span><span style="font-size:13px; color:#7C8578; font-variant-numeric:tabular-nums;">100 g</span><span style="width:88px; text-align:right; font-size:12px; color:#AFB6AA;">hay 2 u</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span class="ms" style="font-size:19px; color:#1D7A43;">arrow_downward</span><span style="flex:1; font-size:14.5px; font-weight:600;">Queso rallado</span><span style="font-size:13px; color:#7C8578;">nivel</span><span style="width:88px; text-align:right; font-size:12px; font-weight:700; color:#1D7A43;">en poco</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span class="ms" style="font-size:19px; color:#2E9E5B;">check_circle</span><span style="flex:1; font-size:14.5px; font-weight:600;">Ajo en polvo</span><span style="font-size:13px; color:#7C8578;">nivel</span><span style="width:88px; text-align:right; font-size:12px; color:#AFB6AA;">lleno</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0;"><span class="ms" style="font-size:19px; color:#CFD3C9;">text_fields</span><span style="flex:1; font-size:14.5px; color:#7C8578;">Cebolla, sal y pimienta</span><span style="font-size:12px; color:#AFB6AA;">texto libre</span></div>
+              </div>
+              <div style="background:rgba(46,158,91,.11); border-radius:18px; padding:16px; display:flex; flex-direction:column; gap:11px;">
+                <span style="font-size:13.5px; font-weight:600; color:#1D7A43; line-height:1.5;">Falta 1 ingrediente para cocinarla hoy.</span>
+                <div style="display:flex; align-items:center; gap:7px; background:#2E9E5B; border-radius:999px; padding:9px 16px; align-self:flex-start; box-shadow:0 6px 16px rgba(46,158,91,.28);"><span class="ms" style="font-size:17px; color:#fff;">shopping_cart</span><span style="font-size:13.5px; font-weight:700; color:#fff;">Mandar a la lista</span></div>
+              </div>
+              <span style="margin-top:auto; font-size:11.5px; color:#AFB6AA; line-height:1.6;">Los ingredientes de texto libre no generan faltantes: inventar «250 g de sal» sería peor que no decir nada.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W8 · EDITOR ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W8</span><span class="frn">Receta — editor</span><span class="frd">Cada ingrediente linkea a un ítem del catálogo, o queda como texto libre.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H2 }}" url="stock.cardozo.dev/recetas/comida-thai/editar" tabs="{{ tabs }}" hint-size="1360px,660px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:flex; flex-direction:column; font-family:'Outfit',sans-serif; box-sizing:border-box;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 32px; border-bottom:1px solid rgba(27,33,25,.09);">
+          <div style="display:flex; align-items:center; gap:14px;"><span class="ms" style="font-size:22px; color:#7C8578;">close</span><span style="font-size:17px; font-weight:700;">Editar receta</span><span style="display:flex; align-items:center; gap:5px; font-size:12px; color:#AFB6AA;"><span class="ms" style="font-size:15px;">cloud_done</span>Guardado automático · hace 4 s</span></div>
+          <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:13.5px; font-weight:600; color:#C0353A;">Eliminar</span><div style="background:#2E9E5B; border-radius:999px; padding:10px 24px; box-shadow:0 6px 16px rgba(46,158,91,.3);"><span style="font-size:14px; font-weight:700; color:#fff;">Listo</span></div></div>
+        </div>
+        <div style="flex:1; display:grid; grid-template-columns:1fr 440px; gap:32px; padding:24px 32px; box-sizing:border-box; overflow:hidden;">
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Título</span><div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:16px; padding:14px 16px; font-size:21px; font-weight:700;">Comida thai</div></div>
+            <div style="display:grid; grid-template-columns:130px 1fr; gap:14px;">
+              <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Porciones</span><div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:14px; padding:11px 14px; font-size:15px; font-weight:600; font-variant-numeric:tabular-nums;">2</div></div>
+              <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Etiquetas</span><div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:14px; padding:9px 12px; display:flex; gap:6px; align-items:center;"><span style="font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.06); border-radius:999px; padding:4px 11px;">wok</span><span style="font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.06); border-radius:999px; padding:4px 11px;">rápida</span><span style="font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.06); border-radius:999px; padding:4px 11px;">picante</span><span style="font-size:13px; color:#AFB6AA;">+</span></div></div>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Preparación</span><div style="flex:1; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:16px; padding:14px 16px; font-size:15px; line-height:1.65; color:#3A4237;">Saltear el pollo en el wok bien caliente. Sumar la pasta de curry, la leche de coco y las espinacas. Reducir 8 min. Servir con arroz jazmín.</div></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:11px; overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA;">Ingredientes</span><span style="font-size:12px; color:#AFB6AA;">4 linkeados · 1 libre</span></div>
+            <div style="display:flex; align-items:center; gap:9px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:14px; padding:9px 12px;"><span class="ms" style="font-size:18px; color:#CFD3C9;">drag_indicator</span><span class="ms" style="font-size:16px; color:#2E9E5B;">link</span><span style="flex:1; font-size:14.5px; font-weight:600;">Leche de coco</span><div style="background:#F3F4EE; border-radius:10px; padding:6px 10px; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums;">400</div><span style="font-size:12px; color:#AFB6AA; width:20px;">ml</span><span class="ms" style="font-size:18px; color:#CFD3C9;">close</span></div>
+            <div style="display:flex; align-items:center; gap:9px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:14px; padding:9px 12px;"><span class="ms" style="font-size:18px; color:#CFD3C9;">drag_indicator</span><span class="ms" style="font-size:16px; color:#2E9E5B;">link</span><span style="flex:1; font-size:14.5px; font-weight:600;">Patas de pollo</span><div style="background:#F3F4EE; border-radius:10px; padding:6px 10px; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums;">4</div><span style="font-size:12px; color:#AFB6AA; width:20px;">u</span><span class="ms" style="font-size:18px; color:#CFD3C9;">close</span></div>
+            <div style="display:flex; align-items:center; gap:9px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:14px; padding:9px 12px;"><span class="ms" style="font-size:18px; color:#CFD3C9;">drag_indicator</span><span class="ms" style="font-size:16px; color:#2E9E5B;">link</span><span style="flex:1; font-size:14.5px; font-weight:600;">Bolsa de espinacas</span><div style="background:#F3F4EE; border-radius:10px; padding:6px 10px; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums;">1</div><span style="font-size:12px; color:#AFB6AA; width:20px;">u</span><span class="ms" style="font-size:18px; color:#CFD3C9;">close</span></div>
+            <div style="display:flex; align-items:center; gap:9px; background:#FCFCF8; border:1.5px solid rgba(27,33,25,.14); border-radius:14px; padding:9px 12px;"><span class="ms" style="font-size:18px; color:#CFD3C9;">drag_indicator</span><span class="ms" style="font-size:16px; color:#AFB6AA;">text_fields</span><span style="flex:1; font-size:14.5px; font-weight:600;">Pasta de curry rojo</span><span style="font-size:12px; color:#AFB6AA;">texto libre</span><span class="ms" style="font-size:18px; color:#CFD3C9;">close</span></div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+              <div style="background:#FCFCF8; border:1.5px solid #2E9E5B; border-radius:14px; padding:11px 14px; font-size:14.5px; font-weight:600;">arr<span style="color:#AFB6AA; font-weight:400;">|</span></div>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:16px; padding:6px; display:flex; flex-direction:column; box-shadow:0 10px 26px rgba(27,33,25,.1);">
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:11px; background:rgba(46,158,91,.13);"><span class="ms" style="font-size:17px; color:#1D7A43;">link</span><span style="font-size:14.5px; font-weight:600; flex:1;">Arroz jazmín</span><span style="font-size:11.5px; color:#7C8578;">Alacena · nivel medio</span></div>
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 12px;"><span class="ms" style="font-size:17px; color:#AFB6AA;">link</span><span style="font-size:14.5px; font-weight:600; flex:1; color:#3A4237;">Arroz largo fino</span><span style="font-size:11.5px; color:#AFB6AA;">Alacena · 2 u</span></div>
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 12px;"><span class="ms" style="font-size:17px; color:#AFB6AA;">text_fields</span><span style="font-size:14.5px; color:#7C8578;">Usar «arr» como texto libre</span></div>
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 12px;"><span class="ms" style="font-size:17px; color:#1D7A43;">add_circle</span><span style="font-size:14.5px; font-weight:600; color:#1D7A43;">Crear ítem nuevo «arr»</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W9 · AJUSTES ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W9</span><span class="frn">Ajustes</span><span class="frd">Hogar, invitación, ubicaciones, categorías y el período de planificación.</span></div>
+    <x-import component-from-global-scope="ChromeWindow" from="./browser-window.jsx" width="{{ W }}" height="{{ H }}" url="stock.cardozo.dev/ajustes" tabs="{{ tabs }}" hint-size="1360px,900px">
+      <div style="width:100%; height:100%; background:#F3F4EE; display:flex; font-family:'Outfit',sans-serif; box-sizing:border-box;">
+        <div style="width:232px; flex:none; border-right:1px solid rgba(27,33,25,.09); display:flex; flex-direction:column; padding:22px 16px; box-sizing:border-box; gap:5px;">
+          <div style="display:flex; align-items:center; gap:10px; padding:0 8px; margin-bottom:22px;">
+            <div style="width:34px; height:34px; border-radius:11px; background:#2E9E5B; display:grid; place-items:center;"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><rect x="23" y="9" width="18" height="7" rx="3.5" fill="#FCFCF8"/><rect x="16.5" y="18.5" width="31" height="36" rx="7" fill="none" stroke="#FCFCF8" stroke-width="4"/><path d="M18.5 34h27v18a4.5 4.5 0 0 1-4.5 4.5H23a4.5 4.5 0 0 1-4.5-4.5z" fill="#FCFCF8"/></svg></div>
+            <div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:15.5px; font-weight:700;">Stock</span><span style="font-size:11px; color:#AFB6AA;">Casa Cardozo</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">inventory_2</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Stock</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">shopping_cart</span><span style="font-size:14px; font-weight:600; color:#7C8578; flex:1;">Falta comprar</span><span style="min-width:20px; height:20px; padding:0 6px; border-radius:10px; background:#E5484D; color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center;">9</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">calendar_month</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Plan</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px;"><span class="ms" style="font-size:19px; color:#7C8578;">menu_book</span><span style="font-size:14px; font-weight:600; color:#7C8578;">Recetas</span></div>
+          <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:rgba(46,158,91,.13);"><span class="ms" style="font-size:19px; color:#1D7A43;">settings</span><span style="font-size:14px; font-weight:700; color:#1D7A43;">Ajustes</span></div>
+          <span style="margin-top:auto; display:flex; align-items:center; gap:6px; padding:0 12px; font-size:11px; font-weight:600; color:#AFB6AA;"><span class="ms" style="font-size:15px;">cloud_done</span>Sincronizado</span>
+        </div>
+        <div style="flex:1; display:flex; flex-direction:column; padding:24px 32px; box-sizing:border-box; overflow:hidden;">
+          <span style="font-size:23px; font-weight:700; letter-spacing:-0.02em; margin-bottom:18px;">Ajustes</span>
+          <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; gap:20px 32px; align-content:start; overflow:hidden;">
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA;">Hogar</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span style="flex:1; font-size:14.5px; font-weight:600;">Nombre</span><span style="font-size:14px; color:#7C8578;">Casa Cardozo</span><span class="ms" style="font-size:18px; color:#CFD3C9;">chevron_right</span></div>
+                <div style="display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span style="flex:1; font-size:14.5px; font-weight:600;">Zona horaria</span><span style="font-size:14px; color:#7C8578;">Australia/Sydney</span><span class="ms" style="font-size:18px; color:#CFD3C9;">chevron_right</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><div style="width:32px; height:32px; border-radius:16px; background:#2A6FDB; display:grid; place-items:center; font-size:13px; font-weight:700; color:#fff;">C</div><div style="flex:1; display:flex; flex-direction:column; line-height:1.25;"><span style="font-size:14.5px; font-weight:600;">Cristian</span><span style="font-size:11.5px; color:#AFB6AA;">cris@…</span></div><span style="font-size:12px; font-weight:600; color:#7C8578; background:rgba(27,33,25,.06); border-radius:999px; padding:4px 11px;">vos</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0;"><div style="width:32px; height:32px; border-radius:16px; background:#E0447C; display:grid; place-items:center; font-size:13px; font-weight:700; color:#fff;">M</div><div style="flex:1; display:flex; flex-direction:column; line-height:1.25;"><span style="font-size:14.5px; font-weight:600;">Meli</span><span style="font-size:11.5px; color:#AFB6AA;">meli@…</span></div><span style="font-size:13px; font-weight:600; color:#C0353A;">Quitar</span></div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA;">Invitación</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:11px;">
+                <span style="font-size:12.5px; color:#7C8578;">El hogar está completo — 2 de 2. Quitá un miembro para poder invitar.</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <span style="flex:1; font:600 18px ui-monospace,Menlo,monospace; letter-spacing:.18em; color:#CFD3C9;">K7QP-2M9XVD</span>
+                  <div style="display:flex; align-items:center; gap:6px; background:#F3F4EE; border-radius:999px; padding:8px 14px; opacity:.45;"><span class="ms" style="font-size:16px; color:#7C8578;">content_copy</span><span style="font-size:13px; font-weight:600; color:#7C8578;">Copiar</span></div>
+                </div>
+                <span style="font-size:11.5px; color:#AFB6AA; line-height:1.55;">Conocer el código <em>es</em> el permiso: se puede leer pero no listar. Se borra en cuanto lo usan.</span>
+              </div>
+              <span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA; margin-top:6px;">Plan de comidas</span>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:13px;">
+                <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:14px; font-weight:600;">Largo del período</span><div style="display:flex; background:#F3F4EE; border-radius:999px; padding:3px;"><span style="font-size:13px; font-weight:600; color:#7C8578; padding:6px 14px;">Semanal</span><span style="font-size:13px; font-weight:700; color:#fff; background:#2E9E5B; border-radius:999px; padding:6px 14px;">Quincenal</span></div></div>
+                <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:14px; font-weight:600;">Arranca el día</span><div style="display:flex; gap:4px;"><span style="width:30px; height:30px; border-radius:15px; background:#F3F4EE; font-size:11.5px; font-weight:600; color:#7C8578; display:grid; place-items:center;">lun</span><span style="width:30px; height:30px; border-radius:15px; background:#F3F4EE; font-size:11.5px; font-weight:600; color:#7C8578; display:grid; place-items:center;">mar</span><span style="width:30px; height:30px; border-radius:15px; background:#F3F4EE; font-size:11.5px; font-weight:600; color:#7C8578; display:grid; place-items:center;">mié</span><span style="width:30px; height:30px; border-radius:15px; background:#F3F4EE; font-size:11.5px; font-weight:600; color:#7C8578; display:grid; place-items:center;">jue</span><span style="width:30px; height:30px; border-radius:15px; background:#F3F4EE; font-size:11.5px; font-weight:600; color:#7C8578; display:grid; place-items:center;">vie</span><span style="width:30px; height:30px; border-radius:15px; background:#2E9E5B; font-size:11.5px; font-weight:700; color:#fff; display:grid; place-items:center;">sáb</span><span style="width:30px; height:30px; border-radius:15px; background:#F3F4EE; font-size:11.5px; font-weight:600; color:#7C8578; display:grid; place-items:center;">dom</span></div></div>
+                <span style="font-size:11.5px; color:#AFB6AA; line-height:1.55;">Se planifica el viernes y se compra el fin de semana. Solo afecta períodos futuros.</span>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA;">Ubicaciones</span><span style="display:flex; align-items:center; gap:4px; font-size:13px; font-weight:700; color:#1D7A43;"><span class="ms" style="font-size:16px;">add</span>Agregar</span></div>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:2px 18px;">
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span class="ms" style="font-size:18px; color:#CFD3C9;">drag_indicator</span><div style="width:32px; height:32px; border-radius:16px; background:rgba(46,127,168,.14); display:grid; place-items:center;"><span class="ms" style="font-size:17px; color:#286D91;">kitchen</span></div><span style="flex:1; font-size:14.5px; font-weight:600;">Heladera</span><span style="font-size:12.5px; color:#AFB6AA;">11 ítems</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span class="ms" style="font-size:18px; color:#CFD3C9;">drag_indicator</span><div style="width:32px; height:32px; border-radius:16px; background:rgba(46,127,168,.14); display:grid; place-items:center;"><span class="ms" style="font-size:17px; color:#286D91;">ac_unit</span></div><span style="flex:1; font-size:14.5px; font-weight:600;">Freezer</span><span style="font-size:12.5px; color:#AFB6AA;">7 ítems</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span class="ms" style="font-size:18px; color:#CFD3C9;">drag_indicator</span><div style="width:32px; height:32px; border-radius:16px; background:rgba(181,115,58,.15); display:grid; place-items:center;"><span class="ms" style="font-size:17px; color:#8F5626;">shelves</span></div><span style="flex:1; font-size:14.5px; font-weight:600;">Alacena</span><span style="font-size:12.5px; color:#AFB6AA;">5 ítems</span></div>
+                <div style="display:flex; align-items:center; gap:11px; padding:11px 0;"><span class="ms" style="font-size:18px; color:#CFD3C9;">drag_indicator</span><div style="width:32px; height:32px; border-radius:16px; background:rgba(46,155,168,.15); display:grid; place-items:center;"><span class="ms" style="font-size:17px; color:#25808B;">local_laundry_service</span></div><span style="flex:1; font-size:14.5px; font-weight:600;">Lavadero</span><span style="font-size:12.5px; color:#AFB6AA;">1 ítem</span></div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:#AFB6AA;">Categorías</span><span style="display:flex; align-items:center; gap:4px; font-size:13px; font-weight:700; color:#1D7A43;"><span class="ms" style="font-size:16px;">add</span>Agregar</span></div>
+              <div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:20px; padding:16px 18px; display:flex; flex-wrap:wrap; gap:7px;">
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#6E7C1C; background:rgba(138,155,35,.14); border-radius:999px; padding:6px 13px;"><span class="ms" style="font-size:15px;">nutrition</span>Frutas y verduras</span>
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#9E3E53; background:rgba(180,72,95,.14); border-radius:999px; padding:6px 13px;"><span class="ms" style="font-size:15px;">kebab_dining</span>Carnicería</span>
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#286D91; background:rgba(46,127,168,.14); border-radius:999px; padding:6px 13px;"><span class="ms" style="font-size:15px;">set_meal</span>Pescadería</span>
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#996A0C; background:rgba(201,138,18,.15); border-radius:999px; padding:6px 13px;"><span class="ms" style="font-size:15px;">egg</span>Lácteos y huevos</span>
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#6B54A0; background:rgba(139,111,190,.15); border-radius:999px; padding:6px 13px;"><span class="ms" style="font-size:15px;">local_dining</span>Almacén</span>
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#8F5626; background:rgba(181,115,58,.15); border-radius:999px; padding:6px 13px;"><span class="ms" style="font-size:15px;">bakery_dining</span>Panadería</span>
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#25808B; background:rgba(46,155,168,.15); border-radius:999px; padding:6px 13px;"><span class="ms" style="font-size:15px;">cleaning_services</span>Limpieza</span>
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#A34E80; background:rgba(192,103,155,.15); border-radius:999px; padding:6px 13px;"><span class="ms" style="font-size:15px;">soap</span>Higiene</span>
+                <span style="display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; color:#AFB6AA; border:1.5px dashed rgba(27,33,25,.16); border-radius:999px; padding:5px 13px;"><span class="ms" style="font-size:15px;">add</span>Nueva</span>
+              </div>
+              <span style="font-size:11.5px; color:#AFB6AA; line-height:1.55;">Solo las categorías de comida participan de las recetas.</span>
+              <div style="display:flex; gap:10px; margin-top:6px;">
+                <div style="display:flex; align-items:center; gap:7px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:999px; padding:9px 15px;"><span class="ms" style="font-size:17px; color:#7C8578;">logout</span><span style="font-size:13.5px; font-weight:600; color:#7C8578;">Cerrar sesión</span></div>
+                <div style="display:flex; align-items:center; gap:7px; padding:9px 8px;"><span class="ms" style="font-size:17px; color:#7C8578;">download</span><span style="font-size:13.5px; font-weight:600; color:#7C8578;">Exportar datos (JSON)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- ══ W10 · HOJAS ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W10</span><span class="frn">Las tres hojas</span><span class="frd">Reponer, cocinada y alta de ítem. Cocinar y comprar son un writeBatch — la UI no espera la promesa.</span></div>
+    <div style="display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;">
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <span style="font-size:12px; font-weight:600; color:rgba(27,33,25,.5);">Marcar comprado → reponer</span>
+        <div style="width:420px; background:#FCFCF8; border-radius:24px; padding:24px; display:flex; flex-direction:column; gap:15px; box-shadow:0 20px 50px rgba(27,33,25,.14); font-family:'Outfit',sans-serif;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:42px; height:42px; border-radius:21px; background:rgba(201,138,18,.15); display:grid; place-items:center;"><span class="ms" style="font-size:21px; color:#996A0C;">egg</span></div>
+            <div style="flex:1; display:flex; flex-direction:column; line-height:1.25;"><span style="font-size:19px; font-weight:700;">Huevos</span><span style="font-size:12px; color:#7C8578;">quedan 3, mínimo 6 · 6 más para Milanesas</span></div>
+            <span class="ms" style="font-size:22px; color:#CFD3C9;">close</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <span style="font-size:12px; font-weight:600; color:#7C8578;">¿Cuánto entró?</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="flex:1; display:flex; align-items:center; justify-content:space-between; background:#F3F4EE; border-radius:999px; padding:4px;"><span class="ms" style="font-size:22px; color:#7C8578; width:42px; height:42px; display:grid; place-items:center;">remove</span><span style="font-size:22px; font-weight:700; font-variant-numeric:tabular-nums;">9 u</span><span class="ms" style="font-size:22px; color:#7C8578; width:42px; height:42px; display:grid; place-items:center;">add</span></div>
+              <span style="font-size:12px; font-weight:700; color:#1D7A43; background:rgba(46,158,91,.13); border-radius:999px; padding:7px 13px;">sugerido 9</span>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Vence</span><div style="background:#F3F4EE; border-radius:14px; padding:11px 14px; font-size:14.5px; font-weight:600; font-variant-numeric:tabular-nums;">04/09/2026</div></div>
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Precio (opcional)</span><div style="background:#F3F4EE; border-radius:14px; padding:11px 14px; font-size:14.5px; color:#AFB6AA;">$ 8,90</div></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:10px;"><span style="width:20px; height:20px; border-radius:10px; border:5.5px solid #2E9E5B; box-sizing:border-box;"></span><span style="font-size:14px; font-weight:600;">Sumar a lo que hay <span style="color:#7C8578; font-weight:500;">(3 → 12)</span></span></div>
+            <div style="display:flex; align-items:center; gap:10px;"><span style="width:20px; height:20px; border-radius:10px; border:1.5px solid rgba(27,33,25,.2); box-sizing:border-box;"></span><span style="font-size:14px; color:#7C8578;">Reemplazar por 9</span></div>
+          </div>
+          <div style="height:52px; border-radius:26px; background:#2E9E5B; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 8px 20px rgba(46,158,91,.32);"><span class="ms" style="font-size:20px; color:#fff;">check</span><span style="font-size:16px; font-weight:700; color:#fff;">Guardar y tildar</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <span style="font-size:12px; font-weight:600; color:rgba(27,33,25,.5);">Cocinada → descontar</span>
+        <div style="width:440px; background:#FCFCF8; border-radius:24px; padding:24px; display:flex; flex-direction:column; gap:15px; box-shadow:0 20px 50px rgba(27,33,25,.14); font-family:'Outfit',sans-serif;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:42px; height:42px; border-radius:21px; background:rgba(46,158,91,.13); display:grid; place-items:center;"><span class="ms" style="font-size:21px; color:#1D7A43;">local_dining</span></div>
+            <div style="flex:1; display:flex; flex-direction:column; line-height:1.25;"><span style="font-size:19px; font-weight:700;">Cocinaste Pastel de papa</span><span style="font-size:12px; color:#7C8578;">Destildá lo que no gastaste.</span></div>
+            <span class="ms" style="font-size:22px; color:#CFD3C9;">close</span>
+          </div>
+          <div style="background:#F3F4EE; border-radius:18px; padding:2px 16px;">
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span style="width:22px; height:22px; border-radius:7px; background:#2E9E5B; display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:16px; color:#fff;">check</span></span><span style="flex:1; font-size:14.5px; font-weight:600;">Carne picada</span><div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:10px; padding:6px 11px; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums;">1500 g</div></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span style="width:22px; height:22px; border-radius:7px; background:#2E9E5B; display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:16px; color:#fff;">check</span></span><span style="flex:1; font-size:14.5px; font-weight:600;">Manteca</span><div style="background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:10px; padding:6px 11px; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums;">100 g</div></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(27,33,25,.07);"><span style="width:22px; height:22px; border-radius:7px; background:#2E9E5B; display:grid; place-items:center; flex:none;"><span class="ms" style="font-size:16px; color:#fff;">check</span></span><span style="flex:1; font-size:14.5px; font-weight:600;">Papas</span><div style="display:flex; align-items:center; gap:8px;"><div style="display:flex; gap:3px;"><span style="width:14px; height:8px; border-radius:3px; background:#2E9E5B;"></span><span style="width:14px; height:8px; border-radius:3px; background:#2E9E5B;"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.13);"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.13);"></span></div><span class="ms" style="font-size:16px; color:#AFB6AA;">arrow_forward</span><div style="display:flex; gap:3px;"><span style="width:14px; height:8px; border-radius:3px; background:#2E9E5B;"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.13);"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.13);"></span><span style="width:14px; height:8px; border-radius:3px; background:rgba(27,33,25,.13);"></span></div></div></div>
+            <div style="display:flex; align-items:center; gap:12px; padding:12px 0; opacity:.5;"><span style="width:22px; height:22px; border-radius:7px; border:2px solid rgba(27,33,25,.22); flex:none;"></span><span style="flex:1; font-size:14.5px; font-weight:600;">Queso rallado</span><span style="font-size:12.5px; color:#7C8578;">no descontar</span></div>
+          </div>
+          <div style="height:52px; border-radius:26px; background:#2E9E5B; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 8px 20px rgba(46,158,91,.32);"><span class="ms" style="font-size:20px; color:#fff;">check</span><span style="font-size:16px; font-weight:700; color:#fff;">Descontar y marcar</span></div>
+          <span style="font-size:13.5px; font-weight:600; color:#7C8578; text-align:center;">Solo marcar cocinada</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <span style="font-size:12px; font-weight:600; color:rgba(27,33,25,.5);">Nuevo ítem</span>
+        <div style="width:420px; background:#FCFCF8; border-radius:24px; padding:24px; display:flex; flex-direction:column; gap:14px; box-shadow:0 20px 50px rgba(27,33,25,.14); font-family:'Outfit',sans-serif;">
+          <div style="display:flex; align-items:center; justify-content:space-between;"><span style="font-size:19px; font-weight:700;">Nuevo ítem</span><span class="ms" style="font-size:22px; color:#CFD3C9;">close</span></div>
+          <div style="display:grid; grid-template-columns:1fr 130px; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Nombre</span><div style="background:#F3F4EE; border-radius:14px; padding:11px 14px; font-size:14.5px; font-weight:600;">Papel higiénico</div></div>
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Marca</span><div style="background:#F3F4EE; border-radius:14px; padding:11px 14px; font-size:14.5px; color:#AFB6AA;">opcional</div></div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Categoría</span><div style="background:#F3F4EE; border-radius:14px; padding:9px 12px; display:flex; align-items:center; gap:7px;"><span style="display:flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; color:#A34E80; background:rgba(192,103,155,.15); border-radius:999px; padding:4px 10px;"><span class="ms" style="font-size:14px;">soap</span>Higiene</span><span class="ms" style="font-size:18px; color:#AFB6AA; margin-left:auto;">expand_more</span></div></div>
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Ubicación</span><div style="background:#F3F4EE; border-radius:14px; padding:11px 14px; font-size:14.5px; font-weight:600; display:flex; align-items:center; justify-content:space-between;">Lavadero<span class="ms" style="font-size:18px; color:#AFB6AA;">expand_more</span></div></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span style="font-size:12px; font-weight:600; color:#7C8578;">Cómo se mide</span>
+            <div style="display:flex; background:#F3F4EE; border-radius:999px; padding:3px;"><span style="flex:1; text-align:center; font-size:13.5px; font-weight:700; color:#fff; background:#2E9E5B; border-radius:999px; padding:9px 0;">Se cuenta</span><span style="flex:1; text-align:center; font-size:13.5px; font-weight:600; color:#7C8578; padding:9px 0;">Por nivel</span></div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 90px; gap:10px;">
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Cantidad</span><div style="background:#F3F4EE; border-radius:14px; padding:11px 14px; font-size:14.5px; font-weight:600; font-variant-numeric:tabular-nums;">6</div></div>
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Mínimo</span><div style="background:#F3F4EE; border-radius:14px; padding:11px 14px; font-size:14.5px; font-weight:600; font-variant-numeric:tabular-nums;">4</div></div>
+            <div style="display:flex; flex-direction:column; gap:5px;"><span style="font-size:12px; font-weight:600; color:#7C8578;">Unidad</span><div style="background:#F3F4EE; border-radius:14px; padding:11px 14px; font-size:14.5px; font-weight:600;">u</div></div>
+          </div>
+          <span style="font-size:11.5px; color:#AFB6AA; line-height:1.55;">Enteros siempre. Lo que no se cuenta en enteros va por nivel — vacío, poco, medio, lleno — no con un decimal.</span>
+          <div style="height:52px; border-radius:26px; background:#2E9E5B; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 20px rgba(46,158,91,.32);"><span style="font-size:16px; font-weight:700; color:#fff;">Crear ítem</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ W11 · ESTADOS ══ -->
+  <div class="fr">
+    <div class="frh"><span class="frb">W11</span><span class="frn">Vacío, error y offline</span><span class="frd">Los estados que no se diseñan y después se resuelven con un spinner.</span></div>
+    <div style="display:flex; gap:20px; flex-wrap:wrap;">
+      <div style="width:420px; height:290px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:11px; padding:30px; text-align:center;">
+        <div style="width:56px; height:56px; border-radius:28px; background:rgba(27,33,25,.05); display:grid; place-items:center;"><span class="ms" style="font-size:28px; color:#AFB6AA;">inventory_2</span></div>
+        <span style="font-size:18px; font-weight:700;">Todavía no hay nada cargado</span>
+        <p style="margin:0; font-size:13.5px; line-height:1.55; color:#7C8578; max-width:34ch;">Empezá por la heladera: diez ítems alcanzan para que la lista del súper sirva.</p>
+        <div style="display:flex; gap:9px; margin-top:4px;">
+          <div style="display:flex; align-items:center; gap:6px; background:#2E9E5B; border-radius:999px; padding:9px 16px; box-shadow:0 6px 16px rgba(46,158,91,.3);"><span class="ms" style="font-size:17px; color:#fff;">add</span><span style="font-size:13.5px; font-weight:700; color:#fff;">Cargar el primero</span></div>
+          <div style="background:#F3F4EE; border-radius:999px; padding:9px 16px;"><span style="font-size:13.5px; font-weight:600; color:#7C8578;">Usar la lista sugerida</span></div>
+        </div>
+      </div>
+      <div style="width:420px; height:290px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:11px; padding:30px; text-align:center;">
+        <div style="width:56px; height:56px; border-radius:28px; background:rgba(46,158,91,.13); display:grid; place-items:center;"><span class="ms" style="font-size:28px; color:#2E9E5B;">check_circle</span></div>
+        <span style="font-size:18px; font-weight:700;">No falta nada</span>
+        <p style="margin:0; font-size:13.5px; line-height:1.55; color:#7C8578; max-width:34ch;">Todo por encima del mínimo y el plan de la quincena cubierto. Hay 2 ítems snoozeados hasta el 23 ago.</p>
+        <span style="font-size:13.5px; font-weight:700; color:#1D7A43; margin-top:4px;">Ver los snoozeados</span>
+      </div>
+      <div style="width:420px; height:290px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:11px; padding:30px; text-align:center;">
+        <div style="width:56px; height:56px; border-radius:28px; background:rgba(229,72,77,.13); display:grid; place-items:center;"><span class="ms" style="font-size:28px; color:#C0353A;">error</span></div>
+        <span style="font-size:18px; font-weight:700;">No se pudo leer el hogar</span>
+        <p style="margin:0; font-size:13.5px; line-height:1.55; color:#7C8578; max-width:36ch;">Las reglas rechazaron la lectura, o el hogar ya no existe. Los datos en cache siguen visibles.</p>
+        <div style="display:flex; gap:9px; margin-top:4px;">
+          <div style="background:#F3F4EE; border-radius:999px; padding:9px 18px;"><span style="font-size:13.5px; font-weight:700; color:#1B2119;">Reintentar</span></div>
+          <div style="padding:9px 10px;"><span style="font-size:13.5px; font-weight:600; color:#7C8578;">Cerrar sesión</span></div>
+        </div>
+      </div>
+      <div style="width:420px; display:flex; flex-direction:column; gap:11px; justify-content:center;">
+        <div style="display:flex; align-items:center; gap:11px; background:rgba(46,158,91,.11); border-radius:16px; padding:13px 16px;"><span class="ms" style="font-size:20px; color:#1D7A43;">cloud_off</span><span style="flex:1; font-size:13.5px; font-weight:600; color:#1B2119;">Sin conexión — se guarda igual y sube cuando vuelva.</span><span style="font-size:11.5px; font-weight:700; color:#1D7A43;">3 pendientes</span></div>
+        <div style="display:flex; align-items:center; gap:11px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:16px; padding:13px 16px;"><span class="ms" style="font-size:20px; color:#7C8578;">sync</span><span style="flex:1; font-size:13.5px; font-weight:600;">Subiendo 3 cambios…</span></div>
+        <div style="display:flex; align-items:center; gap:11px; background:#FCFCF8; border:1px solid rgba(27,33,25,.09); border-radius:16px; padding:13px 16px;"><span class="ms" style="font-size:20px; color:#7C8578;">cloud_done</span><span style="flex:1; font-size:13.5px; font-weight:600;">Todo al día</span><div style="display:flex; align-items:center; gap:6px;"><div style="width:22px; height:22px; border-radius:11px; background:#E0447C; display:grid; place-items:center; font-size:10.5px; font-weight:700; color:#fff;">M</div><span style="font-size:11.5px; color:#AFB6AA;">editó Huevos hace 12 s</span></div></div>
+        <p style="margin:4px 0 0; font-size:11.5px; line-height:1.65; color:#AFB6AA;">La app no espera la confirmación del servidor para mover la UI: Firestore solo resuelve la escritura cuando el servidor la confirma, y en el súper no hay señal.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      W: 1360, H: 900, H2: 660,
+      tabs: [{ title: 'Stock — Casa Cardozo' }, { title: 'Firebase console' }],
+    };
+  }
+}
+</script>
+</body>
+</html>

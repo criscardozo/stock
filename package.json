@@ -16,7 +16,8 @@
     "test:web": "pnpm --filter web test",
     "test:rules": "pnpm --filter rules-tests test",
     "test": "pnpm test:web && pnpm test:rules",
-    "emulators": "firebase emulators:start --config firebase/firebase.json --project demo-stock"
+    "emulators": "firebase emulators:start --only auth,firestore --config firebase/firebase.json --project demo-stock",
+    "seed": "pnpm --filter tools seed"
   },
   "devDependencies": {
     "firebase-tools": "^15.27.0"

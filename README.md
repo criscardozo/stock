@@ -7,9 +7,10 @@ Next.js web app for everything you sit down to do on a Friday night, both talkin
 directly to Firebase (Auth + Firestore, Spark free tier), with no custom backend
 and **$0 infrastructure**.
 
-> **Status: design stage.** Nothing is implemented yet — this README is the
-> specification, [`docs/PLAN.md`](docs/PLAN.md) is the architecture and the
-> phased build order.
+> **Status:** the web app is built and runs against the Firebase emulators —
+> stock, shopping list, meal plan, recipes and settings, on the delivered
+> design. Not deployed yet, and the iOS app hasn't started.
+> [`docs/PLAN.md`](docs/PLAN.md) has the architecture and the phase order.
 
 | | |
 |---|---|
@@ -17,7 +18,7 @@ and **$0 infrastructure**.
 | 🌐 Web | `apps/web` — Next.js App Router, Tailwind, Vercel (`stock.cardozo.dev`). Also an installable **PWA**, which is how it stays on the phone |
 | 🔥 Firebase | `firebase/` — security rules (the only security boundary), indexes, emulator tests |
 | 🤝 Contracts | `shared/` — Firestore schema, seed categories, and the test vectors both platforms must pass |
-| 📐 Design | `docs/design/` — tokens + Claude Design reference |
+| 📐 Design | [`docs/design/`](docs/design/tokens.md) — tokens + the raw Claude Design export |
 | 🗺 Plan | [`docs/PLAN.md`](docs/PLAN.md) — architecture decisions and phases |
 | 📜 Rules | [`docs/reglas.md`](docs/reglas.md) — the project's constraints and the reasoning behind them |
 
@@ -90,7 +91,8 @@ difference is what each is optimised for, not what each can do.
   with a trolley in the other hand.
 - **Dense but scannable.** ~150 items is a long list; status has to read at a
   glance without colour being the only signal.
-- Dark mode from the start — half of these checks happen at night.
+- **Light only, for now.** The delivered design is the cream one; a dark palette
+  would have to be designed, not guessed next to it.
 - No chart library: bars are divs, lines are hand-written SVG.
 
 ## Data model
@@ -162,14 +164,12 @@ anything that would want a server runs in a client.
 
 ## Quick start
 
-Nothing to run yet — see [`docs/PLAN.md`](docs/PLAN.md) Phase 0. Once scaffolded:
-
 ```sh
 pnpm install
-pnpm dev            # web on :3000
-pnpm test           # web unit tests + Firestore rules (emulator, needs Java)
-pnpm emulators      # Auth 9099, Firestore 8080, UI 4000
-cd apps/ios && xcodegen && open Stock.xcodeproj
+pnpm emulators      # Auth 9099, Firestore 8085, UI 4000
+pnpm seed           # a household that looks real, in the emulator
+NEXT_PUBLIC_USE_EMULATORS=1 pnpm dev      # then use the "Emulador" sign-in buttons
+pnpm test           # domain vectors + Firestore rules (needs Java)
 ```
 
 One-time console setup (Firebase project, Vercel, domain): [`docs/setup.md`](docs/setup.md).
