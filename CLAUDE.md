@@ -104,7 +104,8 @@ Nothing is scaffolded yet — Phase 0 in `docs/PLAN.md` creates it. The intended
 - `pnpm test:web` — vitest, includes the shared vector tests.
 - `pnpm test:rules` — Firestore rules tests (spins up the emulator via `firebase emulators:exec`;
   needs Java).
-- `pnpm emulators` — local emulator suite (Auth 9099, Firestore 8080, UI 4000).
+- `pnpm emulators` — local emulator suite (Auth 9099, Firestore **8085**, UI 4000). 8085 and not
+  the usual 8080 because Cristian's own Docker stack (`ecko`/`holocron`) lives there.
 - iOS: `cd apps/ios && xcodegen && open Stock.xcodeproj`. CLI tests:
   `xcodebuild test -project Stock.xcodeproj -scheme Stock -destination 'platform=iOS Simulator,name=<iPhone>' -only-testing:StockTests`.
 - Deploy rules: `firebase deploy --only firestore:rules,firestore:indexes --config firebase/firebase.json --project qcris-stock`.

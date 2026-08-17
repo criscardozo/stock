@@ -1,0 +1,15 @@
+{
+  "$comment": "Everything else is covered by Firestore's automatic single-field indexes. Only add one here when a query actually needs it — an unused composite index still costs storage and write amplification.",
+  "indexes": [
+    {
+      "$comment": "An item's recent history on its detail screen: where itemId == x, order by at desc, limit 20.",
+      "collectionGroup": "moves",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "itemId", "order": "ASCENDING" },
+        { "fieldPath": "at", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

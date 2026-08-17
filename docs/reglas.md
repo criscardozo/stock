@@ -115,9 +115,9 @@ acaba de pedir.
 
 ## 9. La máquina de Cristian
 
-- **No tocar el stack de Docker propio (`ecko`/`holocron`, puerto 8080).** El
-  emulador de Firestore usa ese mismo puerto: antes de matar algo ahí, verificar
-  qué proceso es.
+- **No tocar el stack de Docker propio (`ecko`/`holocron`, puerto 8080).** Por
+  eso el emulador de Firestore de este proyecto escucha en **8085**: así nunca
+  hay que decidir cuál de los dos vive.
 - No dejar emuladores ni servidores de dev corriendo al terminar.
 
 ---

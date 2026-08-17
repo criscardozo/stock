@@ -1,0 +1,11 @@
+{
+  "$comment": "Seed locations written into households.locations when a household is created. Editable afterwards — this is only the starting set.",
+  "locations": [
+    { "id": "heladera", "name": "Heladera", "icon": "🧊", "sortOrder": 10 },
+    { "id": "freezer", "name": "Freezer", "icon": "❄️", "sortOrder": 20 },
+    { "id": "alacena", "name": "Alacena", "icon": "🚪", "sortOrder": 30 },
+    { "id": "bajo-mesada", "name": "Bajo mesada", "icon": "🧴", "sortOrder": 40 },
+    { "id": "bano", "name": "Baño", "icon": "🚿", "sortOrder": 50 },
+    { "id": "otro", "name": "Otro", "icon": "📦", "sortOrder": 60 }
+  ]
+}

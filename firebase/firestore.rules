@@ -1,0 +1,323 @@
+rules_version = '2';
+
+// The ONLY security boundary in this project. Both clients talk straight to
+// Firestore, so anything not enforced here is not enforced at all — client-side
+// gating is cosmetic. Every rule below has a test in `rules-tests/`.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── helpers ──────────────────────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function household(hid) {
+      return get(/databases/$(database)/documents/households/$(hid)).data;
+    }
+
+    // The get() is cached per request, so repeating this across rules in one
+    // evaluation costs a single read.
+    function isMember(hid) {
+      return isSignedIn() && uid() in household(hid).memberIds;
+    }
+
+    function isDate(v) {
+      return v is string && v.matches('^\\d{4}-\\d{2}-\\d{2}$');
+    }
+
+    // Audit fields cannot lie: the server stamps the time and the caller owns
+    // the attribution.
+    function stampedCreate(d, byField) {
+      return d.createdAt == request.time
+        && d.updatedAt == request.time
+        && d[byField] == uid();
+    }
+
+    function stampedUpdate(d, byField) {
+      return d.updatedAt == request.time
+        && d[byField] == uid();
+    }
+
+    // ── users ────────────────────────────────────────────────────────────────
+    // Only ever read by their owner: the other member's display name lives
+    // denormalised in households.members, so no cross-user read is needed.
+
+    match /users/{userId} {
+      function validUser(d) {
+        return d.keys().hasAll(['displayName', 'createdAt', 'updatedAt'])
+          && d.keys().hasOnly(['displayName', 'photoURL', 'householdId', 'createdAt', 'updatedAt'])
+          && d.displayName is string
+          && d.displayName.size() > 0
+          && d.displayName.size() <= 100
+          && (!('householdId' in d) || d.householdId is string)
+          && (!('photoURL' in d) || d.photoURL is string);
+      }
+
+      allow read: if isSignedIn() && userId == uid();
+      allow create: if isSignedIn() && userId == uid()
+        && validUser(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isSignedIn() && userId == uid()
+        && validUser(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    // ── households ───────────────────────────────────────────────────────────
+
+    match /households/{hid} {
+      function validHousehold(d) {
+        return d.keys().hasAll(['name', 'timezone', 'currency', 'memberIds', 'members',
+                                'locations', 'categories', 'planConfig', 'createdAt', 'updatedAt'])
+          && d.keys().hasOnly(['name', 'timezone', 'currency', 'memberIds', 'members',
+                               'locations', 'categories', 'planConfig', 'createdAt', 'updatedAt'])
+          && d.name is string && d.name.size() > 0 && d.name.size() <= 60
+          && d.timezone is string && d.timezone.size() > 0
+          && d.currency is string
+          && d.memberIds is list && d.memberIds.size() >= 1 && d.memberIds.size() <= 2
+          && d.members is map
+          && d.locations is map
+          && d.categories is map
+          && d.planConfig is map
+          && d.planConfig.length in ['weekly', 'fortnightly']
+          && d.planConfig.startWeekday is int
+          && d.planConfig.startWeekday >= 0
+          && d.planConfig.startWeekday <= 6;
+      }
+
+      // Joining with an invite code. A `where inviteCode ==` query cannot be
+      // secured (rules never see the values in a where clause), so the code is
+      // the invite's document id and joining is this self-add update: a
+      // non-member may add ONLY themselves, touching ONLY these keys, and only
+      // while there is room. Once the second member is in, the size cap locks
+      // the household forever.
+      function joiningSelf() {
+        let before = resource.data;
+        let after = request.resource.data;
+        return isSignedIn()
+          && !(uid() in before.memberIds)
+          && before.memberIds.size() < 2
+          && after.diff(before).affectedKeys().hasOnly(['memberIds', 'members', 'updatedAt'])
+          && after.diff(before).affectedKeys().hasAll(['memberIds', 'members'])
+          && after.memberIds.toSet() == before.memberIds.toSet().union([uid()].toSet())
+          && after.members.diff(before.members).affectedKeys() == [uid()].toSet()
+          && after.members[uid()].keys().hasOnly(['displayName', 'photoURL'])
+          && after.members[uid()].displayName is string
+          && after.updatedAt == request.time;
+      }
+
+      // A member editing the household: everything except the membership, which
+      // only ever changes through joiningSelf().
+      function memberEdit() {
+        return isMember(hid)
+          && validHousehold(request.resource.data)
+          && request.resource.data.memberIds == resource.data.memberIds
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.updatedAt == request.time;
+      }
+
+      // `get` only: nothing ever lists households, and a list evaluates the rule
+      // without a concrete hid, so the membership get() could not resolve.
+      allow get: if isMember(hid);
+      allow list: if false;
+      allow create: if isSignedIn()
+        && validHousehold(request.resource.data)
+        && request.resource.data.memberIds == [uid()]
+        && request.resource.data.members.keys() == [uid()]
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if memberEdit() || joiningSelf();
+      allow delete: if false;
+
+      // ── items ──────────────────────────────────────────────────────────────
+
+      match /items/{itemId} {
+        function validItem(d) {
+          return d.keys().hasAll(['name', 'categoryId', 'locationId', 'tracking', 'barcodes',
+                                  'createdAt', 'updatedAt', 'updatedBy'])
+            && d.keys().hasOnly(['name', 'brand', 'categoryId', 'locationId', 'tracking',
+                                 'unit', 'quantity', 'minQuantity', 'level', 'minLevel',
+                                 'packSize', 'barcodes', 'expiresAt', 'snoozedUntil',
+                                 'lastPriceCents', 'notes', 'createdAt', 'updatedAt', 'updatedBy'])
+            && d.name is string && d.name.size() > 0 && d.name.size() <= 80
+            && d.categoryId is string && d.locationId is string
+            && d.barcodes is list && d.barcodes.size() <= 20
+            && (!('expiresAt' in d) || isDate(d.expiresAt))
+            && (!('snoozedUntil' in d) || isDate(d.snoozedUntil))
+            && (!('lastPriceCents' in d) || (d.lastPriceCents is int && d.lastPriceCents >= 0))
+            && (!('brand' in d) || d.brand is string)
+            && (!('packSize' in d) || d.packSize is string)
+            && (!('notes' in d) || d.notes is string)
+            && validTracking(d);
+        }
+
+        // The hybrid measurement, enforced: a counted item carries unit +
+        // quantity + minQuantity and NO level fields, and vice versa. Half a
+        // model on each side is how you end up with an item that is neither.
+        function validTracking(d) {
+          return d.tracking == 'quantity'
+            ? (d.unit in ['unit', 'g', 'ml']
+               && d.quantity is int && d.quantity >= 0
+               && d.minQuantity is int && d.minQuantity >= 0
+               && !d.keys().hasAny(['level', 'minLevel']))
+            : (d.tracking == 'level'
+               && d.level is int && d.level >= 0 && d.level <= 3
+               && d.minLevel is int && d.minLevel >= 0 && d.minLevel <= 3
+               && !d.keys().hasAny(['unit', 'quantity', 'minQuantity']));
+        }
+
+        allow read: if isMember(hid);
+        allow create: if isMember(hid)
+          && validItem(request.resource.data)
+          && stampedCreate(request.resource.data, 'updatedBy');
+        allow update: if isMember(hid)
+          && validItem(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && stampedUpdate(request.resource.data, 'updatedBy');
+        allow delete: if isMember(hid);
+      }
+
+      // ── recipes ────────────────────────────────────────────────────────────
+
+      match /recipes/{recipeId} {
+        function validRecipe(d) {
+          return d.keys().hasAll(['title', 'servings', 'ingredients', 'tags', 'timesCooked',
+                                  'createdAt', 'updatedAt'])
+            && d.keys().hasOnly(['title', 'servings', 'steps', 'ingredients', 'tags',
+                                 'timesCooked', 'lastCookedAt', 'createdAt', 'updatedAt'])
+            && d.title is string && d.title.size() > 0 && d.title.size() <= 120
+            && d.servings is int && d.servings >= 1
+            && d.ingredients is list && d.ingredients.size() <= 60
+            && d.tags is list
+            && d.timesCooked is int && d.timesCooked >= 0
+            && (!('steps' in d) || d.steps is string)
+            && (!('lastCookedAt' in d) || isDate(d.lastCookedAt));
+        }
+
+        allow read: if isMember(hid);
+        allow create: if isMember(hid)
+          && validRecipe(request.resource.data)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isMember(hid)
+          && validRecipe(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if isMember(hid);
+      }
+
+      // ── meal plans ─────────────────────────────────────────────────────────
+      // Document id IS the start date, which is what makes lazy materialisation
+      // idempotent when both clients open the app at the same time.
+
+      match /mealPlans/{startDate} {
+        function validPlan(d) {
+          return d.keys().hasAll(['startDate', 'endDate', 'length', 'days', 'createdAt', 'updatedAt'])
+            && d.keys().hasOnly(['startDate', 'endDate', 'length', 'days', 'createdAt', 'updatedAt'])
+            && d.startDate == startDate
+            && isDate(d.startDate)
+            && isDate(d.endDate)
+            && d.endDate > d.startDate
+            && d.length in ['weekly', 'fortnightly']
+            && d.days is map
+            && d.days.size() <= 14;
+        }
+
+        allow read: if isMember(hid);
+        allow create: if isMember(hid)
+          && validPlan(request.resource.data)
+          && request.resource.data.createdAt == request.time
+          && request.resource.data.updatedAt == request.time;
+        allow update: if isMember(hid)
+          && validPlan(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.startDate == resource.data.startDate
+          && request.resource.data.updatedAt == request.time;
+        allow delete: if isMember(hid);
+      }
+
+      // ── shopping list ──────────────────────────────────────────────────────
+      // Real shared state, not a derivation: both members hold a listener here,
+      // which is what makes a tick in one aisle strike the row through in the
+      // other.
+
+      match /shoppingList/{entryId} {
+        function validEntry(d) {
+          return d.keys().hasAll(['label', 'source', 'checked', 'addedAt', 'addedBy'])
+            && d.keys().hasOnly(['label', 'itemId', 'quantity', 'unit', 'source', 'reason',
+                                 'checked', 'checkedAt', 'checkedBy', 'addedAt', 'addedBy'])
+            && d.label is string && d.label.size() > 0 && d.label.size() <= 80
+            && d.source in ['min', 'plan', 'manual']
+            && d.checked is bool
+            && (!('itemId' in d) || d.itemId is string)
+            && (!('quantity' in d) || (d.quantity is int && d.quantity >= 0))
+            && (!('unit' in d) || d.unit in ['unit', 'g', 'ml'])
+            && (!('reason' in d) || d.reason is string)
+            && (!('checkedBy' in d) || d.checkedBy is string);
+        }
+
+        allow read: if isMember(hid);
+        allow create: if isMember(hid)
+          && validEntry(request.resource.data)
+          && request.resource.data.addedAt == request.time
+          && request.resource.data.addedBy == uid();
+        // Either member may tick or edit any row — attribution, not ownership.
+        allow update: if isMember(hid)
+          && validEntry(request.resource.data)
+          && request.resource.data.addedAt == resource.data.addedAt
+          && request.resource.data.addedBy == resource.data.addedBy;
+        allow delete: if isMember(hid);
+      }
+
+      // ── moves ──────────────────────────────────────────────────────────────
+      // Append-only: the log of what changed stock. Never updated, never
+      // deleted, and the server stamps the time.
+
+      match /moves/{moveId} {
+        function validMove(d) {
+          return d.keys().hasAll(['itemId', 'type', 'at', 'by'])
+            && d.keys().hasOnly(['itemId', 'type', 'delta', 'levelFrom', 'levelTo',
+                                 'recipeId', 'planDate', 'at', 'by'])
+            && d.itemId is string
+            && d.type in ['purchase', 'cook', 'adjust', 'waste']
+            && (!('delta' in d) || d.delta is int)
+            && (!('levelFrom' in d) || (d.levelFrom is int && d.levelFrom >= 0 && d.levelFrom <= 3))
+            && (!('levelTo' in d) || (d.levelTo is int && d.levelTo >= 0 && d.levelTo <= 3))
+            && (!('recipeId' in d) || d.recipeId is string)
+            && (!('planDate' in d) || isDate(d.planDate));
+        }
+
+        allow read: if isMember(hid);
+        allow create: if isMember(hid)
+          && validMove(request.resource.data)
+          && request.resource.data.at == request.time
+          && request.resource.data.by == uid();
+        allow update, delete: if false;
+      }
+    }
+
+    // ── invites ──────────────────────────────────────────────────────────────
+    // Top level, because whoever is joining is not a member yet. Knowing the
+    // code IS the capability, so `get` is open to any signed-in user — but
+    // `list` is denied, so codes cannot be enumerated.
+
+    match /invites/{code} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isSignedIn()
+        && isMember(request.resource.data.householdId)
+        && request.resource.data.keys().hasOnly(['householdId', 'createdBy', 'createdAt'])
+        && request.resource.data.createdBy == uid()
+        && request.resource.data.createdAt == request.time
+        && code.size() >= 10;
+      allow update: if false;
+      allow delete: if isSignedIn() && isMember(resource.data.householdId);
+    }
+  }
+}

@@ -119,16 +119,15 @@ Las dos leen los mismos datos, así que se usan indistintamente.
 
 ```sh
 pnpm install
-pnpm emulators          # Auth 9099, Firestore 8080, UI 4000
+pnpm emulators          # Auth 9099, Firestore 8085, UI 4000
 pnpm dev                # Next.js en :3000 — NEXT_PUBLIC_USE_EMULATORS=1 para apuntar al emulador
 pnpm test:rules         # tests de security rules (levanta su propio emulador, necesita Java)
 pnpm test:web           # unit tests, incluidos los vectores compartidos
 pnpm test               # todo
 ```
 
-⚠️ El emulador de Firestore usa el **puerto 8080**, el mismo que el stack de
-Docker propio (`ecko`/`holocron`). Antes de matar algo ahí, verificar qué proceso
-es.
+El emulador de Firestore escucha en **8085**, no en el 8080 habitual, justamente
+para no competir nunca con el stack de Docker propio (`ecko`/`holocron`).
 
 ## 6. iOS
 

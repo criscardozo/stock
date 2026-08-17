@@ -1,0 +1,32 @@
+{
+  "$comment": "The measurement vocabulary, implemented identically on both platforms. Stored quantities are ALWAYS integers in `id`; `scale` is display only — 1200 g renders as '1,2 kg' and is never stored as 1.2. `step` is the increment for the +/- buttons.",
+  "units": [
+    {
+      "id": "unit",
+      "name": "unidades",
+      "symbol": "u",
+      "step": 1,
+      "scale": null
+    },
+    {
+      "id": "g",
+      "name": "gramos",
+      "symbol": "g",
+      "step": 100,
+      "scale": { "from": 1000, "symbol": "kg", "divisor": 1000, "maxDecimals": 2 }
+    },
+    {
+      "id": "ml",
+      "name": "mililitros",
+      "symbol": "ml",
+      "step": 100,
+      "scale": { "from": 1000, "symbol": "L", "divisor": 1000, "maxDecimals": 2 }
+    }
+  ],
+  "levels": [
+    { "value": 0, "name": "vacío" },
+    { "value": 1, "name": "poco" },
+    { "value": 2, "name": "medio" },
+    { "value": 3, "name": "lleno" }
+  ]
+}

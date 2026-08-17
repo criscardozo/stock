@@ -1,0 +1,10 @@
+packages:
+  - "apps/web"
+  - "firebase/rules-tests"
+
+# Native/postinstall builds we explicitly trust. re2 is what firebase-tools uses
+# to evaluate the regexes in firestore.rules, so it has to actually build.
+allowBuilds:
+  '@firebase/util': true
+  protobufjs: true
+  re2: true

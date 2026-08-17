@@ -1,0 +1,19 @@
+{
+  "$comment": "Seed categories written into households.categories when a household is created. Names are Spanish literals (the UI is Spanish only, so there is no translation key). kind: only 'food' categories are offered when linking a recipe ingredient.",
+  "categories": [
+    { "id": "frutas-verduras", "name": "Frutas y verduras", "icon": "🥬", "color": "#4CAF50", "kind": "food", "sortOrder": 10 },
+    { "id": "carnes-pescados", "name": "Carnes y pescados", "icon": "🥩", "color": "#E05252", "kind": "food", "sortOrder": 20 },
+    { "id": "lacteos-huevos", "name": "Lácteos y huevos", "icon": "🥛", "color": "#64B5F6", "kind": "food", "sortOrder": 30 },
+    { "id": "panaderia", "name": "Panadería", "icon": "🍞", "color": "#C08A4E", "kind": "food", "sortOrder": 40 },
+    { "id": "almacen", "name": "Almacén", "icon": "🥫", "color": "#B08968", "kind": "food", "sortOrder": 50 },
+    { "id": "congelados", "name": "Congelados", "icon": "🧊", "color": "#4FC3D9", "kind": "food", "sortOrder": 60 },
+    { "id": "desayuno", "name": "Café, té y yerba", "icon": "☕", "color": "#8D6E63", "kind": "food", "sortOrder": 70 },
+    { "id": "bebidas", "name": "Bebidas", "icon": "🧃", "color": "#7E7EDB", "kind": "food", "sortOrder": 80 },
+    { "id": "snacks", "name": "Snacks y dulces", "icon": "🍫", "color": "#D98BB8", "kind": "food", "sortOrder": 90 },
+    { "id": "condimentos", "name": "Condimentos", "icon": "🧂", "color": "#A3A86B", "kind": "food", "sortOrder": 100 },
+    { "id": "limpieza", "name": "Limpieza", "icon": "🧽", "color": "#43B0A0", "kind": "household", "sortOrder": 110 },
+    { "id": "higiene", "name": "Higiene personal", "icon": "🧴", "color": "#9575CD", "kind": "household", "sortOrder": 120 },
+    { "id": "papel", "name": "Papel", "icon": "🧻", "color": "#90A4AE", "kind": "household", "sortOrder": 130 },
+    { "id": "otros", "name": "Otros", "icon": "📦", "color": "#78909C", "kind": "household", "sortOrder": 140 }
+  ]
+}
