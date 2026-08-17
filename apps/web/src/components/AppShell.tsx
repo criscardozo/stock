@@ -94,7 +94,7 @@ function Sidebar() {
               {tab.label}
             </span>
             {tab.badge && pending > 0 && (
-              <span className="grid h-5 min-w-5 place-items-center rounded-full bg-danger px-1.5 text-[11px] font-bold text-white">
+              <span className="grid h-5 min-w-5 place-items-center rounded-full bg-danger px-1.5 text-[11px] font-bold text-on-danger">
                 {pending}
               </span>
             )}
@@ -187,7 +187,7 @@ function TabBar() {
               {tab.label === 'Falta comprar' ? 'Comprar' : tab.label}
             </span>
             {tab.badge && pending > 0 && (
-              <span className="absolute -top-1 right-2 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-danger px-1.5 text-[10px] font-bold text-white">
+              <span className="absolute -top-1 right-2 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-danger px-1.5 text-[10px] font-bold text-on-danger">
                 {pending}
               </span>
             )}

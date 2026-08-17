@@ -1,46 +1,127 @@
 import SwiftUI
 import UIKit
 
-/// The design system, from docs/design/tokens.md. Same values as the web's
-/// Tailwind theme — do not invent colours here.
+// MARK: - Colour helpers
+
+extension Color {
+    init(hex: UInt32, alpha: Double = 1) {
+        self.init(
+            .sRGB,
+            red: Double((hex >> 16) & 0xFF) / 255,
+            green: Double((hex >> 8) & 0xFF) / 255,
+            blue: Double(hex & 0xFF) / 255,
+            opacity: alpha
+        )
+    }
+
+    /// A colour that follows the system appearance, the way the web's token
+    /// blocks do.
+    init(light: Color, dark: Color) {
+        self.init(
+            uiColor: UIColor { traits in
+                traits.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
+            })
+    }
+
+    static func hex(
+        light: UInt32, dark: UInt32, lightAlpha: Double = 1, darkAlpha: Double = 1
+    ) -> Color {
+        Color(light: Color(hex: light, alpha: lightAlpha), dark: Color(hex: dark, alpha: darkAlpha))
+    }
+}
+
+// MARK: - Design tokens
+
+/// The design system, from `docs/design/project/` — the light screens and
+/// `Stock - Dark.dc.html`, which maps every role one to one.
+///
+/// Dark is not an inverted filter: the accent RISES to a lighter green so it
+/// survives on a dark ground, which is why text ON the accent flips from white
+/// to near-black (`onPrimary`). Category hues each go up a step of luminosity.
+///
+/// Same values as the web's Tailwind theme — do not invent colours here.
 enum Theme {
-    static let ground = Color(hex: 0xF3F4EE)
-    static let surface = Color(hex: 0xFCFCF8)
+    static let ground = Color.hex(light: 0xF3F4EE, dark: 0x141813)
+    static let surface = Color.hex(light: 0xFCFCF8, dark: 0x1E231C)
 
-    static let ink = Color(hex: 0x1B2119)
-    static let ink2 = Color(hex: 0x7C8578)
-    static let ink3 = Color(hex: 0xAFB6AA)
-    static let ink4 = Color(hex: 0xCFD3C9)
+    static let ink = Color.hex(light: 0x1B2119, dark: 0xECEFE9)
+    static let ink2 = Color.hex(light: 0x7C8578, dark: 0x9AA396)
+    static let ink3 = Color.hex(light: 0x6E776A, dark: 0x8A9386)
+    static let ink4 = Color.hex(light: 0x9AA394, dark: 0x4A5247)
 
-    static let line = Color(hex: 0x1B2119, alpha: 0.09)
-    static let lineSoft = Color(hex: 0x1B2119, alpha: 0.07)
-    static let lineStrong = Color(hex: 0x1B2119, alpha: 0.18)
-    static let track = Color(hex: 0x1B2119, alpha: 0.11)
-    static let neutralSoft = Color(hex: 0x1B2119, alpha: 0.07)
+    static let line = Color.hex(light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.09, darkAlpha: 0.10)
+    static let lineSoft = Color.hex(
+        light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.07, darkAlpha: 0.08)
+    static let lineStrong = Color.hex(
+        light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.18, darkAlpha: 0.20)
+    static let track = Color.hex(light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.11, darkAlpha: 0.14)
+    static let neutralSoft = Color.hex(
+        light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.07, darkAlpha: 0.08)
 
-    static let primary = Color(hex: 0x2E9E5B)
-    static let primaryDeep = Color(hex: 0x1D7A43)
-    static let primarySoft = Color(hex: 0x2E9E5B, alpha: 0.13)
+    static let primary = Color.hex(light: 0x2E9E5B, dark: 0x45BC72)
+    static let primaryDeep = Color.hex(light: 0x1D7A43, dark: 0x7FD79E)
+    static let primarySoft = Color.hex(
+        light: 0x2E9E5B, dark: 0x45BC72, lightAlpha: 0.13, darkAlpha: 0.15)
+    /// Text ON the accent: white in light, near-black in dark.
+    static let onPrimary = Color.hex(light: 0xFFFFFF, dark: 0x0F1A12)
 
-    static let danger = Color(hex: 0xE5484D)
-    static let dangerDeep = Color(hex: 0xC0353A)
-    static let dangerSoft = Color(hex: 0xE5484D, alpha: 0.13)
+    static let danger = Color.hex(light: 0xE5484D, dark: 0xFF6B6E)
+    static let dangerDeep = Color.hex(light: 0xC0353A, dark: 0xFF8C8E)
+    static let dangerSoft = Color.hex(
+        light: 0xE5484D, dark: 0xFF6B6E, lightAlpha: 0.13, darkAlpha: 0.14)
+    static let onDanger = Color.hex(light: 0xFFFFFF, dark: 0x14170F)
 
-    static let memberA = Color(hex: 0x2A6FDB)
-    static let memberB = Color(hex: 0xE0447C)
+    static let memberA = Color.hex(light: 0x2A6FDB, dark: 0x5B93E8)
+    static let memberB = Color.hex(light: 0xE0447C, dark: 0xF06A9B)
 
-    /// Category hues: foreground and its ~14% tint.
+    /// Category hues: foreground and its tint. Dark values from the dark
+    /// document; teal and magenta never appear there (no screen uses them), so
+    /// they follow the rule it states — up a step of luminosity, +0.31 L, which
+    /// is the average measured across the six that ARE specified.
     static func hue(_ name: String?) -> (fg: Color, bg: Color) {
         switch name ?? "violet" {
-        case "olive": return (Color(hex: 0x6E7C1C), Color(hex: 0x8A9B23, alpha: 0.14))
-        case "wine": return (Color(hex: 0x9E3E53), Color(hex: 0xB4485F, alpha: 0.14))
-        case "blue": return (Color(hex: 0x286D91), Color(hex: 0x2E7FA8, alpha: 0.14))
-        case "amber": return (Color(hex: 0x996A0C), Color(hex: 0xC98A12, alpha: 0.15))
-        case "teal": return (Color(hex: 0x25808B), Color(hex: 0x2E9BA8, alpha: 0.15))
-        case "magenta": return (Color(hex: 0xA34E80), Color(hex: 0xC0679B, alpha: 0.15))
-        case "brown": return (Color(hex: 0x8F5626), Color(hex: 0xB5733A, alpha: 0.15))
-        case "green": return (primaryDeep, primarySoft)
-        default: return (Color(hex: 0x6B54A0), Color(hex: 0x8B6FBE, alpha: 0.15))
+        case "olive":
+            return (
+                .hex(light: 0x6E7C1C, dark: 0xB8CE55),
+                .hex(light: 0x8A9B23, dark: 0xB8CE55, lightAlpha: 0.14, darkAlpha: 0.16)
+            )
+        case "wine":
+            return (
+                .hex(light: 0x9E3E53, dark: 0xE88DA0),
+                .hex(light: 0xB4485F, dark: 0xE88DA0, lightAlpha: 0.14, darkAlpha: 0.16)
+            )
+        case "blue":
+            return (
+                .hex(light: 0x286D91, dark: 0x7FB8DC),
+                .hex(light: 0x2E7FA8, dark: 0x7FB8DC, lightAlpha: 0.14, darkAlpha: 0.16)
+            )
+        case "amber":
+            return (
+                .hex(light: 0x996A0C, dark: 0xEFBE5C),
+                .hex(light: 0xC98A12, dark: 0xEFBE5C, lightAlpha: 0.15, darkAlpha: 0.16)
+            )
+        case "teal":
+            return (
+                .hex(light: 0x25808B, dark: 0x73CFDA),
+                .hex(light: 0x2E9BA8, dark: 0x73CFDA, lightAlpha: 0.15, darkAlpha: 0.16)
+            )
+        case "magenta":
+            return (
+                .hex(light: 0xA34E80, dark: 0xDBB3CA),
+                .hex(light: 0xC0679B, dark: 0xDBB3CA, lightAlpha: 0.15, darkAlpha: 0.16)
+            )
+        case "brown":
+            return (
+                .hex(light: 0x8F5626, dark: 0xE1AC74),
+                .hex(light: 0xB5733A, dark: 0xE1AC74, lightAlpha: 0.15, darkAlpha: 0.16)
+            )
+        case "green":
+            return (primaryDeep, primarySoft)
+        default:
+            return (
+                .hex(light: 0x6B54A0, dark: 0xB9A4EE),
+                .hex(light: 0x8B6FBE, dark: 0xB9A4EE, lightAlpha: 0.15, darkAlpha: 0.16)
+            )
         }
     }
 
@@ -81,17 +162,7 @@ enum Theme {
     }
 }
 
-extension Color {
-    init(hex: UInt32, alpha: Double = 1) {
-        self.init(
-            .sRGB,
-            red: Double((hex >> 16) & 0xFF) / 255,
-            green: Double((hex >> 8) & 0xFF) / 255,
-            blue: Double(hex & 0xFF) / 255,
-            opacity: alpha
-        )
-    }
-}
+// MARK: - Type
 
 /// Outfit, the same face the web serves — one 110 KB variable file, so the two
 /// apps genuinely look like one product rather than two that agree on colours.

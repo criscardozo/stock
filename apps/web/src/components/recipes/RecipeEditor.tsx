@@ -124,7 +124,7 @@ export function RecipeEditor({
               aria-label={name}
               onClick={() => setIcon(name)}
               className={`grid h-9 w-9 place-items-center rounded-full ${
-                icon === name ? 'bg-primary text-white' : 'text-ink-2'
+                icon === name ? 'bg-primary text-on-primary' : 'text-ink-2'
               }`}
             >
               <Icon name={name} size={19} />

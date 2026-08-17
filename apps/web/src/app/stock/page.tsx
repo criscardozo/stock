@@ -248,7 +248,7 @@ function FilterPill({
       onClick={onClick}
       className={`rounded-full px-3.5 py-[7px] text-xs ${
         active
-          ? 'bg-ink font-bold text-white'
+          ? 'bg-ink font-bold text-ground'
           : 'border border-line bg-surface font-semibold text-ink-2'
       }`}
     >
@@ -279,7 +279,7 @@ function StatusFilter({
       <span
         className={`flex items-center gap-1.5 rounded-full px-3 py-[7px] text-xs ${
           active
-            ? 'bg-ink font-bold text-white'
+            ? 'bg-ink font-bold text-ground'
             : loud
               ? 'bg-danger-soft font-bold text-danger-deep'
               : 'border border-line bg-surface font-semibold text-ink-2'

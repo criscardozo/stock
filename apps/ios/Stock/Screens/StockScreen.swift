@@ -156,7 +156,9 @@ struct FilterPill: View {
         Button(action: action) {
             Text(title)
                 .font(.stock(13, active ? .bold : .semibold))
-                .foregroundStyle(active ? .white : Theme.ink2)
+                // On `ink`, not on white: in dark the ink token IS the light one,
+                // so a fixed white here is white on white.
+                .foregroundStyle(active ? Theme.ground : Theme.ink2)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 7)
                 .background(

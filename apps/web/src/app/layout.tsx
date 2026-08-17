@@ -27,7 +27,12 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#2E9E5B',
+  // One per scheme, so the browser chrome matches the theme in use. theme.ts
+  // overwrites both when a theme is forced.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#2E9E5B' },
+    { media: '(prefers-color-scheme: dark)', color: '#141813' },
+  ],
   // Extend under the notch and the home indicator; every edge the content must
   // avoid is then handled explicitly with env(safe-area-inset-*).
   viewportFit: 'cover',
@@ -57,6 +62,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-dvh bg-ground font-sans text-ink antialiased">
+        {/*
+          Apply the stored theme BEFORE first paint — a blocking script as the
+          first body node — so a forced light/dark never flashes the system one.
+          The key must match THEME_STORAGE_KEY.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){try{var t=localStorage.getItem("stock:theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();',
+          }}
+        />
         <AppShell>{children}</AppShell>
         <ServiceWorker />
       </body>

@@ -128,7 +128,7 @@ export function ItemSheet({
               onClick={() => setTracking(mode)}
               className={`flex-1 rounded-full py-2.5 text-[13.5px] ${
                 tracking === mode
-                  ? 'bg-primary font-bold text-white'
+                  ? 'bg-primary font-bold text-on-primary'
                   : 'font-semibold text-ink-2'
               }`}
             >

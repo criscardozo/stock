@@ -273,7 +273,7 @@ struct ShoppingRow: View {
                         .overlay(
                             Image(systemName: "checkmark")
                                 .font(.system(size: 13, weight: .bold))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(Theme.onPrimary)
                                 .opacity(entry.checked ? 1 : 0)
                         )
                         .frame(width: 26, height: 26)

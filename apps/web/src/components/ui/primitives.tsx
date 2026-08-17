@@ -52,8 +52,8 @@ type ChipTone = 'danger' | 'danger-deep' | 'danger-quiet' | 'primary' | 'neutral
 const CHIP_TONES: Record<ChipTone, string> = {
   // Solid red is reserved for "out of stock": the loudest state gets the
   // loudest treatment, and nothing else does.
-  danger: 'bg-danger text-white font-bold',
-  'danger-deep': 'bg-danger-deep text-white font-bold',
+  danger: 'bg-danger text-on-danger font-bold',
+  'danger-deep': 'bg-danger-deep text-on-danger font-bold',
   // Tinted, not solid: a recipe missing an ingredient is information, not an
   // alarm. Solid red stays reserved for out-of-stock and expired.
   'danger-quiet': 'bg-danger-soft text-danger-deep font-bold',
@@ -97,7 +97,7 @@ export function PillButton({
 }) {
   const styles =
     variant === 'primary'
-      ? 'bg-primary text-white font-bold shadow-(--shadow-primary) px-[18px] py-2.5'
+      ? 'bg-primary text-on-primary font-bold shadow-(--shadow-primary) px-[18px] py-2.5'
       : 'bg-surface text-ink-2 font-semibold border border-line px-[15px] py-2.5'
   return (
     <button
@@ -319,7 +319,7 @@ export function PrimaryAction({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-white shadow-(--shadow-primary) disabled:opacity-40"
+      className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-on-primary shadow-(--shadow-primary) disabled:opacity-40"
     >
       {icon && <Icon name={icon} size={20} />}
       {children}

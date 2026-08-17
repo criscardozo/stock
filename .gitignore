@@ -38,6 +38,7 @@ DerivedData/
 *.xcresult
 # Build output of install-device.sh (device sideload) and ad-hoc xcodebuild runs
 apps/ios/build-device/
+apps/ios/build-sim/
 apps/ios/build/
 
 # Test output
@@ -52,3 +53,7 @@ firebase/rules-tests/firebase-debug.log
 
 # XcodeGen output — project.yml is the source
 apps/ios/Stock.xcodeproj/
+
+# Design handoff bundle from Claude Design — regenerated on every export,
+# and large. Kept locally, not in the repo.
+docs/design/

@@ -40,7 +40,7 @@ enum ChipTone {
 
     var foreground: Color {
         switch self {
-        case .danger, .dangerDeep: return .white
+        case .danger, .dangerDeep: return Theme.onDanger
         case .dangerQuiet: return Theme.dangerDeep
         case .primary: return Theme.primaryDeep
         case .neutral: return Theme.ink2
@@ -177,7 +177,7 @@ struct PrimaryButton: View {
                 if let icon { Image(systemName: icon).font(.system(size: 17, weight: .bold)) }
                 Text(title).font(.stock(16, .bold))
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(Theme.onPrimary)
             .frame(maxWidth: .infinity, minHeight: 52)
             .background(Capsule().fill(Theme.primary))
             .shadow(color: Theme.primary.opacity(0.3), radius: 10, y: 6)

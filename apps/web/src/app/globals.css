@@ -6,10 +6,8 @@
  * for. Do not invent colours here; add them to the design first.
  *
  * Shape borrowed from Gastos Diarios: raw values live in `:root`, and `@theme
- * inline` only maps them to Tailwind. That indirection is what lets a dark
- * palette arrive later as ONE extra block instead of a rewrite — the delivered
- * design is light-only, so there is no dark block yet, and guessing one next to
- * a designed light one gets you neither.
+ * inline` only maps them to Tailwind. That indirection is what let the dark
+ * palette below arrive as ONE extra block rather than a rewrite.
  */
 :root {
   --ground: #f3f4ee;
@@ -17,8 +15,8 @@
 
   --ink: #1b2119;
   --ink-secondary: #7c8578;
-  --ink-tertiary: #afb6aa;
-  --ink-quaternary: #cfd3c9;
+  --ink-tertiary: #6e776a;
+  --ink-quaternary: #9aa394;
 
   --line-card: rgba(27, 33, 25, 0.09);
   --line-soft: rgba(27, 33, 25, 0.07);
@@ -37,6 +35,10 @@
   --member-a: #2a6fdb;
   --member-b: #e0447c;
 
+  /* Text ON a filled accent/danger. White in light, near-black in dark. */
+  --on-primary: #ffffff;
+  --on-danger: #ffffff;
+
   /* Category hues: foreground and its ~14% tint. Seed data names these. */
   --hue-olive: #6e7c1c;
   --hue-olive-soft: rgba(138, 155, 35, 0.14);
@@ -54,6 +56,124 @@
   --hue-magenta-soft: rgba(192, 103, 155, 0.15);
   --hue-brown: #8f5626;
   --hue-brown-soft: rgba(181, 115, 58, 0.15);
+}
+
+/*
+ * ── Dark ──────────────────────────────────────────────────────────────────
+ *
+ * From `docs/design/project/Stock - Dark.dc.html`, which maps every role one to
+ * one. Not an inverted filter: the accent RISES to a lighter green so it
+ * survives on a dark ground, which also means text ON the accent flips from
+ * white to near-black. Category hues each go up a step of luminosity so they
+ * don't go muddy.
+ *
+ * The block appears TWICE on purpose — CSS cannot share one between a media
+ * query and a selector — once for system-dark (unless light was forced) and
+ * once for the manual override. KEEP BOTH IDENTICAL.
+ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ground: #141813;
+    --surface: #1e231c;
+
+    --ink: #ecefe9;
+    --ink-secondary: #9aa396;
+    --ink-tertiary: #8a9386;
+    --ink-quaternary: #4a5247;
+
+    --line-card: rgba(236, 239, 233, 0.1);
+    --line-soft: rgba(236, 239, 233, 0.08);
+    --line-strong: rgba(236, 239, 233, 0.2);
+    --neutral-soft: rgba(236, 239, 233, 0.08);
+    --track: rgba(236, 239, 233, 0.14);
+
+    --primary: #45bc72;
+    --primary-deep: #7fd79e;
+    --primary-soft: rgba(69, 188, 114, 0.15);
+    /* Text ON the accent: near-black, because the accent is now light. */
+    --on-primary: #0f1a12;
+
+    --danger: #ff6b6e;
+    --danger-deep: #ff8c8e;
+    --danger-soft: rgba(255, 107, 110, 0.14);
+    --on-danger: #14170f;
+
+    --member-a: #5b93e8;
+    --member-b: #f06a9b;
+
+    --hue-olive: #b8ce55;
+    --hue-olive-soft: rgba(184, 206, 85, 0.16);
+    --hue-wine: #e88da0;
+    --hue-wine-soft: rgba(232, 141, 160, 0.16);
+    --hue-blue: #7fb8dc;
+    --hue-blue-soft: rgba(127, 184, 220, 0.16);
+    --hue-amber: #efbe5c;
+    --hue-amber-soft: rgba(239, 190, 92, 0.16);
+    --hue-violet: #b9a4ee;
+    --hue-violet-soft: rgba(185, 164, 238, 0.16);
+    --hue-brown: #e1ac74;
+    --hue-brown-soft: rgba(225, 172, 116, 0.16);
+    /* Teal and magenta never appear in the dark mock — no screen there uses
+       them — so they follow the rule the document states ("up a step of
+       luminosity"): +0.31 L, saturation untouched, which is the average
+       measured across the six hues that ARE specified. */
+    --hue-teal: #73cfda;
+    --hue-teal-soft: rgba(115, 207, 218, 0.16);
+    --hue-magenta: #dbb3ca;
+    --hue-magenta-soft: rgba(219, 179, 202, 0.16);
+  }
+}
+
+/* Manual dark override — same values as the media-query block above. */
+:root[data-theme='dark'] {
+  --ground: #141813;
+  --surface: #1e231c;
+
+  --ink: #ecefe9;
+  --ink-secondary: #9aa396;
+  --ink-tertiary: #8a9386;
+  --ink-quaternary: #4a5247;
+
+  --line-card: rgba(236, 239, 233, 0.1);
+  --line-soft: rgba(236, 239, 233, 0.08);
+  --line-strong: rgba(236, 239, 233, 0.2);
+  --neutral-soft: rgba(236, 239, 233, 0.08);
+  --track: rgba(236, 239, 233, 0.14);
+
+  --primary: #45bc72;
+  --primary-deep: #7fd79e;
+  --primary-soft: rgba(69, 188, 114, 0.15);
+  /* Text ON the accent: near-black, because the accent is now light. */
+  --on-primary: #0f1a12;
+
+  --danger: #ff6b6e;
+  --danger-deep: #ff8c8e;
+  --danger-soft: rgba(255, 107, 110, 0.14);
+  --on-danger: #14170f;
+
+  --member-a: #5b93e8;
+  --member-b: #f06a9b;
+
+  --hue-olive: #b8ce55;
+  --hue-olive-soft: rgba(184, 206, 85, 0.16);
+  --hue-wine: #e88da0;
+  --hue-wine-soft: rgba(232, 141, 160, 0.16);
+  --hue-blue: #7fb8dc;
+  --hue-blue-soft: rgba(127, 184, 220, 0.16);
+  --hue-amber: #efbe5c;
+  --hue-amber-soft: rgba(239, 190, 92, 0.16);
+  --hue-violet: #b9a4ee;
+  --hue-violet-soft: rgba(185, 164, 238, 0.16);
+  --hue-brown: #e1ac74;
+  --hue-brown-soft: rgba(225, 172, 116, 0.16);
+  /* Teal and magenta never appear in the dark mock — no screen there uses
+     them — so they follow the rule the document states ("up a step of
+     luminosity"): +0.31 L, saturation untouched, which is the average
+     measured across the six hues that ARE specified. */
+  --hue-teal: #73cfda;
+  --hue-teal-soft: rgba(115, 207, 218, 0.16);
+  --hue-magenta: #dbb3ca;
+  --hue-magenta-soft: rgba(219, 179, 202, 0.16);
 }
 
 @theme inline {
@@ -76,10 +196,12 @@
   --color-primary: var(--primary);
   --color-primary-deep: var(--primary-deep);
   --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
 
   --color-danger: var(--danger);
   --color-danger-deep: var(--danger-deep);
   --color-danger-soft: var(--danger-soft);
+  --color-on-danger: var(--on-danger);
 
   --color-member-a: var(--member-a);
   --color-member-b: var(--member-b);

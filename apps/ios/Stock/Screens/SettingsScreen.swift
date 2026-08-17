@@ -94,6 +94,13 @@ struct SettingsScreen: View {
                     Button("Cerrar sesión", role: .destructive) { session.signOut() }
                 }
             }
+            // A plain List brings UIKit's own greys: in dark that is pure black
+            // behind #1C1C1E rows, which reads as a different app from the four
+            // screens beside it. The tokens are the product; the platform default
+            // is not.
+            .scrollContentBackground(.hidden)
+            .background(Theme.ground)
+            .listRowBackground(Theme.surface)
             .navigationTitle("Ajustes")
             .onChange(of: expiryAlerts) { _, enabled in
                 ExpiryNotifications.isEnabled = enabled

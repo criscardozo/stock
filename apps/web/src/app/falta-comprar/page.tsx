@@ -350,7 +350,7 @@ function ShoppingRow({
           entry.checked ? 'bg-primary' : 'border-2 border-line-strong'
         }`}
       >
-        {entry.checked && <Icon name="check" size={17} className="text-white" />}
+        {entry.checked && <Icon name="check" size={17} className="text-on-primary" />}
       </button>
 
       <HueBadge icon={category?.icon ?? 'shopping_basket'} hue={category?.hue} />

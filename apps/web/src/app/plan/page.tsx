@@ -276,7 +276,7 @@ function DayRow({
               onClick={() => onCook(recipe)}
               className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-bold ${
                 isToday
-                  ? 'bg-primary text-white shadow-(--shadow-primary)'
+                  ? 'bg-primary text-on-primary shadow-(--shadow-primary)'
                   : 'bg-primary-soft text-primary-deep'
               }`}
             >

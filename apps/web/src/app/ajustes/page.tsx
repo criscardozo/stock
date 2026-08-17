@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useStoredValue, writeStoredValue } from '@/lib/useStoredValue'
+import { applyTheme, asThemePref, THEME_STORAGE_KEY, type ThemePref } from '@/lib/theme'
 import { useAuth } from '@/lib/firebase/auth'
 import { useHousehold } from '@/lib/firebase/household'
 import { createInvite, updateHousehold } from '@/lib/firebase/mutations'
@@ -17,6 +18,11 @@ export default function SettingsPage() {
   const { user, signOut } = useAuth()
   const { household, householdId, items } = useHousehold()
   const [copied, setCopied] = useState(false)
+
+  // The blocking script in layout.tsx already applied the stored theme; this
+  // only reflects it in the control. Read through the same external-store hook
+  // as the invite code, so no effect sets state synchronously.
+  const theme = asThemePref(useStoredValue(THEME_STORAGE_KEY))
 
   /**
    * A generated invite lives until someone uses it, but the state holding it
@@ -164,7 +170,7 @@ export default function SettingsPage() {
                     onClick={() => updateHousehold(householdId, { 'planConfig.length': value })}
                     className={`rounded-full px-5 py-2 text-[13.5px] ${
                       household.planConfig.length === value
-                        ? 'bg-primary font-bold text-white'
+                        ? 'bg-primary font-bold text-on-primary'
                         : 'font-semibold text-ink-2'
                     }`}
                   >
@@ -184,7 +190,7 @@ export default function SettingsPage() {
                     }
                     className={`h-9 w-11 rounded-full text-xs ${
                       household.planConfig.startWeekday === index
-                        ? 'bg-ink font-bold text-white'
+                        ? 'bg-ink font-bold text-ground'
                         : 'border border-line bg-surface font-semibold text-ink-2'
                     }`}
                   >
@@ -197,6 +203,37 @@ export default function SettingsPage() {
               Se planifica el viernes y se compra el fin de semana. Solo afecta períodos futuros:
               los ya armados conservan sus límites.
             </p>
+          </Card>
+        </section>
+
+        <section className="flex flex-col gap-2">
+          <SectionLabel>Tema</SectionLabel>
+          <Card className="flex flex-wrap items-center gap-3 py-4">
+            <span className="w-32 text-sm text-ink-2">Apariencia</span>
+            <div className="flex rounded-full bg-ground p-[3px]">
+              {(
+                [
+                  ['system', 'Sistema'],
+                  ['light', 'Claro'],
+                  ['dark', 'Oscuro'],
+                ] as [ThemePref, string][]
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => {
+                    writeStoredValue(THEME_STORAGE_KEY, value === 'system' ? null : value)
+                    applyTheme(value)
+                  }}
+                  className={`rounded-full px-4 py-2 text-[13.5px] ${
+                    theme === value
+                      ? 'bg-primary font-bold text-on-primary'
+                      : 'font-semibold text-ink-2'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </Card>
         </section>
 
