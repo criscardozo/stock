@@ -1,12 +1,14 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useStoredValue, writeStoredValue } from '@/lib/useStoredValue'
 import { useAuth } from '@/lib/firebase/auth'
 import { useHousehold } from '@/lib/firebase/household'
 import { createInvite, updateHousehold } from '@/lib/firebase/mutations'
 import type { PlanLength } from '@/lib/domain/dates'
 import { plural } from '@/lib/domain/format'
 import { PageHeader } from '@/components/PageHeader'
+import { VersionCard } from '@/components/VersionCard'
 import { Avatar, Card, HueBadge, Icon, SectionLabel } from '@/components/ui/primitives'
 
 const WEEKDAYS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
@@ -14,8 +16,22 @@ const WEEKDAYS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
 export default function SettingsPage() {
   const { user, signOut } = useAuth()
   const { household, householdId, items } = useHousehold()
-  const [code, setCode] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+
+  /**
+   * A generated invite lives until someone uses it, but the state holding it
+   * died on every reload — and reading a code out to someone in the next room
+   * is exactly when you reload by accident. Kept per household, and dropped
+   * once the household is full: a code the rules now refuse is worse than none.
+   */
+  const codeKey = householdId ? `stock:invite:${householdId}` : null
+  const householdFull = (household?.memberIds.length ?? 0) >= 2
+  const stored = useStoredValue(codeKey)
+  const code = householdFull ? null : stored
+
+  useEffect(() => {
+    if (codeKey && householdFull && stored !== null) writeStoredValue(codeKey, null)
+  }, [codeKey, householdFull, stored])
 
   const perLocation = useMemo(() => {
     const counts = new Map<string, number>()
@@ -31,7 +47,17 @@ export default function SettingsPage() {
   const categories = Object.entries(household.categories).sort(
     (a, b) => a[1].sortOrder - b[1].sortOrder,
   )
-  const full = household.memberIds.length >= 2
+  const full = householdFull
+
+  /** Empty is refused, not saved: the rules want 1..60 characters. */
+  const renameHousehold = (value: string, input: HTMLInputElement) => {
+    const name = value.trim().slice(0, 60)
+    if (name === '' || name === household.name) {
+      input.value = household.name
+      return
+    }
+    updateHousehold(householdId, { name })
+  }
 
   return (
     <>
@@ -45,10 +71,16 @@ export default function SettingsPage() {
               <span className="w-32 text-sm text-ink-2">Nombre</span>
               <input
                 defaultValue={household.name}
-                onBlur={(e) =>
-                  e.target.value.trim() &&
-                  updateHousehold(householdId, { name: e.target.value.trim() })
-                }
+                maxLength={60}
+                onBlur={(e) => renameHousehold(e.target.value, e.target)}
+                onKeyDown={(event) => {
+                  const input = event.currentTarget
+                  if (event.key === 'Enter') input.blur()
+                  if (event.key === 'Escape') {
+                    input.value = household.name
+                    input.blur()
+                  }
+                }}
                 className="flex-1 bg-transparent text-[14.5px] font-semibold outline-none"
               />
             </label>
@@ -107,7 +139,10 @@ export default function SettingsPage() {
               </>
             ) : (
               <button
-                onClick={async () => setCode(await createInvite(householdId, user.uid))}
+                onClick={async () => {
+                  const next = await createInvite(householdId, user.uid)
+                  if (codeKey) writeStoredValue(codeKey, next)
+                }}
                 className="flex items-center gap-2 self-start rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-ink-2"
               >
                 <Icon name="person_add" size={18} />
@@ -204,6 +239,8 @@ export default function SettingsPage() {
             </p>
           </Card>
         </section>
+
+        <VersionCard />
 
         <button
           onClick={() => void signOut()}

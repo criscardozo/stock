@@ -103,6 +103,15 @@ contracts in `shared/`.
   write), and the UI never awaits the write promise — Firestore only resolves it on server
   confirmation.
 
+## Family with Gastos Diarios
+
+`/Users/cristian/dev/personal/gastos-diarios` is the sibling app: same author,
+same household, same visual language. Refinements proven there have been ported
+here and are listed with their reasoning in [`docs/reglas.md`](docs/reglas.md)
+§10 — the CSS layering rule, the 16px touch-field rule, the version card, the
+bundled Outfit, the signing-expiry warning, `hasPendingWrites`. **Look there
+before inventing a pattern this project has already met.**
+
 ## Commands
 
 - `pnpm dev` — Next.js dev server (`apps/web`). Point it at the emulators with

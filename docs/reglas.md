@@ -120,6 +120,37 @@ acaba de pedir.
   hay que decidir cuál de los dos vive.
 - No dejar emuladores ni servidores de dev corriendo al terminar.
 
+## 10. Familia con Gastos Diarios
+
+Las dos apps son del mismo autor, la misma casa y el mismo lenguaje visual, así
+que lo que se refinó en una vale en la otra. Lo que Stock tomó de Gastos
+Diarios, y por qué —para que una tercera app arranque con esto puesto:
+
+- **Tokens en `:root`, Tailwind sólo los mapea** (`@theme inline`). El día que
+  haya dark, es un bloque de tokens más, no un rediseño.
+- **Los controles de formulario van en `@layer base`.** Una regla sin capa le
+  gana a cualquier utilidad de Tailwind por más específica que sea: un
+  `bg-*` escrito en un `<input>` perdía en silencio.
+- **`font-size: 16px` en `@media (pointer: coarse)`**, y esta *sin* capa a
+  propósito. Safari en iOS hace zoom al enfocar un campo de menos de 16 px, y
+  las dos apps viven como PWA en el teléfono.
+- **Tarjeta de versión en Ajustes** — versión, commit y fecha, resueltos en
+  build. Un número que alguien tiene que acordarse de subir es un número que
+  miente.
+- **Outfit bundleada también en iOS**, con fallback a la del sistema. Es lo que
+  hace que se vean como un producto y no como dos que coinciden en los colores.
+- **Aviso de vencimiento de la firma**, leído del `embedded.mobileprovision` y
+  no de una fecha guardada: re-firmar no borra el contenedor, así que la fecha
+  guardada mentiría para siempre.
+- **`hasPendingWrites` a la vista.** Lo que todavía no subió se dice; el súper
+  es justo donde no hay señal.
+- **Háptica en la acción que se hace sin mirar** (tildar en la góndola).
+- **Sin `setState` sincrónico dentro de un `useEffect`.** Para leer algo externo
+  —localStorage— va `useSyncExternalStore`.
+
+Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
+de plata y presupuesto, la ingesta del banco y el Watch.
+
 ---
 
 ## Referencias

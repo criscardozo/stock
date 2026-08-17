@@ -36,10 +36,9 @@ function Gate({ children }: { children: React.ReactNode }) {
   // flash of "signed out" on every single reload.
   if (!ready) {
     return (
-      <div className="grid min-h-dvh place-items-center text-sm text-ink-3">
-        <span className="flex items-center gap-2">
-          <Icon name="progress_activity" className="animate-spin" size={20} />
-          Cargando…
+      <div className="grid min-h-dvh place-items-center bg-ground">
+        <span className="animate-pulse">
+          <AppMark size={64} radius={20} />
         </span>
       </div>
     )
@@ -49,7 +48,7 @@ function Gate({ children }: { children: React.ReactNode }) {
   if (!householdId || !household) return <Onboarding />
 
   return (
-    <div className="flex min-h-dvh">
+    <div className="safe-x flex min-h-dvh">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col px-4 pt-5 pb-24 lg:px-7 lg:pt-6 lg:pb-0">
         {children}
@@ -81,6 +80,7 @@ function Sidebar() {
           <Link
             key={tab.href}
             href={tab.href}
+            aria-current={active ? 'page' : undefined}
             className={`flex items-center gap-2.5 rounded-nav px-3 py-2.5 ${
               active ? 'bg-primary-soft' : ''
             }`}
@@ -175,11 +175,12 @@ function TabBar() {
           <Link
             key={tab.href}
             href={tab.href}
-            className="relative flex w-[62px] flex-col items-center gap-0.5"
+            aria-current={active ? 'page' : undefined}
+            className="relative flex min-w-0 flex-1 flex-col items-center gap-0.5"
           >
             <Icon name={tab.icon} size={23} className={active ? 'text-primary' : 'text-ink-3'} />
             <span
-              className={`text-[10.5px] ${
+              className={`max-w-full truncate text-[10.5px] ${
                 active ? 'font-bold text-primary-deep' : 'font-semibold text-ink-3'
               }`}
             >

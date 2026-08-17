@@ -135,10 +135,17 @@ final class Store {
                 self?.recipes = snapshot?.documents.compactMap(Recipe.init(document:)) ?? []
             }
         )
+        // The one listener asking for metadata: a tick made with no signal has
+        // to be able to say so. Metadata events are local — callbacks, not reads.
         listeners.append(
-            root.collection("shoppingList").addSnapshotListener { [weak self] snapshot, _ in
-                self?.list = snapshot?.documents.compactMap(ShoppingEntry.init(document:)) ?? []
-            }
+            root.collection("shoppingList")
+                .addSnapshotListener(includeMetadataChanges: true) { [weak self] snapshot, _ in
+                    self?.list = snapshot?.documents.compactMap { document in
+                        var entry = ShoppingEntry(document: document)
+                        entry?.pending = document.metadata.hasPendingWrites
+                        return entry
+                    } ?? []
+                }
         )
     }
 

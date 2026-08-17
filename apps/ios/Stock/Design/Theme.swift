@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// The design system, from docs/design/tokens.md. Same values as the web's
 /// Tailwind theme — do not invent colours here.
@@ -92,10 +93,31 @@ extension Color {
     }
 }
 
+/// Outfit, the same face the web serves — one 110 KB variable file, so the two
+/// apps genuinely look like one product rather than two that agree on colours.
+/// Falls back to the system rounded face if the font ever fails to register,
+/// which is a wobble in tone rather than a broken screen.
+enum AppFont {
+    private static let available: Bool = UIFont(name: "Outfit-Regular", size: 12) != nil
+
+    private static func name(for weight: Font.Weight) -> String {
+        switch weight {
+        case .bold, .heavy, .black: return "Outfit-Bold"
+        case .semibold, .medium: return "Outfit-SemiBold"
+        default: return "Outfit-Regular"
+        }
+    }
+
+    static func font(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
+        guard available else { return .system(size: size, weight: weight, design: .rounded) }
+        // fixedSize: the layout is drawn at specific sizes; Dynamic Type would
+        // reflow rows the design measured by hand.
+        return .custom(name(for: weight), fixedSize: size)
+    }
+}
+
 extension Font {
-    /// Outfit isn't bundled; the system face at these weights carries the same
-    /// tone, and shipping a webfont to get closer isn't worth the megabytes.
     static func stock(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
-        .system(size: size, weight: weight, design: .rounded)
+        AppFont.font(size, weight)
     }
 }

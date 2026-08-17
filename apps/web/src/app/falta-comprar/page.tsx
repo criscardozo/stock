@@ -366,6 +366,16 @@ function ShoppingRow({
         </span>
       </div>
 
+      {entry.pending && (
+        <span
+          className="flex items-center gap-1 text-[11px] font-semibold text-ink-3"
+          title="Todavía no subió — se sincroniza cuando vuelva la señal"
+        >
+          <Icon name="cloud_off" size={14} />
+          pendiente
+        </span>
+      )}
+
       {entry.quantity !== undefined && (
         <span className="tnum hidden text-[13.5px] font-bold sm:block">
           {formatQuantity(entry.quantity, entry.unit ?? 'unit')}

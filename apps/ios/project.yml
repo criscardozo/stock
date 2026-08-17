@@ -49,6 +49,9 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        # Same face as the web, so the two apps read as one family.
+        UIAppFonts:
+          - Outfit-Variable.ttf
         # The scanner is the only hardware this app asks for, and the string
         # says what it does with it.
         NSCameraUsageDescription: Para escanear el código de barras de un producto y cargarlo sin tipear.
@@ -85,6 +88,9 @@ targets:
     sources:
       - path: StockTests
       - path: Stock/Domain
+      # Pure Foundation despite living in Data/ — no Firebase, so the tests can
+      # compile it without waiting for an SDK.
+      - path: Stock/Data/SigningExpiry.swift
       - path: ../../shared/plan-period-vectors.json
         buildPhase: resources
       - path: ../../shared/shopping-vectors.json

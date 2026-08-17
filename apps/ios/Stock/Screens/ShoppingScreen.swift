@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Supermarket mode: big tap targets, tick as you walk, close the shop on the
 /// way out. Both phones update live, so two people can split the aisles.
@@ -209,6 +210,9 @@ struct ShoppingScreen: View {
 
     private func toggle(_ entry: ShoppingEntry) {
         guard let householdId = store.householdId, let uid = session.user?.uid else { return }
+        // A tap you can feel: this screen gets used one-handed, walking, with
+        // the phone barely in view. Gastos Diarios does the same on entry.
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
         Mutations.setChecked(
             householdId: householdId, uid: uid, entryId: entry.id, checked: !entry.checked)
     }
@@ -288,6 +292,13 @@ struct ShoppingRow: View {
                 }
 
                 Spacer()
+
+                if entry.pending {
+                    Image(systemName: "icloud.slash")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Theme.ink3)
+                        .accessibilityLabel("Todavía no subió")
+                }
 
                 if let quantity = entry.quantity {
                     Text(Quantities.format(quantity, entry.unit ?? .unit))

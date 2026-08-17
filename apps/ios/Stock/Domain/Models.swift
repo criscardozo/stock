@@ -149,6 +149,9 @@ struct ShoppingEntry: Codable, Identifiable, Hashable {
     var checked: Bool
     var checkedBy: String?
     var addedBy: String
+    /// Local metadata, never stored: this write hasn't reached the server yet.
+    /// The supermarket is exactly where there is no signal.
+    var pending: Bool = false
 }
 
 enum MoveType: String, Codable {

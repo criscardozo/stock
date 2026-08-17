@@ -114,6 +114,12 @@ export interface ShoppingEntry {
   checked: boolean
   checkedBy?: string
   addedBy: string
+  /**
+   * Local metadata, never stored: this write hasn't reached the server yet.
+   * The supermarket is exactly where there is no signal, so a row that only
+   * exists on this phone is worth saying out loud.
+   */
+  pending?: boolean
 }
 
 export type MoveType = 'purchase' | 'cook' | 'adjust' | 'waste'

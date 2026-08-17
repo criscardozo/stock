@@ -37,6 +37,10 @@
 	<string>1</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Para escanear el código de barras de un producto y cargarlo sin tipear.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Outfit-Variable.ttf</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UISupportedInterfaceOrientations</key>

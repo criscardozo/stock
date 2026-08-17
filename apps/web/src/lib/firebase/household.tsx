@@ -73,9 +73,26 @@ const subscribeRecipes: Subscribe<Recipe[]> = (hid, set) =>
     set(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Recipe)),
   )
 
+/**
+ * The one listener that asks for metadata changes: a tick made without signal
+ * has to be able to say so. Metadata events are local — they cost callbacks,
+ * not reads.
+ */
 const subscribeList: Subscribe<ShoppingEntry[]> = (hid, set) =>
-  onSnapshot(query(collection(db(), 'households', hid, 'shoppingList')), (snap) =>
-    set(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as ShoppingEntry)),
+  onSnapshot(
+    query(collection(db(), 'households', hid, 'shoppingList')),
+    { includeMetadataChanges: true },
+    (snap) =>
+      set(
+        snap.docs.map(
+          (d) =>
+            ({
+              id: d.id,
+              ...d.data(),
+              pending: d.metadata.hasPendingWrites,
+            }) as ShoppingEntry,
+        ),
+      ),
   )
 
 /** Scope is `householdId|startDate`, so changing either resubscribes. */

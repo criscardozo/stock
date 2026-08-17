@@ -28,7 +28,12 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#2E9E5B',
+  // Extend under the notch and the home indicator; every edge the content must
+  // avoid is then handled explicitly with env(safe-area-inset-*).
   viewportFit: 'cover',
+  // A fixed-height shell: zooming only breaks the layout, and an accidental
+  // double-tap zoom while ticking things off in a supermarket is pure friction.
+  maximumScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
