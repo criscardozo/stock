@@ -31,10 +31,14 @@ Three questions, in the order they get asked:
 2. **What are we eating?** Recipes live in the app, and every Friday the next
    week or fortnight gets planned: one meal per day, picked from the recipes.
    Marking a meal as cooked offers to subtract its ingredients from stock.
-3. **What has to be bought?** A list that builds itself from two sources: items
-   at or below their minimum, and ingredients the planned meals need but the
-   house doesn't have. Ticking something off asks how much came in and puts it
-   back into stock — at which point it drops off the list on its own.
+3. **What has to be bought?** One shared shopping list, live on both phones.
+   The app suggests what to put on it — items at or below their minimum, and
+   ingredients the planned meals need but the house doesn't have — and one tap
+   adds the lot. From there the list is yours: add anything, tick things off as
+   you walk the aisles (ticked = struck through, still visible so nobody buys it
+   twice), and when the shop is done, close it: everything ticked goes into
+   stock in one pass and leaves the list. Whatever the supermarket didn't have
+   stays on for next week.
 
 Everything is shared between the two members of the household: both see the same
 stock, the same plan and the same list, in real time.
@@ -64,7 +68,7 @@ difference is what each is optimised for, not what each can do.
 | Screen | What it's for |
 |---|---|
 | **Stock** (home) | The catalogue. Search, filter by location and category, status chips (`Falta`, `Poco`, `Vence pronto`). Inline `+ / −` on quantity, level dial for the rest. Add item. |
-| **Falta comprar** | The shopping list, grouped by category. Every row shows *why* it's there (`quedan 2, mínimo 6` · `para Fideos boloñesa, miércoles`). Manual extras. Ticking opens the restock sheet. |
+| **Falta comprar** | The shared list, grouped by category, with a suggestions panel below it (`Agregar todo`). Every row shows *why* it's there (`quedan 2, mínimo 6` · `para Fideos boloñesa, miércoles`). Ticking strikes through; `Cerrar compra` pushes everything ticked into stock. |
 | **Plan** | The week or fortnight: one row per day, each holding a recipe, a free-text label (`Afuera`, `Sobras`) or nothing. This is the Friday screen. `Cocinada` opens the consumption sheet. |
 | **Recetas** | List + detail + editor. Ingredients link to stock items, so the detail shows an availability traffic light and a "faltan 3 ingredientes" summary. |
 | **Ajustes** | Household, invite code, locations, categories, plan length (weekly/fortnightly) and which weekday it starts. |
@@ -74,7 +78,7 @@ difference is what each is optimised for, not what each can do.
 | Screen | What it's for |
 |---|---|
 | **Stock** | Same catalogue, thumb-first. Search, quick `+ / −`, scan a barcode to find or create an item. |
-| **Falta comprar** | Supermarket mode: big tap targets, tick as you walk, restock on the way out. The single most-used screen. |
+| **Falta comprar** | Supermarket mode: big tap targets, tick as you walk (both phones update live, so two people can split the aisles), close the shop on the way out. The single most-used screen. |
 | **Hoy** | What's being cooked today, its ingredients, and one button to mark it cooked. |
 | **Recetas** | Read-mostly, for cooking from the phone. |
 | **Ajustes** | Mirror of the web's. |
@@ -101,15 +105,18 @@ households/{hid}/items/{id}                  the catalogue AND the stock: tracki
                                              locationId, categoryId, barcodes, expiresAt, snoozedUntil
 households/{hid}/recipes/{id}                title, servings, steps, ingredients[] → itemId
 households/{hid}/mealPlans/{startDate}       one doc per period, one entry per day
-households/{hid}/shoppingExtras/{id}         manual additions only — the rest of the list is derived
+households/{hid}/shoppingList/{id}           the one live shared list: label, qty, source, reason, checked
 households/{hid}/moves/{id}                  append-only log: purchase | cook | adjust | waste
 invites/{code}                               the code IS the document id
 ```
 
-**The shopping list is not stored.** It's computed on the client from items +
-the meal plan, both of which are already in cache. Only manual extras are
-written. Buying something updates the item, which removes it from the list as a
-side effect — zero writes to maintain a list.
+**One list, no history.** A single collection both members listen to, so a tick
+on one phone strikes the row through on the other. What *suggests* rows is
+derived on the client (items below minimum + what the plan needs); nothing is
+written until you add it, and once added the entry is yours — removing it
+doesn't bring it back. Closing the shop is one batch: ticked entries go into
+stock, write their `moves`, and are deleted. Unticked ones stay for next week,
+which is the whole point of not rebuilding the list from scratch.
 
 ## Tech stack
 
@@ -140,10 +147,11 @@ anything that would want a server runs in a client.
   worth the modelling cost for a two-person household.
 - **Firestore security rules are the security boundary.** Client-side gating is
   cosmetic; client config is public by design.
-- **Bounded reads.** The catalogue is small and bounded (~150 docs) so it can be
-  listened to whole; `moves` grows forever and is therefore always paged with
-  `limit()` via `getDocs`, never a live listener. In React, always return the
-  unsubscribe from `useEffect`.
+- **Bounded reads.** The catalogue (~150 docs) and the shopping list (~30) are
+  bounded by nature, so both are listened to whole — that live listener is what
+  makes two people ticking in the same supermarket work. `moves` grows forever
+  and is therefore always paged with `limit()` via `getDocs`, never a live
+  listener. In React, always return the unsubscribe from `useEffect`.
 - **Google Sign-In only**, on both platforms — mixing providers creates two
   Firebase UIDs for the same person, and the household caps at 2.
 - Logic duplicated across Swift and TypeScript must pass the shared vectors in

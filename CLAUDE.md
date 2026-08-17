@@ -27,7 +27,7 @@ that feeds the shopping list. Two clients, no custom backend:
   (vitest + `@firebase/rules-unit-testing`).
 - `shared/` — the cross-platform contract: `schema.md` (Firestore schema source of truth),
   `categories.json`, `locations.json`, `units.json`, `plan-period-vectors.json`,
-  `shopping-vectors.json`.
+  `shopping-vectors.json` (the suggestion rules, run by both platforms).
 
 pnpm workspaces for the JS side (web + rules-tests). Swift and TS share no code — only data
 contracts in `shared/`.
@@ -50,10 +50,13 @@ contracts in `shared/`.
   not a decimal.
 - **Dates are `"YYYY-MM-DD"` strings computed in the household's timezone** (stored on the
   household doc, default `Australia/Sydney`) — never the device timezone, never UTC bucketing.
-- **The shopping list is derived, never stored.** It's computed on the client from items + the
-  meal plan (both already cached). Only manual extras (`shoppingExtras`) are written. Buying
-  something updates the item, which drops it off the list as a side effect. See PLAN §6.
-- **Item state (`out`/`low`/`expiring`/`expired`) is derived too** — never a persisted field.
+- **The shopping list is stored and shared; the SUGGESTIONS are what's derived.** One
+  `shoppingList` collection both members listen to — a tick strikes the row through on the other
+  phone and never deletes it. Suggestions (items below minimum + what the plan needs) are
+  computed on the client and written only when the user adds them; a removed row comes back as a
+  suggestion, never as a row. Ticking touches no stock — `Cerrar compra` does, in one batch that
+  also deletes those rows and leaves the unticked ones for next week. See PLAN §6.
+- **Item state (`out`/`low`/`expiring`/`expired`) is derived** — never a persisted field.
 - **Google Sign-In only** on both platforms (one provider per person — mixing Apple/Google
   creates two distinct Firebase UIDs for the same person, and the household caps at 2). Web
   serves Firebase's auth handler same-origin (`next.config.ts` rewrites `/__/auth/*`;

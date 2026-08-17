@@ -21,9 +21,13 @@ Decisiones del usuario ya confirmadas:
   los graneles que nadie pesa van con nivel (`vacío/poco/medio/lleno`).
 - **Plan de comidas**: un slot por día (la cena), semanal o quincenal, definido los viernes.
 - **Cocinar descuenta el stock con confirmación** — la app propone, el humano ajusta.
-- **Lista de compras auto + manual, y repone stock**: marcar comprado pregunta cuánto entró.
-- **Reposición determinística**: algo entra a la lista por estar bajo su mínimo o porque lo
-  pide el plan. Nada de estimaciones de consumo por ahora.
+- **Una sola lista de compras, guardada y compartida**: los dos la ven en vivo, se tilda
+  (tachado, la fila no desaparece) y se vacía para la semana siguiente. Sin historial de listas
+  pasadas.
+- **Reposición determinística**: la app *sugiere* lo que está bajo el mínimo o lo que pide el
+  plan; agregarlo a la lista es un acto explícito. Nada de estimaciones de consumo por ahora.
+- **El stock se carga al cerrar la compra**, no al tildar: en el súper el tilde tiene que ser
+  un tap.
 - **Vencimientos** con notificación **local** de iOS (no hay push de servidor sin Blaze).
 - **Escaneo de código de barras** en iOS, con Open Food Facts para autocompletar.
 - **Ubicaciones** físicas (heladera / freezer / alacena / …), editables.
@@ -68,7 +72,7 @@ Ambos clientes hablan **directamente con Firebase** (Auth + Firestore) vía los 
 │   ├── locations.json               # ubicaciones semilla
 │   ├── units.json                   # unidades permitidas y su formateo
 │   ├── plan-period-vectors.json     # aritmética del período de planificación
-│   └── shopping-vectors.json        # derivación de la lista de compras
+│   └── shopping-vectors.json        # sugerencias de compra (mínimos + faltantes del plan)
 ├── docs/                     # PLAN.md, reglas.md, setup.md, design/
 ├── LICENSE                   # MIT
 ├── README.md
@@ -108,7 +112,7 @@ households/{hid}/items/{itemId}     // el catálogo Y el stock, en un mismo docu
   packSize?: string                 // "500 g", informativo, viene de Open Food Facts
   barcodes: [string]                // EANs conocidos de este ítem
   expiresAt?: "YYYY-MM-DD"          // el vencimiento que importa (uno solo, ver §5)
-  snoozedUntil?: "YYYY-MM-DD"       // "esta vuelta no lo compro"
+  snoozedUntil?: "YYYY-MM-DD"       // silencia la SUGERENCIA hasta esa fecha ("esta vuelta no")
   lastPriceCents?: int              // precio de referencia, AUD, centavos enteros
   notes?
   updatedAt, updatedBy
@@ -125,8 +129,13 @@ households/{hid}/mealPlans/{startDate}   // ID = "YYYY-MM-DD" del primer día de
   days: { "YYYY-MM-DD": { recipeId?, label?, status: "planned"|"cooked"|"skipped", cookedAt? } }
   createdAt, updatedAt
 
-households/{hid}/shoppingExtras/{id}     // SOLO lo agregado a mano (ver §6)
-  label, itemId?, quantity?, unit?, done: bool
+households/{hid}/shoppingList/{entryId}  // LA lista: una sola, compartida, sin historial (ver §6)
+  label: string                          // lo que se lee en la fila
+  itemId?: string                        // null si es un agregado suelto que no está en el catálogo
+  quantity?: int, unit?                  // cuánto comprar
+  source: "min" | "plan" | "manual"      // de dónde salió la fila
+  reason?: string                        // congelado al agregar: "quedan 2, mínimo 6"
+  checked: bool, checkedAt?, checkedBy?  // tildado = tachado, la fila NO desaparece
   addedBy, addedAt
 
 households/{hid}/moves/{moveId}          // log append-only de movimientos de stock
@@ -205,35 +214,52 @@ consciente, no un olvido.
 próximos días; la web solo lo muestra cuando la abrís. Se documenta la limitación en vez de
 fingir que hay alertas garantizadas.
 
-### 6. La lista de compras no se guarda — se deriva
+### 6. La lista de compras: una sola, guardada y compartida — las sugerencias son lo derivado
 
-Es la decisión de diseño más importante del proyecto después del modelo de ítems.
+Es la pantalla más usada del proyecto y la que más gente toca al mismo tiempo, así que **la
+lista es estado real, no una vista calculada**. Dos personas repartiéndose las góndolas tienen
+que ver el mismo tilde en el mismo segundo, y algo que uno agrega a mano tiene que seguir ahí
+mañana.
+
+Lo que **sí** es derivado son las **sugerencias**, y se calculan en el cliente sobre datos que ya
+están en cache:
 
 ```
-lista = (ítems en `out` o `low`)
-      ∪ (faltantes de las comidas planificadas todavía no cocinadas)
-      ∪ (shoppingExtras con done == false)
-      − (ítems con snoozedUntil >= hoy)
+sugerencias = (ítems en `out` o `low`)
+            ∪ (faltantes de las comidas planificadas todavía no cocinadas)
+            − (ítems que ya tienen una fila en la lista)
+            − (ítems con snoozedUntil >= hoy)
 ```
 
-Los dos primeros conjuntos salen de datos que el cliente **ya tiene en cache** (el catálogo y el
-plan del período). Materializarlos costaría una escritura por ítem cada vez que alguien abre la
-pantalla, para reconstruir algo que ya es deducible. Entonces:
+Aparecen en un panel debajo de la lista, con su motivo, y con `Agregar todo` para el viernes.
+**Nada se escribe hasta que las agregás**: el paso explícito es lo que hace que la lista sea del
+hogar y no un cálculo que pisa lo que decidiste. Si sacás una fila, no vuelve sola — vuelve como
+sugerencia, que es distinto: se ve, se ignora, y no reaparece dentro de la lista.
 
-- **Solo se escriben los extras manuales** (`shoppingExtras`).
-- El estado "ya lo compré" **no existe como campo** para los derivados: marcar comprado abre la
-  hoja de reposición, suma la cantidad al ítem y el ítem deja de estar bajo el mínimo — sale de
-  la lista por consecuencia, no por un flag.
-- "No lo compro esta vuelta" es `snoozedUntil` en el ítem: una sola escritura, con vencimiento
-  automático, en lugar de una lista paralela de exclusiones.
-- Cada fila muestra **su motivo** (`quedan 2, mínimo 6` · `para Fideos boloñesa, miércoles`).
-  Una lista que no explica por qué está pidiendo algo termina ignorada.
+Reglas del ciclo:
+
+- **El tilde es solo un tilde.** Marca `checked` y tacha la fila; no la borra (para que el otro
+  vea que ya está) y no toca el stock (en el súper, un tap). Una escritura de un campo.
+- **`Cerrar compra`** abre la confirmación de todo lo tildado, con las cantidades editables, y en
+  **un solo batch** suma al stock, escribe los `moves` (`type: "purchase"`) y borra esas filas.
+  Los ítems de nivel se proponen en `lleno`; los tildados sin `itemId` solo se borran.
+- **Lo no tildado queda.** Vaciar la lista es exactamente eso: sacar lo comprado y dejar lo que
+  el súper no tenía, para no volver a tipearlo la semana que viene.
+- **El motivo se congela al agregar.** `reason` es el texto del momento en que la fila entró
+  (`quedan 2, mínimo 6`), no un cálculo vivo: si mientras tanto el stock cambió, lo que explica
+  por qué esa fila está ahí es el motivo original. Una lista que no explica lo que pide termina
+  ignorada.
+- **"Esta vuelta no"** es `snoozedUntil` en el ítem: una escritura con vencimiento automático que
+  silencia la sugerencia, en vez de una lista paralela de exclusiones.
+
+Costo: la lista son ~30 documentos, acotada por naturaleza, así que se escucha entera con
+`onSnapshot`. Las escrituras son las que un humano genera tildando — nada de sincronizar.
 
 **Faltante del plan**: por cada día `planned` con receta, se suman los ingredientes con `itemId`.
 Si lo requerido supera lo que hay, el faltante es la diferencia. Los ingredientes de ítems
 `level` nunca generan un número: si el ítem está en `poco` o `vacío` y una receta del plan lo
-pide, entra a la lista con la comida como motivo. Inventar "250 g de aceite" sería peor que no
-decir nada.
+pide, se sugiere con la comida como motivo. Inventar "250 g de aceite" sería peor que no decir
+nada.
 
 **Sin escalado de porciones en el MVP**: la receta se cocina como está. `servings` se guarda
 igual para cuando haga falta, pero escalar mete redondeos de unidades enteras que no valen la
@@ -263,9 +289,10 @@ operaciones — acá son unidades):
   editable o desmarcable → batch que actualiza los `items`, escribe un `move` por ítem
   (`type: "cook"`, con `recipeId` y `planDate`), marca el día como `cooked` y suma `timesCooked`
   en la receta.
-- **Comprado**: hoja de reposición precargada con la cantidad sugerida, más fecha de
-  vencimiento y precio opcionales → batch que suma al ítem, escribe el `move` (`type:
-  "purchase"`) y marca el extra como hecho si vino de uno.
+- **Cerrar compra**: confirmación de todo lo tildado, con cantidades editables (más vencimiento y
+  precio opcionales) → batch que suma a cada ítem, escribe un `move` por ítem (`type:
+  "purchase"`) y borra esas filas de la lista. Si alguna vez pasara de 500 operaciones —30 ítems
+  son 90—, se parte en batches sucesivos.
 
 Y **no se espera la promesa de la escritura para mover la UI**: Firestore solo la resuelve
 cuando confirma el servidor, así que un `await` congela el formulario aunque el dato ya esté
@@ -292,6 +319,9 @@ hogar.
 - **El catálogo se escucha entero, y está bien**: son ~150 documentos acotados por naturaleza
   (lo que una casa tiene). En frío son ~150 lecturas; después los snapshots facturan solo los
   docs que cambian, y con persistencia offline las recargas salen del cache.
+- **La lista de compras también** (~30 docs): ese listener es justamente lo que hace que un tilde
+  en un teléfono tache la fila en el otro. Cada tilde es una escritura de un campo y un snapshot
+  de un documento.
 - **`moves` crece para siempre** ⇒ nunca un listener: se lee con `getDocs` + `limit(20)` en el
   historial del ítem.
 - Persistencia offline en ambos clientes (`persistentLocalCache` con multi-tab en web; default en
@@ -350,8 +380,9 @@ exista UI.*
 ### Fase 1 — MVP Web: stock y lista
 
 Auth con Google, alta/unión de hogar, CRUD de ítems con los dos modos de medición, ubicaciones
-y categorías, pantalla **Stock** con búsqueda y filtros, pantalla **Falta comprar** derivada (por
-ahora solo mínimos + extras manuales), hoja de reposición, `moves`, deploy en Vercel + dominio.
+y categorías, pantalla **Stock** con búsqueda y filtros, pantalla **Falta comprar** con la lista
+compartida en vivo (tilde, agregado manual, sugerencias por mínimo, `Cerrar compra`), `moves`,
+deploy en Vercel + dominio.
 
 *Salida: la casa se puede inventariar de verdad y la lista del súper ya sirve.* Web primero
 porque valida modelo y rules sin la fricción de firma de Xcode — aunque el uso principal después
@@ -360,16 +391,16 @@ sea el teléfono.
 ### Fase 2 — Recetas y plan de comidas
 
 CRUD de recetas con ingredientes linkeados a ítems, semáforo de disponibilidad, pantalla **Plan**
-(un slot por día, semanal/quincenal), marcar cocinada con la hoja de descuento, y la lista de
-compras completa (mínimos **+ faltantes del plan**), con su motivo por fila. Lógica de períodos
-en TS contra los vectores compartidos.
+(un slot por día, semanal/quincenal), marcar cocinada con la hoja de descuento, y las sugerencias
+completas (mínimos **+ faltantes del plan**) con su motivo por fila. Lógica de períodos en TS
+contra los vectores compartidos.
 
 *Salida: el ciclo completo del viernes — planeo, veo qué falta, compro, cocino, el stock baja.*
 
 ### Fase 3 — App iOS
 
 App SwiftUI, Google Sign-In, **Stock** con ajuste rápido, **Falta comprar** en modo supermercado,
-**Hoy**, recetas en modo lectura, persistencia offline, lógica de períodos y de lista en Swift
+**Hoy**, recetas en modo lectura, persistencia offline, lógica de períodos y de sugerencias en Swift
 contra los mismos vectores, escaneo de códigos de barras con Open Food Facts, notificaciones
 locales de vencimiento. Sideload a ambos teléfonos.
 
@@ -390,11 +421,11 @@ workflow de sideload semanal documentado. Se difiere hasta que la app se pruebe 
 
 - **Rules**: tests unitarios en el emulador — aislamiento por membresía, camino feliz de
   invitación, denegación del tercer usuario, chequeo del diff de auto-alta, validación de forma
-  de `items` y `mealPlans`.
+  de `items`, `mealPlans` y `shoppingList`.
 - **Lógica duplicada**: vitest (TS) + XCTest (Swift) contra los vectores compartidos —
   `plan-period-vectors.json` (hoy en una tz, DST de Sídney, semanal ↔ quincenal, día de inicio
-  configurable) y `shopping-vectors.json` (mínimos, faltantes del plan, ítems de nivel, snooze,
-  extras).
+  configurable) y `shopping-vectors.json` (sugerencias: mínimos, faltantes del plan, ítems de
+  nivel, snooze, y la exclusión de lo que ya tiene fila en la lista).
 - **Web**: `pnpm typecheck && pnpm lint && pnpm build`; E2E con Playwright contra el emulator
   suite; preview deploy en Vercel.
 - **iOS**: build + `xcodebuild test` en simulador, local (no hay CI de iOS: los runners de macOS

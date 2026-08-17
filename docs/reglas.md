@@ -59,10 +59,13 @@ acaba de pedir.
   se cuenta en enteros usa el modo `level`, no un decimal.
 - **Las fechas son `"YYYY-MM-DD"` en la timezone del hogar**, nunca la del
   dispositivo ni buckets UTC.
-- **Lo derivable no se guarda.** La lista de compras y el estado de un ítem
-  (`out`/`low`/`expiring`) son funciones de datos que el cliente ya tiene en
-  cache. Persistirlos obligaría a reescribirlos para mantenerlos sincronizados
-  con algo que ya los determina.
+- **Lo derivable no se guarda; lo que dos personas editan, sí.** El estado de un
+  ítem (`out`/`low`/`expiring`) y las *sugerencias* de compra son funciones de
+  datos que el cliente ya tiene en cache: persistirlos obligaría a reescribirlos
+  para mantenerlos sincronizados con algo que ya los determina. La **lista de
+  compras**, en cambio, es estado compartido de verdad —dos personas tildando en
+  góndolas distintas— y por eso es una colección real. La línea no es "cuánto
+  cuesta calcularlo", es **si alguien lo edita**.
 - **Las reglas de Firestore son la única frontera de seguridad.** Cualquier
   chequeo en el cliente es cosmético.
 - **Sin backend propio.** Los dos clientes hablan directo con Firebase.
@@ -70,9 +73,10 @@ acaba de pedir.
 ## 5. Firestore: el free tier es parte del diseño
 
 - **Se escucha lo acotado, se pagina lo que crece.** El catálogo del hogar
-  (~150 docs) se puede escuchar entero; `moves` crece para siempre y va con
-  `getDocs` + `limit()`, nunca con listener. En React, siempre devolver el
-  unsubscribe desde el `useEffect`.
+  (~150 docs) y la lista de compras (~30) se escuchan enteros —ese listener es
+  lo que hace que un tilde aparezca en el otro teléfono—; `moves` crece para
+  siempre y va con `getDocs` + `limit()`, nunca con listener. En React, siempre
+  devolver el unsubscribe desde el `useEffect`.
 - Una página que se *visita* usa lectura única; una pantalla en la que se *vive*
   usa listener.
 - Persistencia offline en los dos clientes. El súper es exactamente donde no
