@@ -65,6 +65,9 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: dev.cardozo.stock
         MARKETING_VERSION: '0.1'
         SWIFT_VERSION: '5.10'
+        # The bag mark from the design bundle, in the three appearances iOS 18
+        # asks for: light, dark, and the tinted monochrome the system recolours.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Must match REVERSED_CLIENT_ID in GoogleService-Info.plist: it is the
         # URL scheme Google calls back on, and a mismatch means the sign-in
         # leaves and never returns.
