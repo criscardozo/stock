@@ -73,9 +73,14 @@ final class Store {
 
         let db = Firestore.firestore()
         listeners.append(
-            db.collection("users").document(uid).addSnapshotListener { [weak self] snapshot, _ in
+            db.collection("users").document(uid).addSnapshotListener { [weak self] snapshot, error in
+                guard let self else { return }
+                // Swallowing this one is how a misconfigured client looks exactly
+                // like a person with no household: the screen offers to create
+                // one and never says why.
+                if let error { self.loadError = error.localizedDescription; return }
                 let id = snapshot?.data()?["householdId"] as? String
-                guard let self, id != self.householdId else { return }
+                guard id != self.householdId else { return }
                 self.householdId = id
                 self.attachHousehold(id)
             }
