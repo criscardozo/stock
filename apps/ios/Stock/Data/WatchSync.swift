@@ -111,8 +111,13 @@ final class WatchSync: NSObject {
         /// Re-activate, so a re-paired or swapped watch keeps working.
         func sessionDidDeactivate(_ session: WCSession) { session.activate() }
 
-        /// Delivered even if the phone app was asleep when the watch queued it.
-        /// This is what makes a tick survive a supermarket with no signal.
+        /// The immediate path, taken whenever the phone is in range.
+        func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+            handle(message)
+        }
+
+        /// The queued path. Delivered even if the phone app was asleep when the
+        /// watch sent it — what makes a tick survive a supermarket with no signal.
         func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any]) {
             handle(userInfo)
         }

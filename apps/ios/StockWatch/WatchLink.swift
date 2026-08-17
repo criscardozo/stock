@@ -14,9 +14,10 @@ struct WatchEntry: Identifiable, Equatable {
 ///
 /// It receives the list through `updateApplicationContext` (the phone always
 /// sends the whole snapshot, so there is no merge to get wrong) and sends ticks
-/// through `transferUserInfo`, which queues on disk and delivers even if the
-/// phone is asleep or out of range. That is the whole reason this works in a
-/// supermarket basement.
+/// back by whichever route fits: `sendMessage` when the phone is in range, so
+/// the other person sees the tick immediately, and `transferUserInfo` when it
+/// is not — that one queues on disk and delivers even if the phone is asleep,
+/// which is what makes this work in a supermarket basement.
 @Observable
 final class WatchLink: NSObject {
     private(set) var entries: [WatchEntry] = []
@@ -46,10 +47,24 @@ final class WatchLink: NSObject {
             entries[index].checked = next
         }
         guard WCSession.isSupported() else { return }
-        session.transferUserInfo([
-            "entryId": entry.id,
-            "wantChecked": next,
-        ])
+        let payload: [String: Any] = ["entryId": entry.id, "wantChecked": next]
+
+        // Two people share this list, so a tick has to reach the other phone
+        // now, not eventually: sendMessage is immediate but needs the phone in
+        // range, while transferUserInfo always arrives but the system may sit on
+        // it for minutes to save battery. Try the fast path, fall back on
+        // failure — which covers the phone going out of range mid-send, not just
+        // being out of range to begin with.
+        if session.isReachable {
+            session.sendMessage(
+                payload,
+                replyHandler: nil,
+                errorHandler: { [weak self] _ in
+                    self?.session.transferUserInfo(payload)
+                })
+        } else {
+            session.transferUserInfo(payload)
+        }
     }
 
     private func apply(_ context: [String: Any]) {

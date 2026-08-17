@@ -148,8 +148,25 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 - **Sin `setState` sincrónico dentro de un `useEffect`.** Para leer algo externo
   —localStorage— va `useSyncExternalStore`.
 
+- **El Watch como relé, no como cliente.** No puede loguearse (Google necesita
+  un navegador y en la muñeca no hay), así que nunca toca Firebase: el teléfono
+  le manda la lista ya formateada por `updateApplicationContext` y hace todas
+  las escrituras. Los tildes vuelven por `sendMessage` si el teléfono está al
+  alcance —son dos personas mirando la misma lista, el tilde tiene que llegar
+  ya— y por `transferUserInfo` si no, que encola en disco y llega igual.
+- **El tilde se escribe al valor que pidió el reloj**, no invirtiendo el que
+  está: así una entrega repetida no deshace nada.
+
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
-de plata y presupuesto, la ingesta del banco y el Watch.
+de plata y presupuesto, y la ingesta del banco.
+
+### Dos cosas que cuestan una tarde si no están escritas
+
+- **`-sdk iphonesimulator` se lo impone a *todos* los targets**, incluida la app
+  de watchOS embebida: se compila para iPhone y su ícono falla con "did not have
+  any applicable content". Va `-destination` solo.
+- **watchOS rechaza un ícono con canal alfa** (iOS lo tolera). Los PNG del bundle
+  de diseño lo traen, así que hay que aplanarlo.
 
 ---
 
