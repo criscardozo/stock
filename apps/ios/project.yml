@@ -81,6 +81,44 @@ targets:
         product: GoogleSignIn
       - package: GoogleSignIn
         product: GoogleSignInSwift
+      # Embeds the watch app so it installs alongside the phone app.
+      - target: StockWatch
+        embed: true
+
+  # watchOS companion — the shopping list on the wrist, which is the one place
+  # the phone is genuinely in the way: both hands are on the trolley.
+  #
+  # It CANNOT sign in (Google needs a browser and a watch has none), so it never
+  # talks to Firebase. The phone pushes a flattened snapshot over
+  # WatchConnectivity and performs every write. No Firebase dependency here on
+  # purpose — see Stock/Data/WatchSync.swift.
+  StockWatch:
+    type: application
+    platform: watchOS
+    deploymentTarget: '10.0'
+    sources:
+      - path: StockWatch
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cardozo.stock.watchkitapp
+        PRODUCT_NAME: StockWatch
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MARKETING_VERSION: '0.1'
+        CURRENT_PROJECT_VERSION: '1'
+        TARGETED_DEVICE_FAMILY: '4'
+        SKIP_INSTALL: 'YES'
+        GENERATE_INFOPLIST_FILE: 'NO'
+        SWIFT_VERSION: '5.10'
+    info:
+      path: StockWatch/Info.plist
+      properties:
+        CFBundleDisplayName: Stock
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        WKApplication: true
+        # Ties the two together: this is what makes the watch app install with
+        # the phone app instead of as a stranger.
+        WKCompanionAppBundleIdentifier: dev.cardozo.stock
 
   # Domain tests compile the pure-logic files directly instead of depending on
   # the app target: the shared vectors don't need Firebase, and making them wait

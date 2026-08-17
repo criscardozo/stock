@@ -65,6 +65,8 @@ final class Store {
         guard self.uid != uid else { return }
         stop()
         self.uid = uid
+        WatchSync.shared.uid = uid
+        WatchSync.shared.start()
 
         clock = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             guard let self else { return }
@@ -116,6 +118,7 @@ final class Store {
         list = []
         plan = nil
 
+        WatchSync.shared.householdId = id
         guard let id else { return }
         let db = Firestore.firestore()
         let root = db.collection("households").document(id)
@@ -133,11 +136,13 @@ final class Store {
         listeners.append(
             root.collection("items").addSnapshotListener { [weak self] snapshot, _ in
                 self?.items = snapshot?.documents.compactMap(Item.init(document:)) ?? []
+                self?.syncWatch()
             }
         )
         listeners.append(
             root.collection("recipes").addSnapshotListener { [weak self] snapshot, _ in
                 self?.recipes = snapshot?.documents.compactMap(Recipe.init(document:)) ?? []
+                self?.syncWatch()
             }
         )
         // The one listener asking for metadata: a tick made with no signal has
@@ -150,7 +155,34 @@ final class Store {
                         entry?.pending = document.metadata.hasPendingWrites
                         return entry
                     } ?? []
+                    self?.syncWatch()
                 }
+        )
+    }
+
+    /// Flattens the list for the wrist. Everything is formatted here because the
+    /// watch has no domain code — it draws strings and sends back ticks.
+    private func syncWatch() {
+        let byId = itemsById
+        let entries: [[String: Any]] = list.map { entry in
+            var row: [String: Any] = [
+                WatchSync.Key.id: entry.id,
+                WatchSync.Key.label: entry.label,
+                WatchSync.Key.checked: entry.checked,
+            ]
+            var detail = entry.reason ?? ""
+            if let quantity = entry.quantity {
+                let unit = entry.unit ?? byId[entry.itemId ?? ""]?.unit ?? .unit
+                let amount = Quantities.format(quantity, unit)
+                detail = detail.isEmpty ? amount : "\(amount) · \(detail)"
+            }
+            if !detail.isEmpty { row[WatchSync.Key.detail] = detail }
+            return row
+        }
+        WatchSync.shared.push(
+            entries: entries,
+            today: todaysRecipe?.title ?? todaysDay?.label,
+            todayNote: todaysDay == nil ? nil : DayFormat.long(today)
         )
     }
 
@@ -162,6 +194,7 @@ final class Store {
             .collection("mealPlans").document(planStart)
             .addSnapshotListener { [weak self] snapshot, _ in
                 self?.plan = snapshot.flatMap(MealPlan.init(document:))
+                self?.syncWatch()
             }
     }
 
