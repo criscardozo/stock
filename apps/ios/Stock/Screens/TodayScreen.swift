@@ -119,7 +119,7 @@ struct TodayScreen: View {
                     .lineSpacing(4)
                     .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RoundedRectangle(cornerRadius: 20).fill(Theme.surface))
+                    .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
             }
         }
         .padding(.horizontal, 20)

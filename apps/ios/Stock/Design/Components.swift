@@ -159,9 +159,9 @@ struct Card<Content: View>: View {
         VStack(spacing: 0) { content }
             .padding(.horizontal, 18)
             .background(
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: 18)
                     .fill(Theme.surface)
-                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.line))
+                    .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.line))
             )
     }
 }

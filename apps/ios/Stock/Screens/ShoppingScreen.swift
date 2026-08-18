@@ -106,7 +106,7 @@ struct ShoppingScreen: View {
         }
         .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 18)
                 .stroke(Theme.lineStrong, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
         )
         .padding(.horizontal, 16)

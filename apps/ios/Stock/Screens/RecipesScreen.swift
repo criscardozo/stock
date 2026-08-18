@@ -82,9 +82,9 @@ struct RecipesScreen: View {
         }
         .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 18)
                 .fill(Theme.surface)
-                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.line))
+                .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.line))
         )
         .padding(.horizontal, 16)
     }
@@ -163,7 +163,7 @@ struct RecipeDetailSheet: View {
                             .lineSpacing(4)
                             .padding(16)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(RoundedRectangle(cornerRadius: 20).fill(Theme.surface))
+                            .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
                     }
 
                     Text("Los ingredientes de texto libre no generan faltantes: inventar «250 g de sal» sería peor que no decir nada.")

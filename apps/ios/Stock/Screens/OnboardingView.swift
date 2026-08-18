@@ -37,7 +37,7 @@ struct OnboardingView: View {
                         .disabled(code.trimmingCharacters(in: .whitespaces).isEmpty || busy)
                 }
                 .padding(16)
-                .background(RoundedRectangle(cornerRadius: 20).fill(Theme.surface))
+                .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
 
                 VStack(alignment: .leading, spacing: 12) {
                     SectionLabel(text: "Empezar de cero")
@@ -57,7 +57,7 @@ struct OnboardingView: View {
                         .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || busy)
                 }
                 .padding(16)
-                .background(RoundedRectangle(cornerRadius: 20).fill(Theme.surface))
+                .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
 
                 if let error {
                     Text(error).font(.stock(13)).foregroundStyle(Theme.dangerDeep)

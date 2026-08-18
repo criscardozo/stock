@@ -241,7 +241,8 @@
 
   --font-sans: var(--font-outfit), system-ui, sans-serif;
 
-  --radius-card: 20px;
+  /* 18, from the family system: the old doc said 20-24, the code says 18. */
+  --radius-card: 18px;
   --radius-panel: 18px;
   --radius-sheet: 24px;
   --radius-field: 14px;
