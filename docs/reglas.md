@@ -160,6 +160,33 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
 
+### El sistema es compartido, y eso tiene reglas propias
+
+Desde agosto de 2026 las dos apps siguen un design system común, que Stock
+copia en [`docs/design-system.md`](design-system.md). Lo que se aprendió
+mientras se adoptaba, porque no es evidente:
+
+- **Un número dominante en una app no es el número del sistema.** La fila mide
+  14 en la web y 14.5 en iOS; el título 22 y 18. No son inconsistencias: un
+  teléfono a distancia de brazo no es una ventana de navegador. Antes de copiar
+  un valor, preguntar de qué plataforma salió.
+- **Antes de declarar que el sistema miente, medir la plataforma que no miraste.**
+  Dos veces un "esto contradice al código" resultó ser "esto es cierto en la
+  otra plataforma". El padding de pantalla de 20 parecía inventado y era el de
+  iOS, medido.
+- **Los nombres de los tokens no se derivan entre plataformas.** `--ink-secondary`
+  es `ink2`, y ninguna regla lleva "secondary" a "2": la web nombra la jerarquía
+  con palabras porque su archivo de tokens se lee, iOS con números porque una
+  vista lo tipea cincuenta veces. Son 3 de 16 acá y 8 de 15 en Gastos — y 3 de
+  16 es la tasa peligrosa, porque una convención automática parecería andar
+  hasta el cuarto token.
+- **La paleta está escrita dos veces (tres, contando que el bloque oscuro del
+  CSS va duplicado), y sólo el cuidado las mantiene iguales.** Gastos publicó un
+  `--warn-text` bajo el mínimo AA en una plataforma durante meses por eso: los
+  dos archivos son válidos por separado. `apps/web/src/lib/design/tokens.test.ts`
+  compara los tres lugares. Se borra el día que Stock genere su tema desde un
+  archivo de tokens, porque entonces no van a poder diferir.
+
 ### Dos cosas que cuestan una tarde si no están escritas
 
 - **`-sdk iphonesimulator` se lo impone a *todos* los targets**, incluida la app
