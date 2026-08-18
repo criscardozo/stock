@@ -107,8 +107,8 @@ Las tarjetas **no llevan sombra**: se separan del fondo por un borde de 1px. La
 | Tarjeta | radio 20–24 · borde 1px · sin sombra |
 | Pill, chip, botón secundario | radio 999 |
 | CTA primario | cápsula, 54–58px de alto · sombra del acento al 35 % |
-| Campo / tecla | radio 13–15 |
-| Padding horizontal de pantalla | 20 |
+| Campo | radio 10 |
+| Padding horizontal de pantalla | 16 web (`px-4`, 32 desde `lg`) · 20 iOS |
 | Padding horizontal de card | 18 |
 | Separación entre elementos | 6 · 8 · 10 · 12 (los cuatro que cubren casi todo) |
 | Alto mínimo de fila táctil | 44 |

@@ -245,7 +245,8 @@
   --radius-card: 18px;
   --radius-panel: 18px;
   --radius-sheet: 24px;
-  --radius-field: 14px;
+  /* 10, measured: the family system publishes rounded-[10px] for fields. */
+  --radius-field: 10px;
   --radius-nav: 12px;
 
   --shadow-primary: 0 6px 16px rgba(46, 158, 91, 0.3);

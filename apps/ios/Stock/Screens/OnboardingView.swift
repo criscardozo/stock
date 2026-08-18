@@ -32,7 +32,7 @@ struct OnboardingView: View {
                         .autocorrectionDisabled()
                         .font(.stock(16, .semibold))
                         .padding(14)
-                        .background(RoundedRectangle(cornerRadius: 14).fill(Theme.ground))
+                        .background(RoundedRectangle(cornerRadius: 10).fill(Theme.ground))
                     PrimaryButton(title: "Unirme") { join() }
                         .disabled(code.trimmingCharacters(in: .whitespaces).isEmpty || busy)
                 }
@@ -44,7 +44,7 @@ struct OnboardingView: View {
                     TextField("Nombre", text: $name)
                         .font(.stock(16, .semibold))
                         .padding(14)
-                        .background(RoundedRectangle(cornerRadius: 14).fill(Theme.ground))
+                        .background(RoundedRectangle(cornerRadius: 10).fill(Theme.ground))
                     Picker("Zona horaria", selection: $timezone) {
                         ForEach(timezones, id: \.self) { Text($0).tag($0) }
                     }
