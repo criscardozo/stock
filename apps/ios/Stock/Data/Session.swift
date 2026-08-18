@@ -26,6 +26,15 @@ final class Session {
     }
 
     init() {
+        // `-devSignIn` starts from signed out, always. Firebase restores the last
+        // session from the simulator Keychain, which `simctl uninstall` does not
+        // clear — so after a re-seed the app boots as a uid that no longer has a
+        // user document, and lands on Onboarding as if you had no household.
+        // That looks like a product state and costs an hour every time.
+        if Self.useEmulators, ProcessInfo.processInfo.arguments.contains("-devSignIn") {
+            try? Auth.auth().signOut()
+        }
+
         handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             self?.user = user
             self?.ready = true
