@@ -3,6 +3,9 @@
 
 # Local agent workspace
 .claude/
+# Downloaded skill contents, the way node_modules is: skills-lock.json IS
+# committed, so `npx skills add` rebuilds this from the pinned hashes.
+.agents/
 
 # Node
 node_modules/
