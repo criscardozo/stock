@@ -4,12 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-**Both clients are built.** The web is live at `stock.cardozo.dev` (Vercel, from
-`main`); the iOS app builds and runs in the Simulator against the emulators.
-What is NOT done: the Firestore rules are not deployed to `qcris-stock`, the
-domain isn't in Firebase Auth's authorized list, and no iOS app is registered
-(so its `GoogleService-Info.plist` is a placeholder and Google sign-in on iOS
-cannot work yet). All three are console steps in `docs/setup.md`.
+**Both clients are built and live.** The web runs at `stock.cardozo.dev`
+(Vercel, from `main`) and the iOS app is sideloaded on the phone, with a watchOS
+companion embedded. The three console steps that used to be open are done: the
+Firestore rules are deployed to `qcris-stock` (an anonymous read returns 403),
+the domain serves Firebase's auth handler same-origin, and the iOS app is
+registered — `Stock/Resources/GoogleService-Info.plist` carries the real client
+id. `docs/setup.md` still describes those steps for a rebuild.
+
+The free signing team lasts **7 days**: the phone build stops opening after that
+and has to be reinstalled. Ajustes shows exactly when it expires.
 `README.md` is the specification, [`docs/PLAN.md`](docs/PLAN.md) holds the
 architecture decisions and the phase order.
 
