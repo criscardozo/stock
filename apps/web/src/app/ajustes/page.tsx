@@ -67,108 +67,22 @@ export default function SettingsPage() {
 
   return (
     <>
-      <PageHeader title="Ajustes" summary="Hogar, invitación, ubicaciones y el período del plan." />
+      <PageHeader title="Ajustes" summary="El plan, el catálogo y el hogar." />
 
       <div className="flex flex-col gap-6 pb-8">
-        <section className="flex flex-col gap-2">
-          <SectionLabel>Hogar</SectionLabel>
-          <Card className="divide-y divide-line-soft">
-            <label className="flex items-center gap-3 py-3.5">
-              <span className="w-32 text-sm text-ink-2">Nombre</span>
-              <input
-                defaultValue={household.name}
-                maxLength={60}
-                onBlur={(e) => renameHousehold(e.target.value, e.target)}
-                onKeyDown={(event) => {
-                  const input = event.currentTarget
-                  if (event.key === 'Enter') input.blur()
-                  if (event.key === 'Escape') {
-                    input.value = household.name
-                    input.blur()
-                  }
-                }}
-                className="flex-1 bg-transparent text-[14.5px] font-semibold outline-none"
-              />
-            </label>
-            <div className="flex items-center gap-3 py-3.5">
-              <span className="w-32 text-sm text-ink-2">Zona horaria</span>
-              <span className="flex-1 text-[14.5px] font-semibold">{household.timezone}</span>
-              <span className="text-xs text-ink-3">las fechas se calculan acá</span>
-            </div>
-            {household.memberIds.map((uid, index) => (
-              <div key={uid} className="flex items-center gap-3 py-3">
-                <Avatar
-                  name={household.members[uid]?.displayName}
-                  colour={index === 1 ? 'bg-member-b' : 'bg-member-a'}
-                  size={30}
-                />
-                <span className="flex-1 text-[14.5px] font-semibold">
-                  {household.members[uid]?.displayName ?? uid}
-                </span>
-                {uid === user.uid && (
-                  <span className="rounded-full bg-neutral-soft px-2.5 py-1 text-xs font-semibold text-ink-2">
-                    vos
-                  </span>
-                )}
-              </div>
-            ))}
-          </Card>
-        </section>
-
-        <section className="flex flex-col gap-2">
-          <SectionLabel>Invitación</SectionLabel>
-          <Card className="flex flex-col gap-3 py-4">
-            {full ? (
-              <p className="text-sm text-ink-2">
-                El hogar está completo — 2 de 2. El tope lo fuerzan las reglas de Firestore, no la
-                pantalla.
-              </p>
-            ) : code ? (
-              <>
-                <div className="flex items-center gap-3 rounded-field bg-ground px-4 py-3">
-                  <code className="tnum flex-1 text-[15px] font-bold tracking-wider">{code}</code>
-                  <button
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(code)
-                      setCopied(true)
-                    }}
-                    className="flex items-center gap-1.5 text-[13px] font-semibold text-primary-deep"
-                  >
-                    <Icon name={copied ? 'check' : 'content_copy'} size={16} />
-                    {copied ? 'Copiado' : 'Copiar'}
-                  </button>
-                </div>
-                <p className="text-[11.5px] leading-relaxed text-ink-3">
-                  Conocer el código <em>es</em> el permiso: se puede leer, pero no listar. Borralo
-                  desde la consola cuando lo hayan usado.
-                </p>
-              </>
-            ) : (
-              <button
-                onClick={async () => {
-                  const next = await createInvite(householdId, user.uid)
-                  if (codeKey) writeStoredValue(codeKey, next)
-                }}
-                className="flex items-center gap-2 self-start rounded-full border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-ink-2"
-              >
-                <Icon name="person_add" size={18} />
-                Generar código
-              </button>
-            )}
-          </Card>
-        </section>
-
+        {/* Configuration first, the way Gastos Diarios orders it: what you came
+            to change is above what you came to look at. */}
         <section className="flex flex-col gap-2">
           <SectionLabel>Plan de comidas</SectionLabel>
           <Card className="flex flex-col gap-4 py-4">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="w-32 text-sm text-ink-2">Largo</span>
+              <span className="flex-1 text-sm font-semibold">Largo</span>
               <div className="flex rounded-full bg-ground p-[3px]">
                 {(['weekly', 'fortnightly'] as PlanLength[]).map((value) => (
                   <button
                     key={value}
                     onClick={() => updateHousehold(householdId, { 'planConfig.length': value })}
-                    className={`rounded-full px-5 py-2 text-[13.5px] ${
+                    className={`rounded-full px-5 py-2 text-[13px] ${
                       household.planConfig.length === value
                         ? 'bg-primary font-bold text-on-primary'
                         : 'font-semibold text-ink-2'
@@ -180,7 +94,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <span className="w-32 text-sm text-ink-2">Arranca el día</span>
+              <span className="flex-1 text-sm font-semibold">Arranca el día</span>
               <div className="flex gap-1.5">
                 {WEEKDAYS.map((label, index) => (
                   <button
@@ -188,7 +102,7 @@ export default function SettingsPage() {
                     onClick={() =>
                       updateHousehold(householdId, { 'planConfig.startWeekday': index })
                     }
-                    className={`h-9 w-11 rounded-full text-xs ${
+                    className={`h-9 w-11 rounded-full text-[12.5px] ${
                       household.planConfig.startWeekday === index
                         ? 'bg-ink font-bold text-ground'
                         : 'border border-line bg-surface font-semibold text-ink-2'
@@ -207,9 +121,9 @@ export default function SettingsPage() {
         </section>
 
         <section className="flex flex-col gap-2">
-          <SectionLabel>Tema</SectionLabel>
-          <Card className="flex flex-wrap items-center gap-3 py-4">
-            <span className="w-32 text-sm text-ink-2">Apariencia</span>
+          <SectionLabel>Preferencias</SectionLabel>
+          <Card className="flex flex-wrap items-center gap-3 py-3.5">
+            <span className="flex-1 text-sm font-semibold">Apariencia</span>
             <div className="flex rounded-full bg-ground p-[3px]">
               {(
                 [
@@ -224,7 +138,7 @@ export default function SettingsPage() {
                     writeStoredValue(THEME_STORAGE_KEY, value === 'system' ? null : value)
                     applyTheme(value)
                   }}
-                  className={`rounded-full px-4 py-2 text-[13.5px] ${
+                  className={`rounded-full px-4 py-2 text-[13px] ${
                     theme === value
                       ? 'bg-primary font-bold text-on-primary'
                       : 'font-semibold text-ink-2'
@@ -248,8 +162,8 @@ export default function SettingsPage() {
                 }`}
               >
                 <HueBadge icon={location.icon} hue={location.hue} size={32} />
-                <span className="flex-1 text-[14.5px] font-semibold">{location.name}</span>
-                <span className="text-xs text-ink-3">
+                <span className="flex-1 text-sm font-semibold">{location.name}</span>
+                <span className="text-[12.5px] text-ink-3">
                   {plural(perLocation.get(id) ?? 0, 'ítem', 'ítems')}
                 </span>
               </div>
@@ -277,14 +191,99 @@ export default function SettingsPage() {
           </Card>
         </section>
 
+        {/* Household and its invite in one card, as in Gastos Diarios: who is
+            here and how someone else gets in is one thought, not two.
+            No timezone row — it is chosen once when the household is created
+            and every date still resolves against it. */}
+        <section className="flex flex-col gap-2">
+          <SectionLabel>Hogar</SectionLabel>
+          <Card className="divide-y divide-line-soft">
+            <label className="flex items-center gap-3 py-3.5">
+              <span className="flex-1 text-sm font-semibold">Nombre</span>
+              <input
+                defaultValue={household.name}
+                maxLength={60}
+                onBlur={(e) => renameHousehold(e.target.value, e.target)}
+                onKeyDown={(event) => {
+                  const input = event.currentTarget
+                  if (event.key === 'Enter') input.blur()
+                  if (event.key === 'Escape') {
+                    input.value = household.name
+                    input.blur()
+                  }
+                }}
+                className="min-w-0 flex-1 bg-transparent text-right text-sm font-semibold outline-none"
+              />
+            </label>
+            {household.memberIds.map((uid, index) => (
+              <div key={uid} className="flex items-center gap-3 py-3">
+                <Avatar
+                  name={household.members[uid]?.displayName}
+                  colour={index === 1 ? 'bg-member-b' : 'bg-member-a'}
+                  size={30}
+                />
+                <span className="flex-1 text-sm font-semibold">
+                  {household.members[uid]?.displayName ?? uid}
+                </span>
+                {uid === user.uid && (
+                  <span className="rounded-full bg-neutral-soft px-2.5 py-1 text-[12.5px] font-semibold text-ink-2">
+                    vos
+                  </span>
+                )}
+              </div>
+            ))}
+            <div className="flex flex-col gap-3 py-4">
+              {full ? (
+                <p className="text-[13px] text-ink-2">
+                  El hogar está completo — 2 de 2. El tope lo fuerzan las reglas de Firestore, no la
+                  pantalla.
+                </p>
+              ) : code ? (
+                <>
+                  <div className="flex items-center gap-3 rounded-field bg-ground px-4 py-3">
+                    <code className="tnum flex-1 text-[15px] font-bold tracking-wider">{code}</code>
+                    <button
+                      onClick={async () => {
+                        await navigator.clipboard.writeText(code)
+                        setCopied(true)
+                      }}
+                      className="flex items-center gap-1.5 text-[13px] font-semibold text-primary-deep"
+                    >
+                      <Icon name={copied ? 'check' : 'content_copy'} size={16} />
+                      {copied ? 'Copiado' : 'Copiar'}
+                    </button>
+                  </div>
+                  <p className="text-[11.5px] leading-relaxed text-ink-3">
+                    Conocer el código <em>es</em> el permiso: se puede leer, pero no listar. Borralo
+                    desde la consola cuando lo hayan usado.
+                  </p>
+                </>
+              ) : (
+                <button
+                  onClick={async () => {
+                    const next = await createInvite(householdId, user.uid)
+                    if (codeKey) writeStoredValue(codeKey, next)
+                  }}
+                  className="flex items-center gap-2 self-start rounded-full border border-line bg-surface px-4 py-2.5 text-[13px] font-semibold text-ink-2"
+                >
+                  <Icon name="person_add" size={18} />
+                  Generar código
+                </button>
+              )}
+            </div>
+          </Card>
+        </section>
+
         <VersionCard />
 
+        {/* A card rather than a bare link, like Gastos Diarios: the last thing
+            on the page should look like the others, and read as the exit. */}
         <button
           onClick={() => void signOut()}
-          className="flex items-center gap-2 self-start text-sm font-semibold text-ink-2"
+          className="flex items-center gap-2.5 rounded-panel border border-line bg-surface px-[18px] py-3.5 text-left"
         >
-          <Icon name="logout" size={18} />
-          Cerrar sesión
+          <Icon name="logout" size={18} className="text-danger-deep" />
+          <span className="text-sm font-semibold text-danger-deep">Cerrar sesión</span>
         </button>
       </div>
     </>

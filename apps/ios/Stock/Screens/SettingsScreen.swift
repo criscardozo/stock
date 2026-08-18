@@ -1,5 +1,17 @@
 import SwiftUI
 
+/// Settings, in the same shape as every other screen: a ScrollView of cards
+/// under section labels.
+///
+/// It used to be a plain `List`, which brought UIKit's own greys — pure black
+/// behind #1C1C1E rows in dark, sitting next to four screens painted with our
+/// tokens. Gastos Diarios settles this the same way, so the two apps read as
+/// one product.
+///
+/// Order follows Gastos Diarios: what you came to change is above what you came
+/// to look at, the household sits near the end, and version and sign-out close
+/// it. No timezone row — it is chosen once when the household is created, and
+/// every date still resolves against it.
 struct SettingsScreen: View {
     @Environment(Session.self) private var session
     @Environment(Store.self) private var store
@@ -9,98 +21,20 @@ struct SettingsScreen: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                if let household = store.household {
-                    Section("Hogar") {
-                        HStack(spacing: 10) {
-                            ForEach(Array(household.memberIds.enumerated()), id: \.element) { index, uid in
-                                Avatar(
-                                    name: household.members[uid]?.displayName,
-                                    colour: index == 1 ? Theme.memberB : Theme.memberA,
-                                    size: 30
-                                )
-                            }
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(household.name).font(.stock(16, .bold))
-                                Text(
-                                    household.memberIds
-                                        .compactMap { household.members[$0]?.displayName }
-                                        .joined(separator: " y ")
-                                        + " · \(household.memberIds.count) de 2"
-                                )
-                                .font(.stock(12))
-                                .foregroundStyle(Theme.ink2)
-                            }
-                        }
-                        LabeledContent("Zona horaria", value: household.timezone)
-                    }
-
-                    Section {
-                        Picker("Largo", selection: planLength) {
-                            ForEach(PlanLength.allCases, id: \.self) { Text($0.label).tag($0) }
-                        }
-                        Picker("Arranca", selection: startWeekday) {
-                            ForEach(0..<7, id: \.self) { index in
-                                Text(Self.weekdays[index]).tag(index)
-                            }
-                        }
-                    } header: {
-                        Text("Plan de comidas")
-                    } footer: {
-                        Text("Solo afecta períodos futuros: los ya armados conservan sus límites.")
-                    }
-
-                    Section("Catálogo") {
-                        LabeledContent("Ubicaciones", value: "\(household.locations.count)")
-                        LabeledContent("Categorías", value: "\(household.categories.count)")
-                        LabeledContent("Ítems", value: "\(store.items.count)")
-                    }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    planSection
+                    expirySection
+                    catalogueSection
+                    householdSection
+                    aboutSection
+                    signOutRow
                 }
-
-                Section {
-                    Toggle("Avisarme", isOn: $expiryAlerts)
-                    if expiryAlerts {
-                        Picker("Con cuántos días", selection: $expiryDays) {
-                            ForEach([1, 2, 3, 5, 7], id: \.self) { Text("\($0)").tag($0) }
-                        }
-                    }
-                } header: {
-                    Text("Vencimientos")
-                } footer: {
-                    Text("El aviso lo programa la app cuando corre, no un servidor: sin plan pago no hay push. Si no abrís la app en semanas, no hay quien avise.")
-                }
-
-                Section {
-                    LabeledContent("Versión", value: Self.appVersion)
-                        .font(.stock(14.5, .semibold))
-                    if let expiry = SigningExpiry.date {
-                        signingExpiryRow(expiry)
-                    }
-                    Link(destination: URL(string: "https://stock.cardozo.dev")!) {
-                        HStack {
-                            Text("Abrir la web").font(.stock(14.5, .semibold))
-                            Spacer()
-                            Image(systemName: "arrow.up.forward.square")
-                                .font(.system(size: 15))
-                                .foregroundStyle(Theme.ink3)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                } header: {
-                    Text("La app")
-                }
-
-                Section {
-                    Button("Cerrar sesión", role: .destructive) { session.signOut() }
-                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
             }
-            // A plain List brings UIKit's own greys: in dark that is pure black
-            // behind #1C1C1E rows, which reads as a different app from the four
-            // screens beside it. The tokens are the product; the platform default
-            // is not.
-            .scrollContentBackground(.hidden)
             .background(Theme.ground)
-            .listRowBackground(Theme.surface)
             .navigationTitle("Ajustes")
             .onChange(of: expiryAlerts) { _, enabled in
                 ExpiryNotifications.isEnabled = enabled
@@ -111,6 +45,204 @@ struct SettingsScreen: View {
                 Task { await reschedule() }
             }
         }
+    }
+
+    // MARK: - Sections
+
+    private var planSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionLabel(text: "Plan de comidas")
+            Card {
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("Largo").font(.stock(14.5, .semibold))
+                        Spacer()
+                        Picker("", selection: planLength) {
+                            ForEach(PlanLength.allCases, id: \.self) { Text($0.label).tag($0) }
+                        }
+                        .labelsHidden()
+                        .tint(Theme.primaryDeep)
+                    }
+                    .padding(.vertical, 11)
+
+                    Divider().overlay(Theme.lineSoft)
+
+                    HStack {
+                        Text("Arranca el día").font(.stock(14.5, .semibold))
+                        Spacer()
+                        Picker("", selection: startWeekday) {
+                            ForEach(0..<7, id: \.self) { Text(Self.weekdays[$0]).tag($0) }
+                        }
+                        .labelsHidden()
+                        .tint(Theme.primaryDeep)
+                    }
+                    .padding(.vertical, 11)
+                }
+            }
+            Text("Solo afecta períodos futuros: los ya armados conservan sus límites.")
+                .font(.stock(11.5))
+                .foregroundStyle(Theme.ink3)
+                .padding(.horizontal, 4)
+        }
+    }
+
+    private var expirySection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionLabel(text: "Vencimientos")
+            Card {
+                VStack(spacing: 0) {
+                    Toggle(isOn: $expiryAlerts) {
+                        Text("Avisarme").font(.stock(14.5, .semibold))
+                    }
+                    .tint(Theme.primary)
+                    .padding(.vertical, 9)
+
+                    if expiryAlerts {
+                        Divider().overlay(Theme.lineSoft)
+                        HStack {
+                            Text("Con cuántos días").font(.stock(14.5, .semibold))
+                            Spacer()
+                            Picker("", selection: $expiryDays) {
+                                ForEach([1, 2, 3, 5, 7], id: \.self) { Text("\($0)").tag($0) }
+                            }
+                            .labelsHidden()
+                            .tint(Theme.primaryDeep)
+                        }
+                        .padding(.vertical, 11)
+                    }
+                }
+            }
+            Text(
+                "El aviso lo programa la app cuando corre, no un servidor: sin plan pago no hay push."
+            )
+            .font(.stock(11.5))
+            .foregroundStyle(Theme.ink3)
+            .padding(.horizontal, 4)
+        }
+    }
+
+    private var catalogueSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionLabel(text: "Catálogo")
+            Card {
+                VStack(spacing: 0) {
+                    catalogueRow("Ubicaciones", store.household?.locations.count ?? 0)
+                    Divider().overlay(Theme.lineSoft)
+                    catalogueRow("Categorías", store.household?.categories.count ?? 0)
+                    Divider().overlay(Theme.lineSoft)
+                    catalogueRow("Ítems", store.items.count)
+                }
+            }
+        }
+    }
+
+    private func catalogueRow(_ title: String, _ count: Int) -> some View {
+        HStack {
+            Text(title).font(.stock(14.5, .semibold))
+            Spacer()
+            Text("\(count)")
+                .font(.stock(14.5, .semibold))
+                .monospacedDigit()
+                .foregroundStyle(Theme.ink2)
+        }
+        .padding(.vertical, 11)
+    }
+
+    @ViewBuilder
+    private var householdSection: some View {
+        if let household = store.household {
+            VStack(alignment: .leading, spacing: 8) {
+                SectionLabel(text: "Hogar")
+                Card {
+                    VStack(spacing: 0) {
+                        HStack(spacing: 10) {
+                            ForEach(Array(household.memberIds.enumerated()), id: \.element) {
+                                index, uid in
+                                Avatar(
+                                    name: household.members[uid]?.displayName,
+                                    colour: index == 1 ? Theme.memberB : Theme.memberA,
+                                    size: 30
+                                )
+                            }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(household.name).font(.stock(15, .bold))
+                                Text(
+                                    household.memberIds
+                                        .compactMap { household.members[$0]?.displayName }
+                                        .joined(separator: " y ")
+                                        + " · \(household.memberIds.count) de 2"
+                                )
+                                .font(.stock(12))
+                                .foregroundStyle(Theme.ink2)
+                            }
+                            Spacer()
+                        }
+                        .padding(.vertical, 12)
+                    }
+                }
+            }
+        }
+    }
+
+    private var aboutSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionLabel(text: "La app")
+            Card {
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("Versión").font(.stock(14.5, .semibold))
+                        Spacer()
+                        Text(Self.appVersion)
+                            .font(.stock(14.5, .semibold))
+                            .monospacedDigit()
+                            .foregroundStyle(Theme.ink2)
+                    }
+                    .padding(.vertical, 11)
+
+                    if let expiry = SigningExpiry.date {
+                        Divider().overlay(Theme.lineSoft)
+                        signingExpiryRow(expiry).padding(.vertical, 9)
+                    }
+
+                    Divider().overlay(Theme.lineSoft)
+                    Link(destination: URL(string: "https://stock.cardozo.dev")!) {
+                        HStack {
+                            Text("Abrir la web").font(.stock(14.5, .semibold))
+                            Spacer()
+                            Image(systemName: "arrow.up.forward.square")
+                                .font(.system(size: 15))
+                                .foregroundStyle(Theme.ink3)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.vertical, 11)
+                }
+            }
+        }
+    }
+
+    /// A card rather than a bare row, like Gastos Diarios: the last thing on the
+    /// page looks like the others and reads as the exit.
+    private var signOutRow: some View {
+        Button {
+            session.signOut()
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "rectangle.portrait.and.arrow.right")
+                    .font(.system(size: 16, weight: .semibold))
+                Text("Cerrar sesión").font(.stock(14.5, .semibold))
+                Spacer()
+            }
+            .foregroundStyle(Theme.dangerDeep)
+            .padding(.vertical, 13)
+            .padding(.horizontal, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Theme.surface)
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.line))
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     /// "0.1 (1)" from the bundle — which build is actually running.
