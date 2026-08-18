@@ -203,18 +203,60 @@ struct Avatar: View {
     }
 }
 
-/// The app mark: the reduced bag, matching AppMark on the web.
+/// The bag with its zigzag top, drawn from the same path the web's AppMark and
+/// favicon.svg use — laid out on their 64 grid and scaled to fit.
+///
+/// It used to be SF Symbols' `bag.fill`, which is a handled shopping bag and
+/// not this brand's mark at all: the two apps claimed to match and didn't.
+struct BagShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        // The drawing occupies x 15...49, y 27.5...57 on the 64 grid.
+        let s = min(rect.width / 34, rect.height / 29.5)
+        let ox = rect.minX + (rect.width - 34 * s) / 2 - 15 * s
+        let oy = rect.minY + (rect.height - 29.5 * s) / 2 - 27.5 * s
+        func p(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(x: ox + x * s, y: oy + y * s)
+        }
+
+        var path = Path()
+        path.move(to: p(15, 31.5))
+        // The zigzag mouth: eight points alternating between the two heights.
+        // Counted in whole steps rather than strided floats — comparing 4.25
+        // multiples with == is how a tooth silently flattens.
+        for step in 1...8 {
+            path.addLine(to: p(15 + 4.25 * CGFloat(step), step.isMultiple(of: 2) ? 31.5 : 27.5))
+        }
+        path.addLine(to: p(49, 53))
+        path.addQuadCurve(to: p(45, 57), control: p(49, 57))
+        path.addLine(to: p(19, 57))
+        path.addQuadCurve(to: p(15, 53), control: p(15, 57))
+        path.closeSubpath()
+        return path
+    }
+}
+
+/// The app mark: the reduced bag, matching AppMark on the web — same path, same
+/// gradient as the installed icon.
 struct AppMark: View {
     var size: CGFloat = 34
 
     var body: some View {
         RoundedRectangle(cornerRadius: size * 0.32)
-            .fill(Theme.primary)
+            .fill(
+                LinearGradient(
+                    colors: [Theme.markFrom, Theme.markTo],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
             .frame(width: size, height: size)
             .overlay(
-                Image(systemName: "bag.fill")
-                    .font(.system(size: size * 0.5, weight: .semibold))
-                    .foregroundStyle(Theme.surface)
+                BagShape()
+                    // Cream, fixed — NOT Theme.surface, which flips to near-black
+                    // in dark and turns the bag into a hole. The mark is the icon,
+                    // and the icon does not change with the system appearance.
+                    .fill(Color(hex: 0xFCFCF8))
+                    .frame(width: size * 0.58, height: size * 0.5)
             )
     }
 }

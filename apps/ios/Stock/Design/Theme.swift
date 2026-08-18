@@ -65,6 +65,12 @@ enum Theme {
     /// Text ON the accent: white in light, near-black in dark.
     static let onPrimary = Color.hex(light: 0xFFFFFF, dark: 0x0F1A12)
 
+    /// The app icon's own gradient, for the mark drawn inside the app. NOT
+    /// primary -> primaryDeep: in dark that pair runs light-to-lighter, so the
+    /// ramp would flip. These always run bright at the top, like the icon.
+    static let markFrom = Color.hex(light: 0x2E9E5B, dark: 0x45BC72)
+    static let markTo = Color.hex(light: 0x1D7A43, dark: 0x2E9E5B)
+
     static let danger = Color.hex(light: 0xE5484D, dark: 0xFF6B6E)
     static let dangerDeep = Color.hex(light: 0xC0353A, dark: 0xFF8C8E)
     static let dangerSoft = Color.hex(

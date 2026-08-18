@@ -7,11 +7,14 @@
  * all that has to read. Every place this component is used is at or near that
  * size, so it draws the bag; `public/icons/` carries the full art for the sizes
  * that can hold it.
+ *
+ * The field carries the same top-to-bottom gradient as the installed icon, so
+ * the mark in the header and the icon on the home screen are the same object.
  */
 export function AppMark({ size = 34, radius = 11 }: { size?: number; radius?: number }) {
   return (
     <span
-      className="grid shrink-0 place-items-center bg-primary"
+      className="grid shrink-0 place-items-center bg-linear-to-b from-mark-from to-mark-to"
       style={{ width: size, height: size, borderRadius: radius }}
     >
       <svg

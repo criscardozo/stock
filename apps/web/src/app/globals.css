@@ -27,6 +27,11 @@
   --primary: #2e9e5b;
   --primary-deep: #1d7a43;
   --primary-soft: rgba(46, 158, 91, 0.13);
+  /* The app icon's own gradient, for the mark drawn inside the app. NOT
+     primary -> primary-deep: in dark that pair runs light-to-lighter, so the
+     ramp would flip. These always run bright at the top, like the icon. */
+  --mark-from: #2e9e5b;
+  --mark-to: #1d7a43;
 
   --danger: #e5484d;
   --danger-deep: #c0353a;
@@ -90,6 +95,8 @@
     --primary: #45bc72;
     --primary-deep: #7fd79e;
     --primary-soft: rgba(69, 188, 114, 0.15);
+    --mark-from: #45bc72;
+    --mark-to: #2e9e5b;
     /* Text ON the accent: near-black, because the accent is now light. */
     --on-primary: #0f1a12;
 
@@ -143,6 +150,8 @@
   --primary: #45bc72;
   --primary-deep: #7fd79e;
   --primary-soft: rgba(69, 188, 114, 0.15);
+  --mark-from: #45bc72;
+  --mark-to: #2e9e5b;
   /* Text ON the accent: near-black, because the accent is now light. */
   --on-primary: #0f1a12;
 
@@ -196,6 +205,8 @@
   --color-primary: var(--primary);
   --color-primary-deep: var(--primary-deep);
   --color-primary-soft: var(--primary-soft);
+  --color-mark-from: var(--mark-from);
+  --color-mark-to: var(--mark-to);
   --color-on-primary: var(--on-primary);
 
   --color-danger: var(--danger);
