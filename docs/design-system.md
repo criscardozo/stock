@@ -21,8 +21,9 @@ se elige `body` y el sistema decide cuánto mide.
 
 | Rol | Web | iOS | Peso | Para qué |
 |---|---|---|---|---|
-| `hero` | 52–66 | — | 700 | Entrada de un número. Tabular, `-0.03em` |
-| `amount` | 34 | 26 | 700 | La cifra o el dato grande de una card |
+| `hero` | 52–66 | — | 700 | Entrada de un número. Tabular, `-0.03em`. Gastos lo usa; Stock no tiene montos |
+| `welcome` | 30 | 30 | 700 | El texto de bienvenida de Login y Onboarding. Sólo ahí |
+| `amount` | 34 | 26–28 | 700 | El dato grande de una pantalla: acá, el plato de hoy |
 | `title` | 22 | **18** | 700 | Título de pantalla |
 | `heading` | 17 | 17 | 700 | Título de sheet o diálogo |
 | `lead` | 15 | 15 | 600 | Valor destacado dentro de una card |
