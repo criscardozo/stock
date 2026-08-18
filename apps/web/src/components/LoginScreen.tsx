@@ -54,7 +54,7 @@ export function LoginScreen() {
               <button
                 key={email}
                 onClick={() => void devSignIn(email).catch((e) => setError(String(e)))}
-                className="rounded-full border border-line bg-surface px-3.5 py-2 text-[13px] font-semibold text-ink-2"
+                className="rounded-full border border-line bg-surface px-3.5 py-2 text-[13px] font-bold text-ink"
               >
                 Entrar como {email.split('@')[0]}
               </button>

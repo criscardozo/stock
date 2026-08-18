@@ -178,9 +178,10 @@ struct PrimaryButton: View {
                 Text(title).font(.stock(16, .bold))
             }
             .foregroundStyle(Theme.onPrimary)
-            .frame(maxWidth: .infinity, minHeight: 52)
+            .frame(maxWidth: .infinity, minHeight: 54)
             .background(Capsule().fill(Theme.primary))
-            .shadow(color: Theme.primary.opacity(0.35), radius: 10, y: 6)
+            // 0 8px 20px in CSS terms: SwiftUI's radius is roughly half the blur.
+            .shadow(color: Theme.primary.opacity(0.35), radius: 10, y: 8)
         }
         .buttonStyle(.plain)
     }

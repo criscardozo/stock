@@ -264,7 +264,7 @@ export default function SettingsPage() {
                     const next = await createInvite(householdId, user.uid)
                     if (codeKey) writeStoredValue(codeKey, next)
                   }}
-                  className="flex items-center gap-2 self-start rounded-full border border-line bg-surface px-4 py-2.5 text-[13px] font-semibold text-ink-2"
+                  className="flex items-center gap-2 self-start rounded-full border border-line bg-surface px-4 py-2.5 text-[13px] font-bold text-ink"
                 >
                   <Icon name="person_add" size={18} />
                   Generar código

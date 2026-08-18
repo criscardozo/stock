@@ -216,7 +216,7 @@ export default function ShoppingPage() {
                     suggestions.map(entryFor).filter((entry): entry is NewEntry => !!entry),
                   )
                 }
-                className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-semibold text-ink-2"
+                className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-bold text-ink"
               >
                 Agregar todo
               </button>

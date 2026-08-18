@@ -319,7 +319,7 @@ export function PrimaryAction({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-on-primary shadow-(--shadow-primary) disabled:opacity-40"
+      className="flex h-[54px] w-full items-center justify-center gap-2 rounded-full bg-primary text-base font-bold text-on-primary shadow-(--shadow-primary) disabled:opacity-40"
     >
       {icon && <Icon name={icon} size={20} />}
       {children}

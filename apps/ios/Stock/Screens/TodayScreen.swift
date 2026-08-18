@@ -14,6 +14,7 @@ struct TodayScreen: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Hoy")
                         .font(.stock(18, .bold))
+                        .padding(.horizontal, 20)
                         .padding(.top, 6)
                     Text(DayFormat.long(store.today))
                         .font(.stock(13, .semibold))
