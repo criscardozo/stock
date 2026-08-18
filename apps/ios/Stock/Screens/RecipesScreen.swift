@@ -18,6 +18,12 @@ struct RecipesScreen: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 10) {
+                    Text("Recetas")
+                        .font(.stock(18, .bold))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 6)
+                    recipeSearchField
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 6) {
                             ForEach(Filter.allCases, id: \.self) { option in
@@ -45,8 +51,8 @@ struct RecipesScreen: View {
                 .padding(.vertical, 8)
             }
             .background(Theme.ground)
-            .navigationTitle("Recetas")
-            .searchable(text: $search, prompt: "Buscar")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .sheet(item: $open) { recipe in RecipeDetailSheet(recipe: recipe) }
         }
     }
@@ -81,6 +87,32 @@ struct RecipesScreen: View {
                 .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.line))
         )
         .padding(.horizontal, 16)
+    }
+
+    /// Same reason as StockScreen: `.searchable` renders into the navigation bar,
+    /// which puts search above the title once the title is inline.
+    private var recipeSearchField: some View {
+        HStack(spacing: 9) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Theme.ink3)
+            TextField("Buscar", text: $search)
+                .font(.stock(15))
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+            if !search.isEmpty {
+                Button { search = "" } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Theme.ink3)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+        .background(Capsule().fill(Theme.surface).overlay(Capsule().stroke(Theme.line)))
+        .padding(.horizontal, 20)
     }
 
     private var visible: [Recipe] {

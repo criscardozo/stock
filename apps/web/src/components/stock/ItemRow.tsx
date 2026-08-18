@@ -47,7 +47,7 @@ export function ItemRow({
         onClick={onOpen}
         className="flex min-w-0 flex-1 flex-col items-start leading-tight"
       >
-        <span className="truncate text-[14.5px] font-semibold">{item.name}</span>
+        <span className="truncate text-sm font-semibold">{item.name}</span>
         {subtitle && <span className="truncate text-xs text-ink-3">{subtitle}</span>}
       </button>
 

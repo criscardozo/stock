@@ -3,6 +3,7 @@ import SwiftUI
 struct RootView: View {
     @Environment(Session.self) private var session
     @Environment(Store.self) private var store
+    @AppStorage(ThemePreference.key) private var themeRaw = ThemePreference.system.rawValue
 
     var body: some View {
         Group {
@@ -20,6 +21,7 @@ struct RootView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.ground)
+        .preferredColorScheme(ThemePreference(rawValue: themeRaw)?.colorScheme)
         .onChange(of: session.user?.uid, initial: true) { _, uid in
             if let uid { store.start(uid: uid) } else { store.stop() }
         }
@@ -82,7 +84,9 @@ struct ScreenHeader<Actions: View>: View {
     var body: some View {
         HStack(alignment: .lastTextBaseline) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.stock(28, .bold))
+                // 18, not 28: the design system titles iOS smaller than the web
+                // (22 there), and never with UIKit's own large title.
+                Text(title).font(.stock(18, .bold))
                 Text(summary).font(.stock(13)).foregroundStyle(Theme.ink2)
             }
             Spacer()

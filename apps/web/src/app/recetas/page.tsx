@@ -285,7 +285,7 @@ function RecipeDetail({
                             : 'text-primary'
                     }
                   />
-                  <span className="min-w-0 flex-1 truncate text-[14.5px] font-semibold">
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">
                     {ingredient.label}
                     {ingredient.optional && (
                       <span className="ml-2 text-xs font-normal text-ink-3">opcional</span>

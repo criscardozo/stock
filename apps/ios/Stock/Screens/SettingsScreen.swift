@@ -16,6 +16,7 @@ struct SettingsScreen: View {
     @Environment(Session.self) private var session
     @Environment(Store.self) private var store
 
+    @AppStorage(ThemePreference.key) private var themeRaw = ThemePreference.system.rawValue
     @State private var expiryAlerts = ExpiryNotifications.isEnabled
     @State private var expiryDays = ExpiryNotifications.daysAhead
 
@@ -23,7 +24,14 @@ struct SettingsScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
+                    // The system titles iOS at 18, inside the scroll — never
+                    // UIKit's large title, which belongs to a different system.
+                    Text("Ajustes")
+                        .font(.stock(18, .bold))
+                        .padding(.bottom, 2)
+
                     planSection
+                    preferencesSection
                     expirySection
                     catalogueSection
                     householdSection
@@ -31,11 +39,11 @@ struct SettingsScreen: View {
                     signOutRow
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 20)
+                .padding(.top, 6)
+                .padding(.bottom, 24)
             }
             .background(Theme.ground)
-            .navigationTitle("Ajustes")
             .onChange(of: expiryAlerts) { _, enabled in
                 ExpiryNotifications.isEnabled = enabled
                 Task { await reschedule() }
@@ -83,6 +91,29 @@ struct SettingsScreen: View {
                 .font(.stock(11.5))
                 .foregroundStyle(Theme.ink3)
                 .padding(.horizontal, 4)
+        }
+    }
+
+    /// Appearance, matching the web's control. iOS had no theme switch at all —
+    /// it always followed the system, which meant the two clients disagreed
+    /// about what a preference was.
+    private var preferencesSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            SectionLabel(text: "Preferencias")
+            Card {
+                HStack {
+                    Text("Apariencia").font(.stock(14.5, .semibold))
+                    Spacer()
+                    Picker("", selection: $themeRaw) {
+                        ForEach(ThemePreference.allCases, id: \.self) {
+                            Text($0.label).tag($0.rawValue)
+                        }
+                    }
+                    .labelsHidden()
+                    .tint(Theme.primaryDeep)
+                }
+                .padding(.vertical, 11)
+            }
         }
     }
 

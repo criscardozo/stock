@@ -157,7 +157,7 @@ struct Card<Content: View>: View {
 
     var body: some View {
         VStack(spacing: 0) { content }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 18)
             .background(
                 RoundedRectangle(cornerRadius: 20)
                     .fill(Theme.surface)
@@ -180,7 +180,7 @@ struct PrimaryButton: View {
             .foregroundStyle(Theme.onPrimary)
             .frame(maxWidth: .infinity, minHeight: 52)
             .background(Capsule().fill(Theme.primary))
-            .shadow(color: Theme.primary.opacity(0.3), radius: 10, y: 6)
+            .shadow(color: Theme.primary.opacity(0.35), radius: 10, y: 6)
         }
         .buttonStyle(.plain)
     }

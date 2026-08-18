@@ -14,6 +14,10 @@ struct ShoppingScreen: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 14) {
+                    Text("Falta")
+                        .font(.stock(18, .bold))
+                        .padding(.horizontal, 20)
+                        .padding(.top, 6)
                     if !store.list.isEmpty { progress }
 
                     ForEach(sections, id: \.id) { section in
@@ -52,7 +56,8 @@ struct ShoppingScreen: View {
                 .padding(.vertical, 8)
             }
             .background(Theme.ground)
-            .navigationTitle("Falta")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if !checked.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {

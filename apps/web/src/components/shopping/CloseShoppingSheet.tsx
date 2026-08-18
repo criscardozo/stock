@@ -81,7 +81,7 @@ export function CloseShoppingSheet({
                 index === entries.length - 1 ? '' : 'border-b border-line-soft'
               }`}
             >
-              <span className="min-w-0 flex-1 truncate text-[14.5px] font-semibold">
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold">
                 {entry.label}
               </span>
 

@@ -296,7 +296,7 @@ export function FieldInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className={`rounded-field bg-ground px-3.5 py-[11px] text-[14.5px] font-semibold ${props.className ?? ''}`}
+      className={`rounded-field bg-ground px-3.5 py-[11px] text-sm font-semibold ${props.className ?? ''}`}
     />
   )
 }

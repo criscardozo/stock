@@ -55,7 +55,7 @@ export function Onboarding() {
             <select
               value={timezone}
               onChange={(e) => setTimezone(e.target.value)}
-              className="rounded-field bg-ground px-3.5 py-[11px] text-[14.5px] font-semibold"
+              className="rounded-field bg-ground px-3.5 py-[11px] text-sm font-semibold"
             >
               {TIMEZONES.map((tz) => (
                 <option key={tz}>{tz}</option>

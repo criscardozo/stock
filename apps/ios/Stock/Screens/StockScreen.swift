@@ -16,10 +16,17 @@ struct StockScreen: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 14, pinnedViews: []) {
+                    // The title lives in the scroll at 18, not in UIKit's large
+                    // title bar — that bar belongs to a different design system.
+                    Text("Stock")
+                        .font(.stock(18, .bold))
+                        .padding(.horizontal, 20)
+                        .padding(.top, 6)
                     Text(summary)
                         .font(.stock(13))
                         .foregroundStyle(Theme.ink2)
                         .padding(.horizontal, 20)
+                    searchField
                     filters
                     ForEach(groups, id: \.id) { group in
                         VStack(alignment: .leading, spacing: 8) {
@@ -57,9 +64,8 @@ struct StockScreen: View {
                 .padding(.vertical, 8)
             }
             .background(Theme.ground)
-            .navigationTitle("Stock")
-            .navigationBarTitleDisplayMode(.large)
-            .searchable(text: $search, prompt: "Buscar en la casa")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button { scanning = true } label: { Image(systemName: "barcode.viewfinder") }
@@ -70,6 +76,36 @@ struct StockScreen: View {
             .sheet(item: $editing) { item in ItemSheet(item: item) }
             .sheet(isPresented: $creating) { ItemSheet(item: nil) }
         }
+    }
+
+    /// Our own field rather than `.searchable`. That modifier renders into the
+    /// navigation bar, so with an inline title it sits ABOVE the screen title —
+    /// search before you know what you are looking at. This keeps the order the
+    /// design draws: title, summary, search, filters.
+    private var searchField: some View {
+        HStack(spacing: 9) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(Theme.ink3)
+            TextField("Buscar en la casa", text: $search)
+                .font(.stock(15))
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+            if !search.isEmpty {
+                Button {
+                    search = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(Theme.ink3)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+        .background(Capsule().fill(Theme.surface).overlay(Capsule().stroke(Theme.line)))
+        .padding(.horizontal, 20)
     }
 
     private var filters: some View {

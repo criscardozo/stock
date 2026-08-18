@@ -94,7 +94,7 @@ export function ItemSheet({
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="rounded-field bg-ground px-3.5 py-[11px] text-[14.5px] font-semibold"
+            className="rounded-field bg-ground px-3.5 py-[11px] text-sm font-semibold"
           >
             {categories.map(([id, category]) => (
               <option key={id} value={id}>
@@ -107,7 +107,7 @@ export function ItemSheet({
           <select
             value={locationId}
             onChange={(e) => setLocationId(e.target.value)}
-            className="rounded-field bg-ground px-3.5 py-[11px] text-[14.5px] font-semibold"
+            className="rounded-field bg-ground px-3.5 py-[11px] text-sm font-semibold"
           >
             {locations.map(([id, location]) => (
               <option key={id} value={id}>
@@ -162,7 +162,7 @@ export function ItemSheet({
             <select
               value={unit}
               onChange={(e) => setUnit(e.target.value as Unit)}
-              className="rounded-field bg-ground px-3 py-[11px] text-[14.5px] font-semibold"
+              className="rounded-field bg-ground px-3 py-[11px] text-sm font-semibold"
             >
               {(Object.keys(UNIT_NAMES) as Unit[]).map((id) => (
                 <option key={id} value={id}>

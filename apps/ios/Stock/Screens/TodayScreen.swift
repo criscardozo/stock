@@ -12,6 +12,9 @@ struct TodayScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
+                    Text("Hoy")
+                        .font(.stock(18, .bold))
+                        .padding(.top, 6)
                     Text(DayFormat.long(store.today))
                         .font(.stock(13, .semibold))
                         .foregroundStyle(Theme.ink2)
@@ -49,7 +52,8 @@ struct TodayScreen: View {
                 .padding(.vertical, 8)
             }
             .background(Theme.ground)
-            .navigationTitle("Hoy")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .bottom) {
                 if store.todaysRecipe != nil, store.todaysDay?.status != .cooked {
                     PrimaryButton(icon: "fork.knife", title: "Marcar cocinada") { cooking = true }

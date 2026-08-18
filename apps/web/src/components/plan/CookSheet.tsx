@@ -108,7 +108,7 @@ export function CookSheet({
                   {on && <Icon name="check" size={16} className="text-on-primary" />}
                 </button>
 
-                <span className="min-w-0 flex-1 truncate text-[14.5px] font-semibold">
+                <span className="min-w-0 flex-1 truncate text-sm font-semibold">
                   {item.name}
                 </span>
 
