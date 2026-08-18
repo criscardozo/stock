@@ -8,7 +8,7 @@
  *
  * Bump CACHE when the shell changes; the old one is deleted on activate.
  */
-const CACHE = 'stock-shell-v1'
+const CACHE = 'stock-shell-v2'
 
 // The routes a person can cold-start into. Their JS chunks are hashed, so they
 // can't be listed here — they get cached the first time they're fetched.
@@ -69,7 +69,10 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return
 
   // Next's build output is content-hashed, so a hit is always the right bytes.
-  const immutable = url.pathname.startsWith('/_next/static') || url.pathname.startsWith('/icons/')
+  // NOT /icons/: those names are fixed (icon-512.png stays icon-512.png), so a
+  // cache-first hit there serves last month's icon forever. They go through the
+  // network-first path below, which falls back to the cached copy offline.
+  const immutable = url.pathname.startsWith('/_next/static')
 
   event.respondWith(
     caches.match(request).then((hit) => {
