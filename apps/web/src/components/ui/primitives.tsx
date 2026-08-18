@@ -3,7 +3,7 @@
 /**
  * The pieces the design repeats. Each one exists because it appears on three or
  * more screens with the same meaning — not because it could be abstracted.
- * Measurements come from docs/design/reference/, via docs/design/tokens.md.
+ * Measurements come from docs/design/reference/, via docs/design-system.md.
  */
 import type { ReactNode } from 'react'
 import { hueClasses, initialOf } from '@/lib/design/palette'

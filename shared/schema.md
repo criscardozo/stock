@@ -53,7 +53,7 @@ of an array of maps in Firestore means rewriting the whole array.
 `icon` is a Material Symbols Rounded ligature (`nutrition`, `kebab_dining`, …)
 and `hue` names an entry in the palette (`olive`, `wine`, `blue`, `amber`,
 `violet`, `teal`, `magenta`, `brown`, `green`) rather than a raw colour — so
-restyling the palette is one edit in `docs/design/tokens.md` and its CSS, not a
+restyling the palette is one edit in `docs/design-system.md` and its CSS, not a
 data migration.
 
 ## `households/{hid}/items/{itemId}`

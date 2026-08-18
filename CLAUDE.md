@@ -14,9 +14,14 @@ cannot work yet). All three are console steps in `docs/setup.md`.
 architecture decisions and the phase order.
 
 The UI is implemented against the design system in
-[`docs/design/tokens.md`](docs/design/tokens.md), whose raw Claude Design export
-is in `docs/design/reference/`. **Use those tokens — don't invent colours.** The
-delivered design is light-only; a dark palette has to be designed, not guessed.
+[`docs/design-system.md`](docs/design-system.md) — the scale by role, the palette
+in both appearances, the shape rules and the anatomy of a screen. It is shared
+with Gastos Diarios: same system, different brand colour. **Use those tokens —
+don't invent colours.**
+
+The raw Claude Design handover lives in `docs/design/`, which is gitignored: it
+is a generated bundle, not source, and a clone builds without it.
+`tools/icons/build-icons.sh` is the one thing that reads it.
 
 ## What this is
 

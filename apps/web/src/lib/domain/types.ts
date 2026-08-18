@@ -13,7 +13,7 @@ export interface Category {
   name: string
   /** Material Symbols Rounded ligature. */
   icon: string
-  /** Palette name from docs/design/tokens.md — never a raw colour. */
+  /** Palette name from docs/design-system.md — never a raw colour. */
   hue: string
   kind: 'food' | 'household'
   sortOrder: number

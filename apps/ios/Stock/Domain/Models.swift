@@ -31,7 +31,7 @@ struct Category: Codable, Hashable {
     var name: String
     /// SF Symbol-ish name is NOT used: the design is Material Symbols, mapped in Theme.
     var icon: String
-    /// Palette name from docs/design/tokens.md — never a raw colour.
+    /// Palette name from docs/design-system.md — never a raw colour.
     var hue: String
     var kind: String
     var sortOrder: Int

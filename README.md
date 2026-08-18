@@ -20,7 +20,7 @@ and **$0 infrastructure**.
 | 🌐 Web | `apps/web` — Next.js App Router, Tailwind, Vercel (`stock.cardozo.dev`). Also an installable **PWA**, which is how it stays on the phone |
 | 🔥 Firebase | `firebase/` — security rules (the only security boundary), indexes, emulator tests |
 | 🤝 Contracts | `shared/` — Firestore schema, seed categories, and the test vectors both platforms must pass |
-| 📐 Design | [`docs/design/`](docs/design/tokens.md) — tokens + the raw Claude Design export |
+| 📐 Design | [`docs/design-system.md`](docs/design-system.md) — the system Stock shares with Gastos Diarios |
 | 🗺 Plan | [`docs/PLAN.md`](docs/PLAN.md) — architecture decisions and phases |
 | 📜 Rules | [`docs/reglas.md`](docs/reglas.md) — the project's constraints and the reasoning behind them |
 
