@@ -18,7 +18,9 @@ export async function makeTestEnv(): Promise<RulesTestEnvironment> {
     firestore: {
       rules: readFileSync(new URL('../../firestore.rules', import.meta.url), 'utf8'),
       host: '127.0.0.1',
-      port: 8085,
+      // 8085 by default (8080 is Cristian's own Docker stack), overridable
+      // because that stack has been known to claim 8085 too.
+      port: Number(process.env.FIRESTORE_EMULATOR_PORT ?? 8085),
     },
   })
 }

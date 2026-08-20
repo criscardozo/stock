@@ -63,7 +63,8 @@ and "stock level" — for a two-person household the indirection only buys write
 
 | Field | Type | Notes |
 |---|---|---|
-| `name` | string | 1–80 chars |
+| `name` | string | 1–80 chars. For anything bought at Coles this is the receipt's own English name, so a later receipt matches it |
+| `nameEs?` | string | ≤80. What it is called at home, shown as the subtitle. `Leche de soja` under `Coles Regular Soy Milk 1L` |
 | `brand?` | string | |
 | `categoryId` | string | key into `households.categories` |
 | `locationId` | string | key into `households.locations` |
@@ -75,6 +76,7 @@ and "stock level" — for a two-person household the indirection only buys write
 | `minLevel` | int 0–3 | suggest at or below this. Default `1`. Required when `tracking == "level"` |
 | `packSize?` | string | free text like `"500 g"`, informational, usually from Open Food Facts |
 | `barcodes` | string[] | EANs seen for this item. Matched with `array-contains` when scanning |
+| `receiptNames` | string[] | ≤20. Every line a receipt has used for this product, verbatim. Same idea as `barcodes` and for the same reason: one product has several names. Coles prints `Coles Regular Soy Milk 1L` online and `COLES DRINK SOY:REGU 1LITRE` at the till |
 | `expiresAt?` | date | the one expiry that matters (the soonest). **Not a batch ledger** — see PLAN §5 |
 | `snoozedUntil?` | date | silences the *suggestion* until this date. Does not affect the list |
 | `lastPriceCents?` | int ≥ 0 | reference only. No totals, no budget — that's Gastos Diarios' job |

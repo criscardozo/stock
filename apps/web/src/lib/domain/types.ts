@@ -11,6 +11,8 @@ export type Level = 0 | 1 | 2 | 3
 
 export interface Category {
   name: string
+  /** What it is called at home, under the receipt's own name. */
+  nameEs?: string
   /** Material Symbols Rounded ligature. */
   icon: string
   /** Palette name from docs/design-system.md — never a raw colour. */
@@ -55,6 +57,8 @@ export interface Item {
   minLevel?: Level
   packSize?: string
   barcodes: string[]
+  /** Every receipt line matched to this item, verbatim. See schema.md. */
+  receiptNames?: string[]
   expiresAt?: IsoDate
   snoozedUntil?: IsoDate
   lastPriceCents?: number

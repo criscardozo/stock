@@ -130,6 +130,30 @@ describe('items: field validation', () => {
     await assertSucceeds(setDoc(item(ALICE, 'ok'), countedItem(ALICE, { lastPriceCents: 499 })))
     await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { lastPriceCents: 4.99 })))
   })
+
+  it('receipt names are a bounded list, like barcodes', async () => {
+    await assertSucceeds(
+      setDoc(
+        item(ALICE, 'ok'),
+        countedItem(ALICE, { receiptNames: ['COLES DRINK SOY:REGU 1LITRE'] }),
+      ),
+    )
+    // One product really does have several names — online and in-store print
+    // it differently — but not unbounded, for the same reason barcodes are capped.
+    await assertFails(
+      setDoc(
+        item(ALICE, 'x'),
+        countedItem(ALICE, { receiptNames: Array.from({ length: 21 }, (_, i) => `n${i}`) }),
+      ),
+    )
+    await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { receiptNames: 'COLES' })))
+  })
+
+  it('the Spanish subtitle is an optional short string', async () => {
+    await assertSucceeds(setDoc(item(ALICE, 'ok'), countedItem(ALICE, { nameEs: 'Leche de soja' })))
+    await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { nameEs: 'x'.repeat(81) })))
+    await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { nameEs: 42 })))
+  })
 })
 
 describe('items: audit fields cannot lie', () => {

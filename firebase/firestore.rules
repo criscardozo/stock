@@ -148,13 +148,17 @@ service cloud.firestore {
         function validItem(d) {
           return d.keys().hasAll(['name', 'categoryId', 'locationId', 'tracking', 'barcodes',
                                   'createdAt', 'updatedAt', 'updatedBy'])
-            && d.keys().hasOnly(['name', 'brand', 'categoryId', 'locationId', 'tracking',
+            && d.keys().hasOnly(['name', 'nameEs', 'brand', 'categoryId', 'locationId', 'tracking',
                                  'unit', 'quantity', 'minQuantity', 'level', 'minLevel',
-                                 'packSize', 'barcodes', 'expiresAt', 'snoozedUntil',
+                                 'packSize', 'barcodes', 'receiptNames', 'expiresAt', 'snoozedUntil',
                                  'lastPriceCents', 'notes', 'createdAt', 'updatedAt', 'updatedBy'])
             && d.name is string && d.name.size() > 0 && d.name.size() <= 80
             && d.categoryId is string && d.locationId is string
             && d.barcodes is list && d.barcodes.size() <= 20
+            // Receipt lines matched to this item. Same shape and cap as barcodes:
+            // one product genuinely has several names (online vs in-store).
+            && (!('receiptNames' in d) || (d.receiptNames is list && d.receiptNames.size() <= 20))
+            && (!('nameEs' in d) || (d.nameEs is string && d.nameEs.size() <= 80))
             && (!('expiresAt' in d) || isDate(d.expiresAt))
             && (!('snoozedUntil' in d) || isDate(d.snoozedUntil))
             && (!('lastPriceCents' in d) || (d.lastPriceCents is int && d.lastPriceCents >= 0))
