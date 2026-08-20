@@ -1,0 +1,11 @@
+# The web app is the only thing Vercel builds. Without this the CLI uploads the
+# whole monorepo — the Xcode build directories alone are 4.7 GB and blow past
+# the 10 MB request limit — even though git ignores them.
+#
+# Every pattern is ANCHORED with a leading slash. Without it, `firebase` also
+# matches apps/web/src/lib/firebase/, which took the build down with 21
+# "Can't resolve '@/lib/firebase/auth'" errors.
+/apps/ios
+/docs
+/firebase
+/tools
