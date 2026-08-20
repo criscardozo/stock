@@ -312,8 +312,8 @@ export default function SettingsPage() {
           categories={categories}
           locations={locations}
           onClose={() => setImporting(false)}
-          onApply={(actions) => {
-            applyReceipt(householdId, user.uid, actions)
+          onApply={(actions, deleteItemIds) => {
+            applyReceipt(householdId, user.uid, actions, deleteItemIds)
             setImporting(false)
           }}
         />

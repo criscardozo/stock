@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react'
 import type { Category, Item, Location } from '@/lib/domain/types'
-import type { NewItem, ReceiptAction } from '@/lib/firebase/mutations'
+import type { ReceiptAction } from '@/lib/firebase/mutations'
+import { buildActions, summarise, type Decision } from '@/lib/receipts/actions'
 import { consolidate, priceToStore } from '@/lib/receipts/consolidate'
 import { matchLines } from '@/lib/receipts/match'
 import { parseReceipt, type Receipt } from '@/lib/receipts/parse'
@@ -22,7 +23,6 @@ import { Icon, PrimaryAction, Sheet } from '../ui/primitives'
  * free samples, and none of those are food in the house.
  */
 
-type Decision = { kind: 'skip' } | { kind: 'link'; itemId: string } | { kind: 'create' }
 
 function money(cents: number | null): string {
   return cents === null ? '—' : `$${(cents / 100).toFixed(2)}`
@@ -39,7 +39,7 @@ export function ImportSheet({
   categories: [string, Category][]
   locations: [string, Location][]
   onClose: () => void
-  onApply: (actions: ReceiptAction[]) => void
+  onApply: (actions: ReceiptAction[], deleteItemIds: string[]) => void
 }) {
   const [receipts, setReceipts] = useState<Receipt[]>([])
   const [failed, setFailed] = useState<string[]>([])
@@ -54,6 +54,8 @@ export function ImportSheet({
    * disagree.
    */
   const [minBuys, setMinBuys] = useState(3)
+  /** "Start the catalogue from these receipts" — off unless asked for. */
+  const [wipeFirst, setWipeFirst] = useState(false)
 
   const lines = useMemo(() => consolidate(receipts), [receipts])
 
@@ -102,35 +104,35 @@ export function ImportSheet({
   }
 
   function apply() {
-    const actions: ReceiptAction[] = resolved.map(({ line, match }) => {
-      const price = priceToStore(line)
-      if (match.status === 'known' && match.item) {
-        return { kind: 'link', itemId: match.item.id, priceCents: price, receiptName: line.raw }
-      }
-      const decision = decisionFor(line.raw)
-      if (decision.kind === 'link') {
-        return { kind: 'link', itemId: decision.itemId, priceCents: price, receiptName: line.raw }
-      }
-      if (decision.kind === 'create') {
-        const item: NewItem = {
-          name: line.name,
-          categoryId,
-          locationId,
-          tracking: 'quantity',
-          unit: 'unit',
-          // Past shops say nothing about what is in the house right now.
-          quantity: 0,
-          minQuantity: 0,
-          barcodes: [],
-        }
-        return { kind: 'create', item, priceCents: price, receiptName: line.raw }
-      }
-      return { kind: 'skip' }
-    })
-    onApply(actions)
+    const actions = buildActions(resolved, decisions, { categoryId, locationId })
+    // Linking to an item that is about to be deleted would write to nothing, so
+    // a wipe turns every link into a create.
+    const safe = wipeFirst
+      ? actions.map((a) =>
+          a.kind === 'link'
+            ? ({
+                kind: 'create',
+                item: {
+                  name: resolved.find((r) => r.line.raw === a.receiptName)?.line.name ?? a.receiptName,
+                  categoryId,
+                  locationId,
+                  tracking: 'quantity' as const,
+                  unit: 'unit' as const,
+                  quantity: 0,
+                  minQuantity: 0,
+                  barcodes: [],
+                },
+                priceCents: a.priceCents,
+                receiptName: a.receiptName,
+              } satisfies ReceiptAction)
+            : a,
+        )
+      : actions
+    onApply(safe, wipeFirst ? items.map((i) => i.id) : [])
   }
 
-  const toCreate = unknownAll.filter((r) => decisionFor(r.line.raw).kind === 'create').length
+  const counts = summarise(buildActions(resolved, decisions, { categoryId, locationId }))
+  const toCreate = counts.created
   const toLink = unknownAll.filter((r) => decisionFor(r.line.raw).kind === 'link').length
   const dates = receipts.map((r) => r.date).filter((d): d is string => d !== null).sort()
 
@@ -143,8 +145,10 @@ export function ImportSheet({
       onClose={onClose}
       footer={
         receipts.length > 0 && (
-          <PrimaryAction icon="check" onClick={apply}>
-            {`Aplicar · ${known.length} precio${known.length === 1 ? '' : 's'}` +
+          <PrimaryAction icon={wipeFirst ? 'delete_sweep' : 'check'} onClick={apply}>
+            {wipeFirst
+              ? `Borrar ${items.length} y crear ${toCreate}`
+              : `Aplicar · ${known.length} precio${known.length === 1 ? '' : 's'}` +
               (toCreate > 0 ? `, ${toCreate} nuevo${toCreate === 1 ? '' : 's'}` : '') +
               (toLink > 0 ? `, ${toLink} vinculado${toLink === 1 ? '' : 's'}` : '')}
           </PrimaryAction>
@@ -248,8 +252,25 @@ export function ImportSheet({
                 ))}
               </div>
 
+              {items.length > 0 && (
+                <label className="flex cursor-pointer items-start gap-2.5 rounded-field bg-danger-soft px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    checked={wipeFirst}
+                    onChange={(e) => setWipeFirst(e.target.checked)}
+                    className="mt-0.5"
+                  />
+                  <span className="flex-1 text-[12px] leading-relaxed text-danger-deep">
+                    <strong>Empezar de cero</strong>: borrar los {items.length} producto
+                    {items.length === 1 ? '' : 's'} que ya tengo y quedarme solo con lo de estos
+                    recibos. Las recetas y la lista que apunten a algo borrado se quedan sin
+                    referencia.
+                  </span>
+                </label>
+              )}
+
               <div className="flex flex-wrap items-center gap-2 rounded-field bg-ground px-3 py-2.5">
-                <span className="text-[11.5px] text-ink-2">Los nuevos entran en</span>
+                <span className="text-[11.5px] text-ink-2">Por defecto, los nuevos van a</span>
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
@@ -315,7 +336,20 @@ export function ImportSheet({
                         </button>
                         <button
                           onClick={() =>
-                            setDecisions((d) => ({ ...d, [line.raw]: { kind: 'create' } }))
+                            setDecisions((d) => ({
+                              ...d,
+                              [line.raw]: {
+                                kind: 'create',
+                                categoryId:
+                                  d[line.raw]?.kind === 'create'
+                                    ? (d[line.raw] as { categoryId?: string }).categoryId
+                                    : undefined,
+                                locationId:
+                                  d[line.raw]?.kind === 'create'
+                                    ? (d[line.raw] as { locationId?: string }).locationId
+                                    : undefined,
+                              },
+                            }))
                           }
                           className={`rounded-full px-3 py-1.5 text-[12px] ${
                             decision.kind === 'create'
@@ -352,6 +386,43 @@ export function ImportSheet({
                           ))}
                         </select>
                       </div>
+
+                      {decision.kind === 'create' && (
+                        <div className="flex flex-wrap gap-1.5">
+                          <select
+                            value={decision.categoryId ?? categoryId}
+                            onChange={(e) =>
+                              setDecisions((d) => ({
+                                ...d,
+                                [line.raw]: { ...decision, categoryId: e.target.value },
+                              }))
+                            }
+                            className="rounded-full border border-line bg-surface px-3 py-1.5 text-[12px] font-semibold text-ink-2"
+                          >
+                            {categories.map(([id, c]) => (
+                              <option key={id} value={id}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                          <select
+                            value={decision.locationId ?? locationId}
+                            onChange={(e) =>
+                              setDecisions((d) => ({
+                                ...d,
+                                [line.raw]: { ...decision, locationId: e.target.value },
+                              }))
+                            }
+                            className="rounded-full border border-line bg-surface px-3 py-1.5 text-[12px] font-semibold text-ink-2"
+                          >
+                            {locations.map(([id, l]) => (
+                              <option key={id} value={id}>
+                                {l.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     </div>
                   )
                 })}

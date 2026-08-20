@@ -535,15 +535,30 @@ export type ReceiptAction =
  *
  * One batch because a half-applied import is the worst outcome: some prices
  * updated, some items created, and no way to tell which without reading every
- * row. A receipt is tens of lines, far under Firestore's 500-write cap.
+ * row. A receipt is tens of lines, far under Firestore's 500-write cap — and
+ * that headroom is what lets an optional wipe ride along in the same batch.
  *
  * Quantities are deliberately untouched. These are PAST shops — that food was
  * eaten weeks ago, and adding it to today's stock would invent food that is not
  * in the house. Buying today goes through `closeShopping`, which does move stock.
  */
-export function applyReceipt(householdId: string, uid: string, actions: ReceiptAction[]) {
+export function applyReceipt(
+  householdId: string,
+  uid: string,
+  actions: ReceiptAction[],
+  /**
+   * Item ids to delete first — "start the catalogue from this receipt".
+   * In the same batch as the writes on purpose: a catalogue that got emptied
+   * and then failed to refill is the one outcome worth ruling out.
+   */
+  deleteItemIds: string[] = [],
+) {
   const database = db()
   const batch = writeBatch(database)
+
+  for (const id of deleteItemIds) {
+    batch.delete(doc(database, HOUSEHOLDS, householdId, 'items', id))
+  }
 
   for (const action of actions) {
     if (action.kind === 'skip') continue
