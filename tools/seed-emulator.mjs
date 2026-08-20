@@ -18,7 +18,10 @@ import { initializeTestEnvironment } from '@firebase/rules-unit-testing'
 import { doc, setDoc } from 'firebase/firestore'
 
 const PROJECT = 'demo-stock'
-const AUTH = 'http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1'
+// Ports are overridable: Cristian's Docker stack has claimed 8085/9099 before.
+const AUTH_PORT = process.env.AUTH_EMULATOR_PORT ?? '9099'
+const FIRESTORE_PORT = Number(process.env.FIRESTORE_EMULATOR_PORT ?? 8085)
+const AUTH = `http://127.0.0.1:${AUTH_PORT}/identitytoolkit.googleapis.com/v1`
 const PASSWORD = 'emulator-only'
 
 const read = (path) => JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8'))
@@ -44,7 +47,7 @@ async function ensureAccount({ email, displayName }) {
     } catch {
       // A bare "fetch failed" here is always the same thing, and saying so
       // beats making the next person read this file to find out.
-      throw new Error('No hay nadie en 127.0.0.1:9099 — arrancá `pnpm emulators` primero.')
+      throw new Error(`No hay nadie en 127.0.0.1:${AUTH_PORT} — arrancá \`pnpm emulators\` primero.`)
     }
     if (response.ok) return (await response.json()).localId
   }
@@ -240,7 +243,7 @@ async function main() {
 
   const env = await initializeTestEnvironment({
     projectId: PROJECT,
-    firestore: { host: '127.0.0.1', port: 8085 },
+    firestore: { host: '127.0.0.1', port: FIRESTORE_PORT },
   })
   await env.clearFirestore()
 

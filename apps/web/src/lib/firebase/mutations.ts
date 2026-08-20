@@ -24,6 +24,7 @@ import {
   updateDoc,
   where,
   writeBatch,
+  arrayUnion,
   type Firestore,
 } from 'firebase/firestore'
 import { db } from './client'
@@ -519,4 +520,56 @@ async function inBatches<T>(
     for (const row of rows.slice(i, i + perBatch)) write(batch, row)
     await batch.commit()
   }
+}
+
+/** What the receipt review screen decided for one line. */
+export type ReceiptAction =
+  | { kind: 'skip' }
+  /** Remember this receipt name on an existing item, and refresh its price. */
+  | { kind: 'link'; itemId: string; priceCents: number | null; receiptName: string }
+  /** Create the item, already carrying the receipt name that produced it. */
+  | { kind: 'create'; item: NewItem; priceCents: number | null; receiptName: string }
+
+/**
+ * Applies a whole reviewed receipt in one batch.
+ *
+ * One batch because a half-applied import is the worst outcome: some prices
+ * updated, some items created, and no way to tell which without reading every
+ * row. A receipt is tens of lines, far under Firestore's 500-write cap.
+ *
+ * Quantities are deliberately untouched. These are PAST shops — that food was
+ * eaten weeks ago, and adding it to today's stock would invent food that is not
+ * in the house. Buying today goes through `closeShopping`, which does move stock.
+ */
+export function applyReceipt(householdId: string, uid: string, actions: ReceiptAction[]) {
+  const database = db()
+  const batch = writeBatch(database)
+
+  for (const action of actions) {
+    if (action.kind === 'skip') continue
+
+    if (action.kind === 'create') {
+      const ref = doc(collection(database, HOUSEHOLDS, householdId, 'items'))
+      batch.set(ref, {
+        ...stripUndefined(action.item),
+        receiptNames: [action.receiptName],
+        ...(action.priceCents !== null ? { lastPriceCents: action.priceCents } : {}),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        updatedBy: uid,
+      })
+      continue
+    }
+
+    // arrayUnion rather than a rewritten array: the other phone may have taught
+    // this item a different receipt name while the import screen was open.
+    batch.update(doc(database, HOUSEHOLDS, householdId, 'items', action.itemId), {
+      receiptNames: arrayUnion(action.receiptName),
+      ...(action.priceCents !== null ? { lastPriceCents: action.priceCents } : {}),
+      updatedAt: serverTimestamp(),
+      updatedBy: uid,
+    })
+  }
+
+  return batch.commit()
 }

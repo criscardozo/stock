@@ -5,10 +5,11 @@ import { useStoredValue, writeStoredValue } from '@/lib/useStoredValue'
 import { applyTheme, asThemePref, THEME_STORAGE_KEY, type ThemePref } from '@/lib/theme'
 import { useAuth } from '@/lib/firebase/auth'
 import { useHousehold } from '@/lib/firebase/household'
-import { createInvite, updateHousehold } from '@/lib/firebase/mutations'
+import { applyReceipt, createInvite, updateHousehold } from '@/lib/firebase/mutations'
 import type { PlanLength } from '@/lib/domain/dates'
 import { plural } from '@/lib/domain/format'
 import { PageHeader } from '@/components/PageHeader'
+import { ImportSheet } from '@/components/receipts/ImportSheet'
 import { VersionCard } from '@/components/VersionCard'
 import { Avatar, Card, HueBadge, Icon, SectionLabel } from '@/components/ui/primitives'
 
@@ -18,6 +19,7 @@ export default function SettingsPage() {
   const { user, signOut } = useAuth()
   const { household, householdId, items } = useHousehold()
   const [copied, setCopied] = useState(false)
+  const [importing, setImporting] = useState(false)
 
   // The blocking script in layout.tsx already applied the stored theme; this
   // only reflects it in the control. Read through the same external-store hook
@@ -191,6 +193,23 @@ export default function SettingsPage() {
           </Card>
         </section>
 
+        <section className="flex flex-col gap-2">
+          <SectionLabel>Compras</SectionLabel>
+          <Card className="flex flex-col gap-3 py-4">
+            <button
+              onClick={() => setImporting(true)}
+              className="flex items-center gap-2 self-start rounded-full border border-line bg-surface px-4 py-2.5 text-[13px] font-bold text-ink"
+            >
+              <Icon name="receipt_long" size={18} />
+              Importar un PDF de Coles
+            </button>
+            <p className="text-[11.5px] leading-relaxed text-ink-3">
+              Actualiza el precio de referencia de lo que ya tenés y te deja dar de alta lo que
+              falte. No toca las cantidades: para la compra del día está «Cerrar compra».
+            </p>
+          </Card>
+        </section>
+
         {/* Household and its invite in one card, as in Gastos Diarios: who is
             here and how someone else gets in is one thought, not two.
             No timezone row — it is chosen once when the household is created
@@ -286,6 +305,19 @@ export default function SettingsPage() {
           <span className="text-sm font-semibold text-danger-deep">Cerrar sesión</span>
         </button>
       </div>
+
+      {importing && (
+        <ImportSheet
+          items={items}
+          categories={categories}
+          locations={locations}
+          onClose={() => setImporting(false)}
+          onApply={(actions) => {
+            applyReceipt(householdId, user.uid, actions)
+            setImporting(false)
+          }}
+        />
+      )}
     </>
   )
 }
