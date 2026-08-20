@@ -140,15 +140,20 @@ enum Theme {
         case "kebab_dining": return "fork.knife"
         case "set_meal": return "fish.fill"
         case "egg": return "oval.fill"
-        case "bakery_dining", "coffee": return "cup.and.saucer.fill"
+        // Panadería and Café must not share a glyph — they are two categories
+        // in the same list. SF Symbols has no croissant, so the bakery takes
+        // the cake and coffee keeps the cup.
+        case "bakery_dining": return "birthday.cake.fill"
+        case "coffee": return "cup.and.saucer.fill"
         case "local_dining": return "takeoutbag.and.cup.and.straw.fill"
         case "ac_unit": return "snowflake"
         case "local_bar": return "wineglass.fill"
-        case "cookie": return "birthday.cake.fill"
+        case "cookie": return "popcorn.fill"
         case "grocery": return "basket.fill"
-        case "cleaning_services": return "sparkles"
-        case "soap": return "drop.fill"
-        case "dry": return "wind"
+        case "cleaning_services": return "bubbles.and.sparkles.fill"
+        case "soap": return "hands.and.sparkles.fill"
+        // "dry" is Material's tumble-dry mark, used here for the paper aisle.
+        case "dry": return "toilet.fill"
         case "kitchen": return "refrigerator.fill"
         case "shelves": return "cabinet.fill"
         case "local_laundry_service": return "washer.fill"

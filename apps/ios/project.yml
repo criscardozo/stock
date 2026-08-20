@@ -132,6 +132,13 @@ targets:
       # Pure Foundation despite living in Data/ — no Firebase, so the tests can
       # compile it without waiting for an SDK.
       - path: Stock/Data/SigningExpiry.swift
+      # SwiftUI and UIKit only. Compiled in so the symbol map can be checked
+      # against what SF Symbols actually ships.
+      - path: Stock/Design/Theme.swift
+      - path: ../../shared/categories.json
+        buildPhase: resources
+      - path: ../../shared/locations.json
+        buildPhase: resources
       - path: ../../shared/plan-period-vectors.json
         buildPhase: resources
       - path: ../../shared/shopping-vectors.json
