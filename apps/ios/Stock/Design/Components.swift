@@ -236,8 +236,14 @@ struct BagShape: Shape {
     }
 }
 
-/// The app mark: the reduced bag, matching AppMark on the web — same path, same
-/// gradient as the installed icon.
+/// The app mark, matching AppMark on the web — same threshold, same gradient as
+/// the installed icon.
+///
+/// The design's rule is a size, not a preference: "a 32 px y menos se caen los
+/// productos — ahí queda la bolsa con su zigzag, que alcanza". Above 32 this
+/// draws the full mark, from the same source art the app icons are built from,
+/// as a template image; at 32 and under it draws `BagShape` and the produce
+/// falls away.
 struct AppMark: View {
     var size: CGFloat = 34
 
@@ -251,13 +257,26 @@ struct AppMark: View {
                 )
             )
             .frame(width: size, height: size)
-            .overlay(
-                BagShape()
-                    // Cream, fixed — NOT Theme.surface, which flips to near-black
-                    // in dark and turns the bag into a hole. The mark is the icon,
-                    // and the icon does not change with the system appearance.
-                    .fill(Color(hex: 0xFCFCF8))
-                    .frame(width: size * 0.58, height: size * 0.5)
-            )
+            .overlay(glyph)
+    }
+
+    // Theme.markGlyph and not Theme.surface: surface flips to near-black in dark
+    // and would turn the bag into a hole. The mark is the icon, and the icon does
+    // not repaint itself when the system flips.
+    @ViewBuilder private var glyph: some View {
+        if size > 32 {
+            // The source is laid out on the icon's own canvas, so at the full
+            // frame the bag lands exactly where it does on the home screen.
+            Image("MarkGlyph")
+                .renderingMode(.template)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(Theme.markGlyph)
+                .frame(width: size, height: size)
+        } else {
+            BagShape()
+                .fill(Theme.markGlyph)
+                .frame(width: size * 0.58, height: size * 0.5)
+        }
     }
 }

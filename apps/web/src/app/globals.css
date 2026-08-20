@@ -32,6 +32,10 @@
      ramp would flip. These always run bright at the top, like the icon. */
   --mark-from: #2e9e5b;
   --mark-to: #1d7a43;
+  /* The drawing on that field. Cream in BOTH appearances, unlike everything
+     else here: the mark is the icon, and the icon does not repaint itself when
+     the system flips. Only the green underneath it brightens. */
+  --mark-glyph: #fcfcf8;
 
   --danger: #e5484d;
   --danger-deep: #c0353a;
@@ -97,6 +101,10 @@
     --primary-soft: rgba(69, 188, 114, 0.15);
     --mark-from: #45bc72;
     --mark-to: #2e9e5b;
+    /* Unchanged from light, and repeated here on purpose: the mark's drawing
+       does not repaint when the system flips, and stating it is what lets the
+       token test hold both halves to the same value. */
+    --mark-glyph: #fcfcf8;
     /* Text ON the accent: near-black, because the accent is now light. */
     --on-primary: #0f1a12;
 
@@ -152,6 +160,10 @@
   --primary-soft: rgba(69, 188, 114, 0.15);
   --mark-from: #45bc72;
   --mark-to: #2e9e5b;
+  /* Unchanged from light, and repeated here on purpose: the mark's drawing
+     does not repaint when the system flips, and stating it is what lets the
+     token test hold both halves to the same value. */
+  --mark-glyph: #fcfcf8;
   /* Text ON the accent: near-black, because the accent is now light. */
   --on-primary: #0f1a12;
 
@@ -207,6 +219,7 @@
   --color-primary-soft: var(--primary-soft);
   --color-mark-from: var(--mark-from);
   --color-mark-to: var(--mark-to);
+  --color-mark-glyph: var(--mark-glyph);
   --color-on-primary: var(--on-primary);
 
   --color-danger: var(--danger);

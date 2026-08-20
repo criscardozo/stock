@@ -71,6 +71,7 @@ const ROLES: Record<string, string> = {
   'member-b': 'memberB',
   'mark-from': 'markFrom',
   'mark-to': 'markTo',
+  'mark-glyph': 'markGlyph',
 }
 
 describe('design tokens', () => {

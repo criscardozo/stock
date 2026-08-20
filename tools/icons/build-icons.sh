@@ -79,6 +79,41 @@ render "$SRC/apple-touch-icon-180.png" "$WEB/apple-touch-icon-180.png" 180 $L_LO
 render "$SRC/favicon-32.png"          "$WEB/favicon-32.png"          32  $L_LO $L_HI "gradient:$LIGHT_BG_FROM-$LIGHT_BG_TO" "xc:$LIGHT_GLYPH"
 render "$SRC/favicon-16.png"          "$WEB/favicon-16.png"          16  $L_LO $L_HI "gradient:$LIGHT_BG_FROM-$LIGHT_BG_TO" "xc:$LIGHT_GLYPH"
 
+# The in-app mark, as a MASK rather than finished art. Above 32 px the design
+# calls for the full drawing (bag + produce), but the field it sits on is a
+# gradient that inverts with the appearance — so shipping a finished PNG would
+# freeze one appearance into a binary. The alpha channel is all either client
+# needs: the web fills it through CSS `mask-image`, iOS renders it as a template
+# image, and the cream stays a token in both.
+#
+# The in-app mark, as a MASK rather than finished art. Above 32 px the design
+# calls for the full drawing (bag + produce), but the field it sits on is a
+# gradient that inverts with the appearance — so shipping finished art would
+# freeze one appearance into a binary. The alpha channel is all either client
+# needs: the web fills it through CSS `mask-image`, iOS renders it as a template
+# image, and the cream stays a token on both sides.
+#
+# Derived from the two-colour icon source by the SAME red-channel normalisation
+# `render` uses, and not from `mark-glyph-green.png`: that asset is only the
+# outer silhouette. Masking with it loses every interior cut-out — the slashes
+# on the baguette, the gaps between the produce, the notches of the zigzag —
+# and the mark comes out as a blob that is recognisably the wrong drawing.
+#
+# 256 px: the mark is drawn at 64 CSS px at most, so this covers @3x with room
+# to spare.
+echo "in-app mark"
+# The glyph mask is intersected with the source's OWN alpha. Without that the
+# antialiased outer edge of the icon normalises to partly-opaque and the mask
+# grows a faint ring the whole way round the field.
+magick \
+  \( -size 256x256 xc:white \) \
+  \( \( "$SRC/icon-512.png" -resize 256x256 -channel R -separate +channel -level "$L_LO%,$L_HI%" \) \
+     \( "$SRC/icon-512.png" -resize 256x256 -alpha extract \) \
+     -compose Multiply -composite \) \
+  -compose CopyOpacity -composite \
+  "$WEB/mark-glyph-256.png"
+cp "$WEB/mark-glyph-256.png" apps/ios/Stock/Assets.xcassets/MarkGlyph.imageset/mark-glyph-256.png
+
 # iOS and watchOS reject an app icon carrying an alpha channel; watchOS is the
 # strict one, and it fails as "did not have any applicable content".
 for f in "$IOS"/*.png "$WATCH"/appicon-1024.png; do

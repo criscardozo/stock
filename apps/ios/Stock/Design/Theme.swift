@@ -70,6 +70,12 @@ enum Theme {
     /// ramp would flip. These always run bright at the top, like the icon.
     static let markFrom = Color.hex(light: 0x2E9E5B, dark: 0x45BC72)
     static let markTo = Color.hex(light: 0x1D7A43, dark: 0x2E9E5B)
+    /// The drawing on that field. The SAME cream in both appearances, unlike
+    /// every other token here: the mark is the icon, and the icon does not
+    /// repaint itself when the system flips — only the green under it
+    /// brightens. Declared as a pair anyway so the token test can hold web and
+    /// iOS to it.
+    static let markGlyph = Color.hex(light: 0xFCFCF8, dark: 0xFCFCF8)
 
     static let danger = Color.hex(light: 0xE5484D, dark: 0xFF6B6E)
     static let dangerDeep = Color.hex(light: 0xC0353A, dark: 0xFF8C8E)
