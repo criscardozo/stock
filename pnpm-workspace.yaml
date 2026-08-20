@@ -3,6 +3,21 @@ packages:
   - "firebase/rules-tests"
   - "tools"
 
+# Single-sourced versions for anything BOTH workspaces use. They had drifted
+# apart on their own — web was on TypeScript 5.9 and @types/node 20 while
+# rules-tests was on 7.0.2 and 26 — which meant the rules tests were being
+# typechecked by a different compiler than the app. A catalog makes that
+# impossible rather than merely discouraged, and keeps the versions matched with
+# Gastos Diarios, which shares this stack.
+catalog:
+  # 5.9 and not 7.x on purpose: TypeScript 7 is the native port and still has
+  # gaps. Agreed with the Gastos Diarios side, which stays on 5.9 too.
+  typescript: ^5.9.3
+  # 24 and not 26: it is the LTS line, and nothing here needs newer typings.
+  "@types/node": ^24.13.3
+  firebase: ^12.18.0
+  vitest: ^4.1.11
+
 # Native/postinstall builds we explicitly trust. re2 is what firebase-tools uses
 # to evaluate the regexes in firestore.rules, so it has to actually build.
 allowBuilds:
@@ -11,3 +26,51 @@ allowBuilds:
   re2: true
   sharp: false
   unrs-resolver: false
+
+minimumReleaseAgeExclude:
+  - '@firebase/ai@2.15.0'
+  - '@firebase/analytics-compat@0.2.30'
+  - '@firebase/analytics-types@0.8.5'
+  - '@firebase/analytics@0.10.24'
+  - '@firebase/app-check-compat@0.4.7'
+  - '@firebase/app-check-interop-types@0.3.5'
+  - '@firebase/app-check-types@0.5.5'
+  - '@firebase/app-check@0.13.1'
+  - '@firebase/app-compat@0.5.17'
+  - '@firebase/app-types@0.9.6'
+  - '@firebase/app@0.16.1'
+  - '@firebase/auth-compat@0.6.10'
+  - '@firebase/auth-interop-types@0.2.6'
+  - '@firebase/auth-types@0.13.2'
+  - '@firebase/auth@1.13.5'
+  - '@firebase/component@0.7.5'
+  - '@firebase/data-connect@0.7.4'
+  - '@firebase/database-compat@2.1.7'
+  - '@firebase/database-types@1.0.22'
+  - '@firebase/database@1.1.5'
+  - '@firebase/firestore-compat@0.4.13'
+  - '@firebase/firestore-types@3.0.5'
+  - '@firebase/firestore@4.17.1'
+  - '@firebase/functions-compat@0.5.0'
+  - '@firebase/functions-types@0.6.5'
+  - '@firebase/functions@0.14.0'
+  - '@firebase/installations-compat@0.2.24'
+  - '@firebase/installations-types@0.5.5'
+  - '@firebase/installations@0.6.24'
+  - '@firebase/logger@0.5.2'
+  - '@firebase/messaging-compat@0.2.29'
+  - '@firebase/messaging-interop-types@0.2.6'
+  - '@firebase/messaging@0.13.2'
+  - '@firebase/performance-compat@0.2.27'
+  - '@firebase/performance-types@0.2.5'
+  - '@firebase/performance@0.7.14'
+  - '@firebase/remote-config-compat@0.2.29'
+  - '@firebase/remote-config-types@0.5.2'
+  - '@firebase/remote-config@0.9.2'
+  - '@firebase/rules-unit-testing@5.0.2'
+  - '@firebase/storage-compat@0.4.5'
+  - '@firebase/storage-types@0.8.5'
+  - '@firebase/storage@0.14.5'
+  - '@firebase/util@1.15.3'
+  - '@firebase/webchannel-wrapper@1.0.7'
+  - firebase@12.18.0

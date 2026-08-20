@@ -8,10 +8,10 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^5.0.1",
-    "@types/node": "^26.2.0",
-    "firebase": "^12.17.1",
-    "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@types/node": "catalog:",
+    "firebase": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }
