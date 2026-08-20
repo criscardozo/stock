@@ -122,12 +122,17 @@ export function Stepper({
   onChange,
   step = 1,
   size = 'sm',
+  name,
 }: {
   value: number
   label: string
   onChange: (next: number) => void
   step?: number
   size?: 'sm' | 'lg'
+  /** What this stepper counts. Without it a screen reader hears "Restar · 3 u ·
+   * Sumar" with no idea of what, and a row full of steppers is unusable by
+   * voice. Also what makes each one addressable in the E2E suite. */
+  name?: string
 }) {
   const big = size === 'lg'
   const glyph = big ? 22 : 18
@@ -136,7 +141,7 @@ export function Stepper({
     <div className={`flex shrink-0 items-center rounded-full bg-ground ${big ? 'p-1' : 'p-[3px]'}`}>
       <button
         type="button"
-        aria-label="Restar"
+        aria-label={name ? `Restar ${name}` : 'Restar'}
         onClick={() => onChange(Math.max(0, value - step))}
         className={`grid place-items-center rounded-full ${box} ${
           value === 0 ? 'text-ink-4' : 'text-ink-2'
@@ -145,13 +150,15 @@ export function Stepper({
         <Icon name="remove" size={glyph} />
       </button>
       <span
+        role="status"
+        aria-label={name ? `${name}: ${label}` : label}
         className={`tnum text-center font-bold ${big ? 'min-w-24 text-[22px]' : 'min-w-[52px] text-sm'}`}
       >
         {label}
       </span>
       <button
         type="button"
-        aria-label="Sumar"
+        aria-label={name ? `Sumar ${name}` : 'Sumar'}
         onClick={() => onChange(value + step)}
         className={`grid place-items-center rounded-full text-ink-2 ${box}`}
       >

@@ -96,6 +96,7 @@ export function CloseShoppingSheet({
                 <span className="flex items-center gap-2">
                   <span className="text-xs text-ink-3">sin abrir</span>
                   <Stepper
+                    name={entry.label}
                     value={amounts[entry.id] ?? 0}
                     step={1}
                     label={`+${amounts[entry.id] ?? 0}`}
@@ -104,6 +105,7 @@ export function CloseShoppingSheet({
                 </span>
               ) : item.tracking === 'quantity' ? (
                 <Stepper
+                  name={entry.label}
                   value={amounts[entry.id] ?? 0}
                   step={stepFor(item.unit ?? 'unit')}
                   label={formatQuantity(amounts[entry.id] ?? 0, item.unit ?? 'unit')}

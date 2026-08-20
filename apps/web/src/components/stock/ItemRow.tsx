@@ -65,6 +65,7 @@ export function ItemRow({
 
       {item.tracking === 'quantity' ? (
         <Stepper
+          name={item.name}
           value={item.quantity ?? 0}
           step={stepFor(item.unit ?? 'unit')}
           label={formatQuantity(item.quantity ?? 0, item.unit ?? 'unit')}

@@ -64,3 +64,7 @@ docs/design/
 # Written by `vercel link`: the project id and the OIDC token it downloads.
 .vercel
 .env*
+
+# Playwright run output (traces, error contexts). The specs are source; these are not.
+apps/web/test-results/
+apps/web/playwright-report/
