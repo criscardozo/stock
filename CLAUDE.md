@@ -131,7 +131,18 @@ before inventing a pattern this project has already met.**
 - `pnpm typecheck && pnpm lint && pnpm build` — web checks.
 - `pnpm test:web` — vitest, includes the shared vector tests.
 - `pnpm test:rules` — Firestore rules tests (spins up the emulator via `firebase emulators:exec`;
-  needs Java).
+  needs a **JDK 21 or newer** — firebase-tools 15 dropped the older ones and refuses to start
+  rather than warning).
+- `pnpm test:e2e` — Playwright, against the emulators. Needs `pnpm emulators` AND `pnpm seed`
+  running first: the suite drives the seeded household through `Cerrar compra`, which is the
+  operation with the most consequences and the least readable from source.
+- `pnpm verify:pwa` — PWA smoke check (service worker, precache, offline cold start, and that
+  the auth handler is never cached). Needs a PRODUCTION build already serving:
+  `pnpm build && pnpm --filter web exec next start -p 3113`. Port 3113 and not 3112 because
+  Gastos Diarios runs the same check on 3112.
+- CI runs the web checks, the rules tests, the E2E suite and the PWA check on every push
+  (`.github/workflows/ci.yml`). Ubuntu only: a macOS runner bills at 10x, so **the iOS tests
+  are not in CI** and have to be run locally before a change lands.
 - `pnpm emulators` — local emulator suite (Auth 9099, Firestore **8085**, UI 4000). 8085 and not
   the usual 8080 because Cristian's own Docker stack (`ecko`/`holocron`) lives there.
 - iOS: `cd apps/ios && xcodegen && open Stock.xcodeproj`. CLI tests:
