@@ -74,6 +74,8 @@ and "stock level" — for a two-person household the indirection only buys write
 | `minQuantity` | int ≥ 0 | reorder threshold. Required when `tracking == "quantity"` |
 | `level` | int 0–3 | `0` empty · `1` low · `2` half · `3` full. Required when `tracking == "level"` |
 | `minLevel` | int 0–3 | suggest at or below this. Default `1`. Required when `tracking == "level"` |
+| `spare?` | int ≥ 0 | sealed containers behind the open one. Only meaningful with `tracking == "level"`: `level` measures the bottle in use, `spare` counts the ones still closed |
+| `minSpare?` | int ≥ 0 | how many sealed ones to keep. Its presence is what turns the reserve on — an item without it behaves exactly as before |
 | `packSize?` | string | free text like `"500 g"`, informational, usually from Open Food Facts |
 | `barcodes` | string[] | EANs seen for this item. Matched with `array-contains` when scanning |
 | `receiptNames` | string[] | ≤20. Every line a receipt has used for this product, verbatim. Same idea as `barcodes` and for the same reason: one product has several names. Coles prints `Coles Regular Soy Milk 1L` online and `COLES DRINK SOY:REGU 1LITRE` at the till |
@@ -85,7 +87,10 @@ and "stock level" — for a two-person household the indirection only buys write
 | `updatedBy` | string | uid. Attribution, not ownership: either member may edit anything |
 
 **Derived, never stored**: `out` (`quantity == 0` / `level == 0`), `low`
-(`<= min`), `expired` (`expiresAt < today`), `expiring` (`expiresAt <= today+3`).
+(`<= min`), `expired` (`expiresAt < today`), `expiring` (`expiresAt <= today+3`). With a
+reserve, `out` needs the open one empty AND no spare left, and `low` also fires
+on `spare < minSpare` — opening the last bottle of a pair is what puts detergent
+on the list, not waiting for it to run dry.
 Persisting these would mean rewriting documents to keep them in sync with the
 fields that already determine them.
 

@@ -37,7 +37,14 @@ export function ItemRow({
   // The Spanish name leads the subtitle: for anything imported from a receipt
   // the row's title is the shop's English, and this is what makes it readable
   // at a glance. Falls back to the details when there is no translation.
-  const subtitle = [item.nameEs, item.brand, item.packSize, location?.name]
+  // The reserve goes in the subtitle and not in the `mín` column because that
+  // column is hidden on the phone, and the whole point of counting sealed
+  // bottles is to see them while standing in front of the cupboard.
+  const reserve =
+    item.minSpare !== undefined
+      ? `${item.spare ?? 0} de ${item.minSpare} sin abrir`
+      : undefined
+  const subtitle = [reserve, item.nameEs, item.brand, item.packSize, location?.name]
     .filter(Boolean)
     .join(' · ')
 

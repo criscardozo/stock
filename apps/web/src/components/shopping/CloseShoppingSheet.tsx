@@ -90,6 +90,18 @@ export function CloseShoppingSheet({
                   <Icon name="remove_shopping_cart" size={15} />
                   suelto, no entra al stock
                 </span>
+              ) : item.minSpare !== undefined ? (
+                // Sealed containers, so the question is "how many did you
+                // bring", not "how much is left in the open one".
+                <span className="flex items-center gap-2">
+                  <span className="text-xs text-ink-3">sin abrir</span>
+                  <Stepper
+                    value={amounts[entry.id] ?? 0}
+                    step={1}
+                    label={`+${amounts[entry.id] ?? 0}`}
+                    onChange={(next) => setAmounts((prev) => ({ ...prev, [entry.id]: next }))}
+                  />
+                </span>
               ) : item.tracking === 'quantity' ? (
                 <Stepper
                   value={amounts[entry.id] ?? 0}

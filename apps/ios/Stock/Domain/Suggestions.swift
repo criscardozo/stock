@@ -76,10 +76,18 @@ enum Suggestions {
             let belowOwnMin = ItemState.stock(item) != .ok
 
             if item.tracking == .level {
-                // Never a number: inventing "250 ml of oil" is worse than saying
-                // nothing, so the plan can enrich the reason but cannot trigger
-                // the suggestion.
                 guard belowOwnMin else { continue }
+                // A reserve DOES have a number, and it is not invented: counting
+                // sealed bottles is counting units. Without one, the old rule
+                // stands — "250 ml of oil" is worse than saying nothing.
+                if let minSpare = item.minSpare {
+                    let missing = max(0, minSpare - (item.spare ?? 0))
+                    out.append(
+                        Suggestion(
+                            itemId: item.id, source: .min,
+                            quantity: missing > 0 ? missing : nil, planRefs: refs))
+                    continue
+                }
                 out.append(Suggestion(itemId: item.id, source: .min, quantity: nil, planRefs: refs))
                 continue
             }

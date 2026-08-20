@@ -276,8 +276,10 @@ struct ItemRow: View {
             // there IS — out of stock, going off — the state wins the line: this
             // screen is read standing in front of the fridge, and what is
             // missing matters more than what a product is called.
+            // The reserve leads when there is one: seeing "1 de 2 sin abrir"
+            // in front of the cupboard is the whole reason it is counted.
             Text(
-                [item.nameEs, location?.name, item.packSize]
+                [reserve, item.nameEs, location?.name, item.packSize]
                     .compactMap { $0 }
                     .joined(separator: " · ")
             )
@@ -292,6 +294,11 @@ struct ItemRow: View {
             Text(text).font(.stock(12, .semibold))
         }
         .foregroundStyle(colour)
+    }
+
+    private var reserve: String? {
+        guard let minSpare = item.minSpare else { return nil }
+        return "\(item.spare ?? 0) de \(minSpare) sin abrir"
     }
 
     private var minimum: String {

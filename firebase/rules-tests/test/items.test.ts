@@ -149,6 +149,13 @@ describe('items: field validation', () => {
     await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { receiptNames: 'COLES' })))
   })
 
+  it('the reserve is whole containers, never a fraction', async () => {
+    await assertSucceeds(setDoc(item(ALICE, 'ok'), levelItem(ALICE, { spare: 2, minSpare: 2 })))
+    // Half a sealed bottle is not a thing you can have.
+    await assertFails(setDoc(item(ALICE, 'x'), levelItem(ALICE, { spare: 1.5 })))
+    await assertFails(setDoc(item(ALICE, 'x'), levelItem(ALICE, { minSpare: -1 })))
+  })
+
   it('the Spanish subtitle is an optional short string', async () => {
     await assertSucceeds(setDoc(item(ALICE, 'ok'), countedItem(ALICE, { nameEs: 'Leche de soja' })))
     await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { nameEs: 'x'.repeat(81) })))

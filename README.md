@@ -55,8 +55,16 @@ measured**:
   `Huevos: 8 u (mín. 6)`. This is what makes an exact shortfall computable.
 - **Level** — `vacío / poco / medio / lleno`, for staples nobody measures:
   salt, oil, flour, dish soap. No arithmetic, just a four-step dial.
+- **Level + reserve** — the same dial, plus a count of the SEALED containers
+  behind the open one and how many of those to keep. Detergent is the case:
+  half a bottle in use and two unopened under the sink. Opening one drops the
+  reserve to one, which is below the minimum, so it goes on the list right then
+  — not weeks later when the last bottle runs dry. The dial measures what is
+  open; the counter measures what is closed.
 
-Recipes can only compute a numeric shortfall against counted items. When a
+Recipes can only compute a numeric shortfall against counted items, with one
+exception: an item with a reserve HAS a number — how many sealed ones it is
+short of its minimum. When a
 planned meal needs a level-tracked item that sits at `poco` or `vacío`, the item
 goes on the list with the meal as its reason — no invented numbers.
 

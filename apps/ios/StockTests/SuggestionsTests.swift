@@ -13,6 +13,8 @@ final class SuggestionsTests: XCTestCase {
             let minQuantity: Int?
             let level: Int?
             let minLevel: Int?
+            let spare: Int?
+            let minSpare: Int?
             let snoozedUntil: String?
         }
         struct RawDay: Decodable {
@@ -84,6 +86,8 @@ final class SuggestionsTests: XCTestCase {
             minQuantity: raw.minQuantity,
             level: raw.level,
             minLevel: raw.minLevel,
+            spare: raw.spare,
+            minSpare: raw.minSpare,
             packSize: nil,
             barcodes: [],
             expiresAt: nil,

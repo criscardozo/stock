@@ -19,7 +19,9 @@ export function ingredientStatus(
 
   if (item.tracking === 'level') {
     const level = (item.level ?? 0) as Level
-    if (level === 0) return 'missing'
+    // An empty open container with a sealed one behind it is not missing —
+    // you open the next one. It is 'low' because doing that eats the reserve.
+    if (level === 0) return (item.spare ?? 0) > 0 ? 'low' : 'missing'
     return level <= ((item.minLevel ?? 1) as Level) ? 'low' : 'have'
   }
 

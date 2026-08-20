@@ -83,9 +83,20 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
     const belowOwnMin = stockStatus(item) !== 'ok'
 
     if (item.tracking === 'level') {
-      // Never a number: inventing "250 ml of oil" is worse than saying nothing,
-      // so the plan can enrich the reason but cannot trigger the suggestion.
       if (!belowOwnMin) continue
+      // A reserve DOES have a number, and it is not invented: counting sealed
+      // bottles is counting units. Without one, the old rule stands — saying
+      // "250 ml of oil" is worse than saying nothing.
+      if (item.minSpare !== undefined) {
+        const missing = Math.max(0, item.minSpare - (item.spare ?? 0))
+        out.push({
+          itemId: item.id,
+          source: 'min',
+          ...(missing > 0 ? { quantity: missing } : {}),
+          planRefs: refs,
+        })
+        continue
+      }
       out.push({ itemId: item.id, source: 'min', planRefs: refs })
       continue
     }

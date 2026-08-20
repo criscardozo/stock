@@ -31,6 +31,20 @@ struct CloseShoppingSheet: View {
                                             label: Quantities.format(
                                                 amounts[entry.id] ?? 0, item.unit ?? .unit)
                                         ) { amounts[entry.id] = $0 }
+                                    } else if let item, item.minSpare != nil {
+                                        // Sealed containers, so the question is
+                                        // how many came home — not how much is
+                                        // left in the open one.
+                                        HStack(spacing: 8) {
+                                            Text("sin abrir")
+                                                .font(.stock(12))
+                                                .foregroundStyle(Theme.ink3)
+                                            Stepper(
+                                                value: amounts[entry.id] ?? 0,
+                                                step: 1,
+                                                label: "+\(amounts[entry.id] ?? 0)"
+                                            ) { amounts[entry.id] = $0 }
+                                        }
                                     } else if let item, item.tracking == .level {
                                         LevelDial(
                                             level: levels[entry.id] ?? 3, showName: false
@@ -249,6 +263,8 @@ struct ItemSheet: View {
     @State private var minQuantity = 0
     @State private var level: Level = 3
     @State private var minLevel: Level = 1
+    @State private var spare = 0
+    @State private var minSpare = 0
 
     var body: some View {
         NavigationStack {
@@ -300,11 +316,21 @@ struct ItemSheet: View {
                     } else {
                         LabeledContent("Ahora") { LevelDial(level: level) { level = $0 } }
                         LabeledContent("Avisar en") { LevelDial(level: minLevel) { minLevel = $0 } }
+                        LabeledContent("Sin abrir") {
+                            Stepper(value: spare, step: 1, label: "\(spare)") { spare = $0 }
+                        }
+                        LabeledContent("Tener siempre") {
+                            Stepper(value: minSpare, step: 1, label: "\(minSpare)") { minSpare = $0 }
+                        }
                     }
                 } header: {
                     Text("Cómo se mide")
                 } footer: {
-                    Text("Enteros siempre. Lo que no se cuenta en enteros va por nivel — vacío, poco, medio, lleno — no con un decimal.")
+                    Text(
+                        tracking == .quantity
+                            ? "Enteros siempre. Lo que no se cuenta en enteros va por nivel — vacío, poco, medio, lleno — no con un decimal."
+                            : "El nivel mide la que está abierta; la reserva cuenta las cerradas. Con dos de reserva, abrir una ya pone la compra en la lista."
+                    )
                 }
             }
             .navigationTitle(item == nil ? "Nuevo ítem" : "Editar")
@@ -343,6 +369,8 @@ struct ItemSheet: View {
             minQuantity = item.minQuantity ?? 0
             level = item.level ?? 3
             minLevel = item.minLevel ?? 1
+            spare = item.spare ?? 0
+            minSpare = item.minSpare ?? 0
         } else {
             name = prefill?.name ?? ""
             brand = prefill?.brand ?? ""
@@ -373,6 +401,13 @@ struct ItemSheet: View {
         } else {
             fields["level"] = level
             fields["minLevel"] = minLevel
+            // `minSpare` is the switch: without it the item behaves exactly as
+            // it did before reserves existed, so an untouched field writes
+            // nothing rather than a zero that means the same thing.
+            if minSpare > 0 {
+                fields["spare"] = spare
+                fields["minSpare"] = minSpare
+            }
         }
 
         if let item {

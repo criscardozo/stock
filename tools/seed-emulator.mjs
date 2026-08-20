@@ -131,7 +131,13 @@ const ITEMS = [
   item('salsa-tacos', 'Salsa de tacos', 'almacen', 'alacena', counted('unit', 0, 1)),
   item('leche-coco', 'Leche de coco', 'almacen', 'alacena', counted('unit', 1, 1, { packSize: 'Lata 400 ml' })),
   item('yerba', 'Yerba', 'desayuno', 'alacena', counted('g', 500, 250, { snoozedUntil: addDays(today, 6) })),
-  item('detergente', 'Detergente', 'limpieza', 'lavadero', levelled(0)),
+  // The reserve case, as it actually is under the sink: half a bottle in use
+  // and one sealed left of the two we keep — so it is already on the list.
+  item('detergente', 'Detergente', 'limpieza', 'lavadero', {
+    ...levelled(2),
+    spare: 1,
+    minSpare: 2,
+  }),
   item('papel-higienico', 'Papel higiénico', 'papel', 'lavadero', counted('unit', 8, 4)),
 ]
 

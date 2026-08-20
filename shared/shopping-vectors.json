@@ -5,7 +5,8 @@
     "An item is skipped entirely when: its id already has a row in the list (listItemIds), or snoozedUntil >= today.",
     "planNeed = sum of `quantity` over NON-optional ingredients linked to this item, taken from days whose status is 'planned' AND whose date >= today. Days already cooked or skipped, and days in the past, contribute nothing.",
     "tracking 'quantity': threshold = minQuantity + planNeed. Suggest when the item is not 'ok' (out or at/below its own minimum) OR quantity < threshold. Zero always suggests, even with a minimum of 0 — being out is the strongest signal there is, and silencing it is what snooze is for. The suggested amount is threshold - quantity, omitted when that is 0 (you are exactly at the trigger point, so the amount is the user's call).",
-    "tracking 'level': suggest when level <= minLevel. NEVER a numeric amount — an ingredient quantity against a level-tracked item is ignored, because inventing '250 g of oil' is worse than saying nothing.",
+    "tracking 'level' WITHOUT a reserve (no minSpare): suggest when level <= minLevel. NEVER a numeric amount — an ingredient quantity against a level-tracked item is ignored, because inventing '250 g of oil' is worse than saying nothing.",
+    "tracking 'level' WITH a reserve (minSpare set): `level` measures the OPEN container and `spare` counts the unopened ones. Suggest when spare < minSpare, or when the open one is at/below minLevel and there is no spare left. The amount IS numeric here and is minSpare - spare: counting sealed bottles is counting units, not inventing a measure. When the open container is empty but spares remain, nothing is suggested — you open one, which drops spare and raises the suggestion then.",
     "source is 'min' when the item is at or below its own minimum, otherwise 'plan'. planRefs is filled either way, so the UI can say why beyond the number.",
     "planRefs lists {recipeId, date} for every planned day that uses the item, in date order. The UI turns that into the frozen `reason` text when the row is added.",
     "Results are returned sorted by itemId, so the vectors are deterministic. Presentation order (by category, then name) is a UI concern."
@@ -318,6 +319,61 @@
         { "itemId": "carne", "source": "min", "quantity": 500, "planRefs": [{ "recipeId": "bolo", "date": "2026-08-17" }] },
         { "itemId": "huevos", "source": "min", "quantity": 4, "planRefs": [] }
       ]
+    },
+    {
+      "name": "level item with a full reserve is not suggested",
+      "input": {
+        "today": "2026-08-17",
+        "items": [{ "id": "detergente", "tracking": "level", "level": 2, "minLevel": 1, "spare": 2, "minSpare": 2 }],
+        "plan": null,
+        "recipes": [],
+        "listItemIds": []
+      },
+      "expected": []
+    },
+    {
+      "name": "a reserve below its minimum suggests the difference, as a number",
+      "input": {
+        "today": "2026-08-17",
+        "items": [{ "id": "detergente", "tracking": "level", "level": 3, "minLevel": 1, "spare": 1, "minSpare": 2 }],
+        "plan": null,
+        "recipes": [],
+        "listItemIds": []
+      },
+      "expected": [{ "itemId": "detergente", "source": "min", "quantity": 1, "planRefs": [] }]
+    },
+    {
+      "name": "an empty open container is not urgent while spares remain",
+      "input": {
+        "today": "2026-08-17",
+        "items": [{ "id": "detergente", "tracking": "level", "level": 0, "minLevel": 1, "spare": 2, "minSpare": 2 }],
+        "plan": null,
+        "recipes": [],
+        "listItemIds": []
+      },
+      "expected": []
+    },
+    {
+      "name": "empty and no reserve left is the strongest signal there is",
+      "input": {
+        "today": "2026-08-17",
+        "items": [{ "id": "detergente", "tracking": "level", "level": 0, "minLevel": 1, "spare": 0, "minSpare": 2 }],
+        "plan": null,
+        "recipes": [],
+        "listItemIds": []
+      },
+      "expected": [{ "itemId": "detergente", "source": "min", "quantity": 2, "planRefs": [] }]
+    },
+    {
+      "name": "a level item with no reserve configured keeps the old, numberless behaviour",
+      "input": {
+        "today": "2026-08-17",
+        "items": [{ "id": "aceite", "tracking": "level", "level": 1, "minLevel": 1 }],
+        "plan": null,
+        "recipes": [],
+        "listItemIds": []
+      },
+      "expected": [{ "itemId": "aceite", "source": "min", "planRefs": [] }]
     }
   ]
 }

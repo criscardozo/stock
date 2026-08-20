@@ -338,6 +338,23 @@ export function closeShopping(householdId: string, uid: string, purchases: Purch
           at: serverTimestamp(),
           by: uid,
         })
+      } else if (item.minSpare !== undefined) {
+        // What came home is sealed containers — it goes behind the open one.
+        // Filling `level` here would throw away the bottle in use.
+        const delta = Math.max(0, purchase.quantity ?? 0)
+        batch.update(itemRef, {
+          spare: (item.spare ?? 0) + delta,
+          ...(purchase.priceCents !== undefined ? { lastPriceCents: purchase.priceCents } : {}),
+          updatedAt: serverTimestamp(),
+          updatedBy: uid,
+        })
+        batch.set(moveRef, {
+          itemId: item.id,
+          type: 'purchase',
+          delta,
+          at: serverTimestamp(),
+          by: uid,
+        })
       } else {
         const level = (purchase.level ?? 3) as Level
         batch.update(itemRef, {

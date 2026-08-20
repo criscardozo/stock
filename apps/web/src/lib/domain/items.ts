@@ -19,6 +19,14 @@ export function stockStatus(item: Item): StockStatus {
     return quantity <= (item.minQuantity ?? 0) ? 'low' : 'ok'
   }
   const level = (item.level ?? 0) as Level
+  // With a reserve, what is at hand is the open container PLUS the sealed ones.
+  // An empty bottle with two spares behind it is not "out": you open one.
+  if (item.minSpare !== undefined) {
+    const spare = item.spare ?? 0
+    if (level === 0 && spare === 0) return 'out'
+    if (spare < item.minSpare) return 'low'
+    return level <= ((item.minLevel ?? 1) as Level) && spare === 0 ? 'low' : 'ok'
+  }
   if (level === 0) return 'out'
   return level <= ((item.minLevel ?? 1) as Level) ? 'low' : 'ok'
 }

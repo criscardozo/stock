@@ -58,6 +58,13 @@ export interface Item {
   /** present when tracking === 'level' */
   level?: Level
   minLevel?: Level
+  /**
+   * Unopened containers behind the one in use. `level` measures the open one;
+   * this counts the sealed ones. Only meaningful with `tracking: 'level'`.
+   */
+  spare?: number
+  /** How many sealed ones the household wants to keep. */
+  minSpare?: number
   packSize?: string
   barcodes: string[]
   /** Every receipt line matched to this item, verbatim. See schema.md. */

@@ -28,6 +28,15 @@ enum ItemState {
             return quantity <= (item.minQuantity ?? 0) ? .low : .ok
         }
         let level = item.level ?? 0
+        // With a reserve, what is at hand is the open container PLUS the sealed
+        // ones. An empty bottle with two spares behind it is not "out": you open
+        // one.
+        if let minSpare = item.minSpare {
+            let spare = item.spare ?? 0
+            if level == 0 && spare == 0 { return .out }
+            if spare < minSpare { return .low }
+            return level <= (item.minLevel ?? 1) && spare == 0 ? .low : .ok
+        }
         if level == 0 { return .out }
         return level <= (item.minLevel ?? 1) ? .low : .ok
     }

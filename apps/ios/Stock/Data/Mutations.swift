@@ -225,6 +225,20 @@ enum Mutations {
                         ],
                         forDocument: moveRef
                     )
+                } else if item.minSpare != nil {
+                    // What came home is sealed containers — it goes behind the
+                    // open one. Filling `level` would throw away the bottle in
+                    // use.
+                    let delta = max(0, purchase.quantity)
+                    patch["spare"] = (item.spare ?? 0) + delta
+                    batch.updateData(patch, forDocument: itemRef)
+                    batch.setData(
+                        [
+                            "itemId": item.id, "type": MoveType.purchase.rawValue, "delta": delta,
+                            "at": FieldValue.serverTimestamp(), "by": uid,
+                        ],
+                        forDocument: moveRef
+                    )
                 } else {
                     patch["level"] = purchase.level
                     batch.updateData(patch, forDocument: itemRef)

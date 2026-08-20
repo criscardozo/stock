@@ -39,6 +39,8 @@ export function ItemSheet({
   const [minQuantity, setMinQuantity] = useState(item?.minQuantity ?? 0)
   const [level, setLevel] = useState<Level>((item?.level ?? 3) as Level)
   const [minLevel, setMinLevel] = useState<Level>((item?.minLevel ?? 1) as Level)
+  const [spare, setSpare] = useState(item?.spare ?? 0)
+  const [minSpare, setMinSpare] = useState(item?.minSpare ?? 0)
   const [expiresAt, setExpiresAt] = useState(item?.expiresAt ?? '')
 
   const save = () => {
@@ -54,7 +56,15 @@ export function ItemSheet({
       ...(expiresAt ? { expiresAt } : {}),
       ...(tracking === 'quantity'
         ? { tracking, unit, quantity, minQuantity }
-        : { tracking, level, minLevel }),
+        : {
+            tracking,
+            level,
+            minLevel,
+            // `minSpare` is the switch: without it the item behaves exactly as
+            // it did before reserves existed, so an untouched field writes
+            // nothing rather than a zero that means the same thing.
+            ...(minSpare > 0 ? { spare, minSpare } : {}),
+          }),
     })
   }
 
@@ -194,6 +204,28 @@ export function ItemSheet({
               <LevelDial level={minLevel} onChange={setMinLevel} />
             </div>
           </SheetField>
+          <SheetField label="Sin abrir">
+            <FieldInput
+              type="number"
+              min={0}
+              className="tnum"
+              value={spare}
+              onChange={(e) => setSpare(Math.max(0, Math.round(Number(e.target.value))))}
+            />
+          </SheetField>
+          <SheetField label="Tener siempre">
+            <FieldInput
+              type="number"
+              min={0}
+              className="tnum"
+              value={minSpare}
+              onChange={(e) => setMinSpare(Math.max(0, Math.round(Number(e.target.value))))}
+            />
+          </SheetField>
+          <p className="col-span-2 text-xs text-ink-3">
+            El nivel mide la que está abierta; acá van las cerradas. Con dos de
+            reserva, abrir una ya pone la compra en la lista.
+          </p>
         </div>
       )}
 

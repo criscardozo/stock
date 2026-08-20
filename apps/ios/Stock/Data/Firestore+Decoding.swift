@@ -31,6 +31,8 @@ extension Item {
             minQuantity: data["minQuantity"] as? Int,
             level: data["level"] as? Int,
             minLevel: data["minLevel"] as? Int,
+            spare: data["spare"] as? Int,
+            minSpare: data["minSpare"] as? Int,
             packSize: data["packSize"] as? String,
             barcodes: data["barcodes"] as? [String] ?? [],
             receiptNames: data["receiptNames"] as? [String] ?? [],

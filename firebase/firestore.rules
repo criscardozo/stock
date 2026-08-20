@@ -150,6 +150,7 @@ service cloud.firestore {
                                   'createdAt', 'updatedAt', 'updatedBy'])
             && d.keys().hasOnly(['name', 'nameEs', 'brand', 'categoryId', 'locationId', 'tracking',
                                  'unit', 'quantity', 'minQuantity', 'level', 'minLevel',
+                                 'spare', 'minSpare',
                                  'packSize', 'barcodes', 'receiptNames', 'expiresAt', 'snoozedUntil',
                                  'lastPriceCents', 'notes', 'createdAt', 'updatedAt', 'updatedBy'])
             && d.name is string && d.name.size() > 0 && d.name.size() <= 80
@@ -159,6 +160,10 @@ service cloud.firestore {
             // one product genuinely has several names (online vs in-store).
             && (!('receiptNames' in d) || (d.receiptNames is list && d.receiptNames.size() <= 20))
             && (!('nameEs' in d) || (d.nameEs is string && d.nameEs.size() <= 80))
+            // Sealed containers behind the open one, and how many to keep.
+            // Integers like every other count in this schema.
+            && (!('spare' in d) || (d.spare is int && d.spare >= 0))
+            && (!('minSpare' in d) || (d.minSpare is int && d.minSpare >= 0))
             && (!('expiresAt' in d) || isDate(d.expiresAt))
             && (!('snoozedUntil' in d) || isDate(d.snoozedUntil))
             && (!('lastPriceCents' in d) || (d.lastPriceCents is int && d.lastPriceCents >= 0))

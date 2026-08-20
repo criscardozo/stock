@@ -84,6 +84,11 @@ struct Item: Codable, Identifiable, Hashable {
     // present when tracking == .level
     var level: Level?
     var minLevel: Level?
+    /// Unopened containers behind the one in use. `level` measures the open one;
+    /// this counts the sealed ones. Only meaningful when tracking is `.level`.
+    var spare: Int?
+    /// How many sealed ones the household wants to keep.
+    var minSpare: Int?
     var packSize: String?
     var barcodes: [String]
     /// Every receipt line matched to this item, verbatim. See shared/schema.md.
