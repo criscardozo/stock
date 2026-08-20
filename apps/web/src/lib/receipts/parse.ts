@@ -39,10 +39,22 @@ export interface ReceiptLine {
   totalCents: number
   /** The receipt's own section, e.g. "Pantry". Only the online format has them. */
   section: string | null
+  /**
+   * The till marks a discounted line with `*`. Worth keeping: the same product
+   * at $5.00 on special and $10.00 the next week is not a price that doubled,
+   * and a reference price taken from a special would read as normal forever.
+   */
+  onSpecial: boolean
 }
 
 export interface Receipt {
   kind: ReceiptKind
+  /**
+   * What the receipt says it holds: "Total for 11 items" / "Your trolley (49
+   * items)". Counts UNITS, not lines, so two of one thing is two. Kept so a
+   * caller can check the parse against the paper instead of trusting it.
+   */
+  declaredItems: number | null
   /** YYYY-MM-DD, in the receipt's own words. Null when it could not be read. */
   date: string | null
   lines: ReceiptLine[]
@@ -97,6 +109,15 @@ export function detectKind(text: string): ReceiptKind | null {
 const MONTHS: Record<string, string> = {
   january: '01', february: '02', march: '03', april: '04', may: '05', june: '06',
   july: '07', august: '08', september: '09', october: '10', november: '11', december: '12',
+}
+
+/** The item count the receipt prints about itself, when it prints one. */
+export function parseDeclaredItems(text: string): number | null {
+  const till = text.match(/Total for (\d+) items?:/i)
+  if (till) return Number(till[1])
+  const online = text.match(/Your trolley \((\d+) items?\)/i)
+  if (online) return Number(online[1])
+  return null
 }
 
 export function parseDate(text: string): string | null {
@@ -165,10 +186,18 @@ function parseOnline(text: string): Receipt {
       unitPriceCents: cents(unit),
       totalCents,
       section,
+      // The online invoice only marks tax (%), never a special.
+      onSpecial: false,
     })
   }
 
-  return { kind: 'online', date: parseDate(text), lines, skipped }
+  return {
+    kind: 'online',
+    date: parseDate(text),
+    declaredItems: parseDeclaredItems(text),
+    lines,
+    skipped,
+  }
 }
 
 /** `0.301 kg NET @ $7.90/kg` or `2 @ $1.70 EACH` */
@@ -196,14 +225,22 @@ function parseInstore(text: string): Receipt {
     if (/^Total for \d+ items?:/i.test(trimmed)) break
     if (/^(Store|Store Manager|Phone|Served By|Register|Date|Description)\b/i.test(trimmed)) continue
 
-    //  [* or %] NAME IN CAPS      12.34
-    const m = trimmed.match(/^([*%]?)\s*([A-Z0-9][A-Z0-9 .,:\-/&']*?)\s{2,}(\d+\.\d{2})$/)
+    //  [markers] NAME      12.34
+    //
+    // Markers stack: a line that is both on special and taxable prints "*%".
+    // And the name is not always shouted — "AVOCADO 5pk" mixes case — so lower
+    // case is allowed after the first character. Everything below the total is
+    // already out of scope by the break above, which is what keeps this from
+    // swallowing the card terminal.
+    // A percent can also be INSIDE the name — "% 100% RECYCLE PAPER B 1EACH" is
+    // a taxable line whose product is literally called 100% something.
+    const m = trimmed.match(/^([*%]*)\s*([A-Z0-9][A-Za-z0-9 .,:\-/&'%]*?)\s{2,}(\d+\.\d{2})$/)
     if (!m) {
       if (/\d+\.\d{2}\s*$/.test(trimmed) && !parseDetail(trimmed)) skipped.push(trimmed)
       continue
     }
 
-    const [, , rawName, total] = m
+    const [, markers, rawName, total] = m
     const totalCents = cents(total)
     if (totalCents === null) {
       skipped.push(trimmed)
@@ -223,10 +260,17 @@ function parseInstore(text: string): Receipt {
       unitPriceCents: detail?.unitPriceCents ?? totalCents,
       totalCents,
       section: null,
+      onSpecial: markers.includes('*'),
     })
   }
 
-  return { kind: 'instore', date: parseDate(text), lines, skipped }
+  return {
+    kind: 'instore',
+    date: parseDate(text),
+    declaredItems: parseDeclaredItems(text),
+    lines,
+    skipped,
+  }
 }
 
 /** The one entry point. Throws only when the text is not a Coles receipt. */

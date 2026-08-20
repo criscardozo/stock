@@ -120,6 +120,44 @@ describe('in-store receipt', () => {
   })
 })
 
+describe('in-store lines that broke the first parser', () => {
+  // All three came from a folder of 20 real receipts, and each one was losing
+  // a product in silence until the declared item count gave them away.
+  const receipt = (body: string) =>
+    parseReceipt(`Served By: Assisted Checkout\nRegister: 118  Receipt: 1\nDate:      11/08/2026      Time:   06:49\n\nDescription                                     $\n\n${body}\n\nTotal for 9 items:                          $9.99\n`)
+
+  it('reads stacked markers: on special AND taxable', () => {
+    const r = receipt('*%BULLA CHOC BARS VAN 600ML                   5.00')
+    expect(r.lines[0]).toMatchObject({
+      raw: 'BULLA CHOC BARS VAN 600ML',
+      totalCents: 500,
+      // The same product was $10.00 without the star a fortnight later. A
+      // reference price taken from a special would read as normal forever.
+      onSpecial: true,
+    })
+  })
+
+  it('knows a line that is taxable but not discounted', () => {
+    const r = receipt('% 100% RECYCLE PAPER B 1EACH                  0.25')
+    expect(r.lines[0]?.onSpecial).toBe(false)
+  })
+
+  it('reads a name that is not shouted', () => {
+    const r = receipt('  AVOCADO 5pk                                 6.50')
+    expect(r.lines[0]).toMatchObject({ raw: 'AVOCADO 5pk', totalCents: 650 })
+  })
+
+  it('reads a percent inside the name, not just as a marker', () => {
+    const r = receipt('% 100% RECYCLE PAPER B 1EACH                  0.25')
+    expect(r.lines[0]).toMatchObject({ raw: '100% RECYCLE PAPER B 1EACH', totalCents: 25 })
+  })
+
+  it('reports what the paper claims, so a lost line can be caught', () => {
+    const r = receipt('  COLES CRM SPREAD 250GRAM                    2.60')
+    expect(r.declaredItems).toBe(9)
+  })
+})
+
 describe('the same product, two receipts', () => {
   it('prints differently in each, which is why an item needs a list of names', () => {
     const fromOnline = parseReceipt(online).lines.find((l) => l.raw.includes('Soy Milk'))

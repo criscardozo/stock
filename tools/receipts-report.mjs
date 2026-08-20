@@ -91,6 +91,7 @@ for (const file of pdfs) {
         total: line.totalCents,
         qty: line.quantity,
         kilos: line.kilos,
+        onSpecial: line.onSpecial,
       })
     }
   } catch (cause) {
@@ -137,25 +138,52 @@ if (failed.length > 0) {
 }
 
 out.push('## Recibos\n')
-out.push('| Archivo | Tipo | Fecha | Productos | No-productos |')
-out.push('|---|---|---|---|---|')
+out.push('| Archivo | Tipo | Fecha | Líneas | Unidades | Dice el papel | |')
+out.push('|---|---|---|---|---|---|---|')
+const mismatched = []
 for (const { file, receipt } of receipts) {
+  // Units, not lines: the receipt counts two broccoli as two.
+  const units = receipt.lines.reduce((n, l) => n + (l.quantity ?? 1), 0)
+  const declared = receipt.declaredItems
+  const ok = declared === null || units === declared
+  if (!ok) mismatched.push({ file, units, declared })
   out.push(
-    `| \`${file}\` | ${receipt.kind === 'online' ? 'online' : 'local'} | ${receipt.date ?? '—'} | ${receipt.lines.length} | ${receipt.skipped.length} |`,
+    `| \`${file}\` | ${receipt.kind === 'online' ? 'online' : 'local'} | ${receipt.date ?? '—'} | ${receipt.lines.length} | ${units} | ${declared ?? '—'} | ${ok ? '✓' : '⚠︎'} |`,
   )
 }
 out.push('')
 
+if (mismatched.length > 0) {
+  out.push('## Cuidado: no cuadran con el papel\n')
+  out.push('El recibo declara un total distinto del parseado. Puede ser un producto que no se leyó.\n')
+  for (const m of mismatched) {
+    out.push(`- \`${m.file}\` — parseadas ${m.units} unidades, el recibo dice ${m.declared}`)
+  }
+  out.push('')
+}
+
 out.push('## Productos, por veces comprado\n')
-out.push('| Veces | Producto | Último precio | Precios vistos |')
-out.push('|---|---|---|---|')
+out.push('| Veces | Producto | Último precio | Precios vistos | Normal |')
+out.push('|---|---|---|---|---|')
 for (const e of entries) {
-  const prices = [...new Set(e.buys.map((b) => b.unit).filter((p) => p !== null))]
+  const seen = new Map()
+  for (const b of e.buys) {
+    const price = b.unit ?? b.total
+    if (price === null) continue
+    // A starred line was discounted; keep that with the number.
+    if (!seen.has(price)) seen.set(price, b.onSpecial)
+    else if (!b.onSpecial) seen.set(price, false)
+  }
+  const shown = [...seen].map(([p, sp]) => `${money(p)}${sp ? '*' : ''}`).join(' · ')
   const last = e.buys[e.buys.length - 1]
+  // What it costs when nothing is on sale — the number worth storing.
+  const normal = [...seen].filter(([, sp]) => !sp).map(([p]) => p)
   out.push(
-    `| ${e.buys.length} | ${e.name} | ${money(last.unit ?? last.total)} | ${prices.map(money).join(' · ') || '—'} |`,
+    `| ${e.buys.length} | ${e.name} | ${money(last.unit ?? last.total)} | ${shown || '—'} | ${normal.length ? money(Math.max(...normal)) : '—'} |`,
   )
 }
+out.push('')
+out.push('`*` = estaba en oferta. La columna «Normal» es el precio más alto visto sin oferta.')
 out.push('')
 
 const groups = aliasGroups(entries)

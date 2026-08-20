@@ -25,6 +25,7 @@ function line(raw: string, extra: Partial<ReceiptLine> = {}): ReceiptLine {
     unitPriceCents: 100,
     totalCents: 100,
     section: null,
+    onSpecial: false,
     ...extra,
   }
 }
