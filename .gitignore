@@ -60,3 +60,7 @@ apps/ios/Stock.xcodeproj/
 # Design handoff bundle from Claude Design — regenerated on every export,
 # and large. Kept locally, not in the repo.
 docs/design/
+
+# Written by `vercel link`: the project id and the OIDC token it downloads.
+.vercel
+.env*
