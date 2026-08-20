@@ -16,7 +16,13 @@ final class Store {
     private(set) var recipes: [Recipe] = []
     private(set) var list: [ShoppingEntry] = []
     private(set) var plan: MealPlan?
+    /// A READ that failed. Set by every listener; shown by RootView.
     private(set) var loadError: String?
+    /// A WRITE the server REFUSED. Never set by being offline — Firestore
+    /// queues those and sends them later — so anything here means the change
+    /// the user just made is saved nowhere while the local cache shows it as
+    /// applied. Fed by `Mutations.onWriteRejected`, cleared by dismissing it.
+    var writeError: String?
 
     /// Recomputed on the minute so midnight rolls the plan over without a relaunch.
     private(set) var today: CalendarDate.Iso = CalendarDate.today(in: "Australia/Sydney")
@@ -68,6 +74,15 @@ final class Store {
         WatchSync.shared.uid = uid
         WatchSync.shared.start()
 
+        // Claim the write channel. `Mutations` is a static enum by design — it
+        // holds no state — so it reports through a closure rather than owning a
+        // dependency. Wired here and not in the App's init because reaching into
+        // `@State` before the view is installed is exactly what SwiftUI warns
+        // about, and this is the lifecycle point that already owns the listeners.
+        Mutations.onWriteRejected = { [weak self] error in
+            Task { @MainActor in self?.writeError = error.localizedDescription }
+        }
+
         clock = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
             guard let self else { return }
             Task { @MainActor in self.today = CalendarDate.today(in: self.timezone) }
@@ -96,6 +111,7 @@ final class Store {
         planListener = nil
         clock?.invalidate()
         clock = nil
+        Mutations.onWriteRejected = nil
         uid = nil
         householdId = nil
         household = nil
@@ -103,6 +119,10 @@ final class Store {
         recipes = []
         list = []
         plan = nil
+        // Signing out clears the complaints too: an alert about a write made by
+        // the previous session has nobody left to show it to.
+        loadError = nil
+        writeError = nil
     }
 
     private func attachHousehold(_ id: String?) {
@@ -134,28 +154,37 @@ final class Store {
             }
         )
         listeners.append(
-            root.collection("items").addSnapshotListener { [weak self] snapshot, _ in
-                self?.items = snapshot?.documents.compactMap(Item.init(document:)) ?? []
-                self?.syncWatch()
+            root.collection("items").addSnapshotListener { [weak self] snapshot, error in
+                guard let self else { return }
+                // Reported rather than dropped: without this a failed read and
+                // an empty catalogue render identically, and the screen states
+                // that there is nothing in the house.
+                if let error { self.loadError = error.localizedDescription; return }
+                self.items = snapshot?.documents.compactMap(Item.init(document:)) ?? []
+                self.syncWatch()
             }
         )
         listeners.append(
-            root.collection("recipes").addSnapshotListener { [weak self] snapshot, _ in
-                self?.recipes = snapshot?.documents.compactMap(Recipe.init(document:)) ?? []
-                self?.syncWatch()
+            root.collection("recipes").addSnapshotListener { [weak self] snapshot, error in
+                guard let self else { return }
+                if let error { self.loadError = error.localizedDescription; return }
+                self.recipes = snapshot?.documents.compactMap(Recipe.init(document:)) ?? []
+                self.syncWatch()
             }
         )
         // The one listener asking for metadata: a tick made with no signal has
         // to be able to say so. Metadata events are local — callbacks, not reads.
         listeners.append(
             root.collection("shoppingList")
-                .addSnapshotListener(includeMetadataChanges: true) { [weak self] snapshot, _ in
-                    self?.list = snapshot?.documents.compactMap { document in
+                .addSnapshotListener(includeMetadataChanges: true) { [weak self] snapshot, error in
+                    guard let self else { return }
+                    if let error { self.loadError = error.localizedDescription; return }
+                    self.list = snapshot?.documents.compactMap { document in
                         var entry = ShoppingEntry(document: document)
                         entry?.pending = document.metadata.hasPendingWrites
                         return entry
                     } ?? []
-                    self?.syncWatch()
+                    self.syncWatch()
                 }
         )
     }
@@ -192,9 +221,11 @@ final class Store {
         planListener = Firestore.firestore()
             .collection("households").document(householdId)
             .collection("mealPlans").document(planStart)
-            .addSnapshotListener { [weak self] snapshot, _ in
-                self?.plan = snapshot.flatMap(MealPlan.init(document:))
-                self?.syncWatch()
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let self else { return }
+                if let error { self.loadError = error.localizedDescription; return }
+                self.plan = snapshot.flatMap(MealPlan.init(document:))
+                self.syncWatch()
             }
     }
 

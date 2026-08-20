@@ -1,6 +1,14 @@
 'use client'
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
 import { collection, doc, onSnapshot, query } from 'firebase/firestore'
 import { db } from './client'
 import { useAuth } from './auth'
@@ -20,13 +28,24 @@ interface HouseholdState {
   planStart: IsoDate | null
   today: IsoDate
   suggestions: Suggestion[]
+  /**
+   * A READ that failed, in the user's words. Null when everything is being
+   * heard from. Worth surfacing because an empty collection and an unread one
+   * render identically: with this null and no items, the screen truthfully says
+   * the house is empty; with it set, it must not.
+   */
+  loadError: string | null
 }
 
 const Ctx = createContext<HouseholdState | null>(null)
 
 const DEFAULT_TZ = 'Australia/Sydney'
 
-type Subscribe<T> = (scope: string, set: (value: T) => void) => () => void
+type Subscribe<T> = (
+  scope: string,
+  set: (value: T) => void,
+  fail: (error: Error) => void,
+) => () => void
 
 /**
  * A listener whose data belongs to a scope (a household, a period). Holding the
@@ -34,7 +53,12 @@ type Subscribe<T> = (scope: string, set: (value: T) => void) => () => void
  * without an effect that resets state — which would be a cascading render, and
  * would briefly show one household's data under another's id.
  */
-function useScoped<T>(scope: string | null, subscribe: Subscribe<T>, empty: T): T {
+function useScoped<T>(
+  scope: string | null,
+  subscribe: Subscribe<T>,
+  empty: T,
+  fail: (error: Error) => void,
+): T {
   const [state, setState] = useState<{ scope: string | null; value: T }>({
     scope: null,
     value: empty,
@@ -43,9 +67,12 @@ function useScoped<T>(scope: string | null, subscribe: Subscribe<T>, empty: T): 
   useEffect(() => {
     if (!scope) return
     // Returning the unsubscribe is not optional: StrictMode's double mount
-    // duplicating onSnapshot is the classic way to burn the free tier.
-    return subscribe(scope, (value) => setState({ scope, value }))
-  }, [scope, subscribe])
+    // duplicating onSnapshot is the classic way to burn the free tier. Passing
+    // `fail` is the other half of the same job: a listener that dies without
+    // saying so leaves this hook holding `empty` forever, which every screen
+    // then renders as "there is nothing here".
+    return subscribe(scope, (value) => setState({ scope, value }), fail)
+  }, [scope, subscribe, fail])
 
   return state.scope === scope ? state.value : empty
 }
@@ -55,22 +82,32 @@ const NO_RECIPES: Recipe[] = []
 const NO_LIST: ShoppingEntry[] = []
 
 // Module-level so their identity is stable across renders.
-const subscribeUserHousehold: Subscribe<string | null> = (uid, set) =>
-  onSnapshot(doc(db(), 'users', uid), (snap) => set((snap.data()?.householdId as string) ?? null))
-
-const subscribeHousehold: Subscribe<Household | null> = (hid, set) =>
-  onSnapshot(doc(db(), 'households', hid), (snap) =>
-    set(snap.exists() ? ({ id: snap.id, ...snap.data() } as Household) : null),
+const subscribeUserHousehold: Subscribe<string | null> = (uid, set, fail) =>
+  onSnapshot(
+    doc(db(), 'users', uid),
+    (snap) => set((snap.data()?.householdId as string) ?? null),
+    fail,
   )
 
-const subscribeItems: Subscribe<Item[]> = (hid, set) =>
-  onSnapshot(query(collection(db(), 'households', hid, 'items')), (snap) =>
-    set(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Item)),
+const subscribeHousehold: Subscribe<Household | null> = (hid, set, fail) =>
+  onSnapshot(
+    doc(db(), 'households', hid),
+    (snap) => set(snap.exists() ? ({ id: snap.id, ...snap.data() } as Household) : null),
+    fail,
   )
 
-const subscribeRecipes: Subscribe<Recipe[]> = (hid, set) =>
-  onSnapshot(query(collection(db(), 'households', hid, 'recipes')), (snap) =>
-    set(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Recipe)),
+const subscribeItems: Subscribe<Item[]> = (hid, set, fail) =>
+  onSnapshot(
+    query(collection(db(), 'households', hid, 'items')),
+    (snap) => set(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Item)),
+    fail,
+  )
+
+const subscribeRecipes: Subscribe<Recipe[]> = (hid, set, fail) =>
+  onSnapshot(
+    query(collection(db(), 'households', hid, 'recipes')),
+    (snap) => set(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Recipe)),
+    fail,
   )
 
 /**
@@ -78,7 +115,7 @@ const subscribeRecipes: Subscribe<Recipe[]> = (hid, set) =>
  * has to be able to say so. Metadata events are local — they cost callbacks,
  * not reads.
  */
-const subscribeList: Subscribe<ShoppingEntry[]> = (hid, set) =>
+const subscribeList: Subscribe<ShoppingEntry[]> = (hid, set, fail) =>
   onSnapshot(
     query(collection(db(), 'households', hid, 'shoppingList')),
     { includeMetadataChanges: true },
@@ -93,13 +130,16 @@ const subscribeList: Subscribe<ShoppingEntry[]> = (hid, set) =>
             }) as ShoppingEntry,
         ),
       ),
+    fail,
   )
 
 /** Scope is `householdId|startDate`, so changing either resubscribes. */
-const subscribePlan: Subscribe<MealPlan | null> = (scope, set) => {
+const subscribePlan: Subscribe<MealPlan | null> = (scope, set, fail) => {
   const [hid, startDate] = scope.split('|')
-  return onSnapshot(doc(db(), 'households', hid, 'mealPlans', startDate), (snap) =>
-    set(snap.exists() ? ({ id: snap.id, ...snap.data() } as MealPlan) : null),
+  return onSnapshot(
+    doc(db(), 'households', hid, 'mealPlans', startDate),
+    (snap) => set(snap.exists() ? ({ id: snap.id, ...snap.data() } as MealPlan) : null),
+    fail,
   )
 }
 
@@ -112,13 +152,24 @@ const subscribePlan: Subscribe<MealPlan | null> = (scope, set) => {
 export function HouseholdProvider({ children }: { children: ReactNode }) {
   const { user, ready: authReady } = useAuth()
 
+  // One error for all six listeners, the same shape the iOS Store uses: which
+  // one failed matters far less than the fact that what you are looking at is
+  // incomplete. Stable identity because it goes into the subscribe effects.
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const fail = useCallback((error: Error) => setLoadError(error.message), [])
+
   // `households.memberIds` is the authorisation source of truth; this field is
   // just how a client finds which household to open.
-  const householdId = useScoped<string | null>(user?.uid ?? null, subscribeUserHousehold, null)
-  const household = useScoped<Household | null>(householdId, subscribeHousehold, null)
-  const items = useScoped<Item[]>(householdId, subscribeItems, NO_ITEMS)
-  const recipes = useScoped<Recipe[]>(householdId, subscribeRecipes, NO_RECIPES)
-  const list = useScoped<ShoppingEntry[]>(householdId, subscribeList, NO_LIST)
+  const householdId = useScoped<string | null>(
+    user?.uid ?? null,
+    subscribeUserHousehold,
+    null,
+    fail,
+  )
+  const household = useScoped<Household | null>(householdId, subscribeHousehold, null, fail)
+  const items = useScoped<Item[]>(householdId, subscribeItems, NO_ITEMS, fail)
+  const recipes = useScoped<Recipe[]>(householdId, subscribeRecipes, NO_RECIPES, fail)
+  const list = useScoped<ShoppingEntry[]>(householdId, subscribeList, NO_LIST, fail)
 
   // Midnight in the HOUSEHOLD's timezone should roll the plan over without a
   // reload; a minute of lag beats a day of drift.
@@ -140,6 +191,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
     householdId && planStart ? `${householdId}|${planStart}` : null,
     subscribePlan,
     null,
+    fail,
   )
 
   const value = useMemo<HouseholdState>(
@@ -156,6 +208,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
       plan,
       planStart,
       today,
+      loadError,
       suggestions: suggestions({
         today,
         items,
@@ -164,7 +217,7 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
         listItemIds: list.map((e) => e.itemId).filter((id): id is string => !!id),
       }),
     }),
-    [authReady, householdId, household, items, recipes, list, plan, planStart, today],
+    [authReady, householdId, household, items, recipes, list, plan, planStart, today, loadError],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

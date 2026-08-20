@@ -1,5 +1,6 @@
 import FirebaseFirestore
 import Foundation
+import OSLog
 
 /// Every write the iOS app makes.
 ///
@@ -15,6 +16,31 @@ enum Mutations {
     private static func household(_ id: String) -> DocumentReference {
         db.collection("households").document(id)
     }
+
+    /// Called when the SERVER refuses a write.
+    ///
+    /// Firestore does not fail a write for being offline — it queues it locally
+    /// and sends it later — so anything that reaches here was refused on
+    /// purpose: a rule said no, or the document does not have the shape the
+    /// rules demand. That means the change the user just made is saved nowhere,
+    /// while the local cache keeps showing it as applied. Reported instead of
+    /// dropped, because otherwise the app lies for as long as it stays
+    /// installed. Wired to `Store.writeError` in StockApp.
+    static var onWriteRejected: ((Error) -> Void)?
+
+    /// Completion handler for every fire-and-forget write: reports a rejection
+    /// and ignores success. The UI still does not WAIT for these — not awaiting
+    /// and not catching are different things.
+    private static func reportRejection(_ error: Error?) {
+        guard let error else { return }
+        // Logged as well as alerted. The alert is for the person holding the
+        // phone right now; the log is what a release build can still be asked
+        // weeks later, when the only evidence is "it did not save that time".
+        log.error("write rejected: \(error.localizedDescription, privacy: .public)")
+        onWriteRejected?(error)
+    }
+
+    private static let log = Logger(subsystem: "dev.cardozo.stock", category: "firestore")
 
     // MARK: - Household
 
@@ -87,7 +113,7 @@ enum Mutations {
     static func updateHousehold(_ id: String, _ patch: [String: Any]) {
         var data = patch
         data["updatedAt"] = FieldValue.serverTimestamp()
-        household(id).updateData(data)
+        household(id).updateData(data, completion: reportRejection)
     }
 
     // MARK: - Items
@@ -129,7 +155,7 @@ enum Mutations {
                 forDocument: moveRef
             )
         }
-        batch.commit()
+        batch.commit(completion: reportRejection)
     }
 
     static func createItem(householdId: String, uid: String, fields: [String: Any]) {
@@ -138,14 +164,16 @@ enum Mutations {
         data["createdAt"] = FieldValue.serverTimestamp()
         data["updatedAt"] = FieldValue.serverTimestamp()
         data["updatedBy"] = uid
-        household(householdId).collection("items").addDocument(data: data)
+        household(householdId).collection("items")
+            .addDocument(data: data, completion: reportRejection)
     }
 
     static func updateItem(householdId: String, uid: String, itemId: String, patch: [String: Any]) {
         var data = patch
         data["updatedAt"] = FieldValue.serverTimestamp()
         data["updatedBy"] = uid
-        household(householdId).collection("items").document(itemId).updateData(data)
+        household(householdId).collection("items").document(itemId)
+            .updateData(data, completion: reportRejection)
     }
 
     static func snooze(householdId: String, uid: String, itemId: String, until: CalendarDate.Iso) {
@@ -169,7 +197,8 @@ enum Mutations {
         data["checked"] = false
         data["addedAt"] = FieldValue.serverTimestamp()
         data["addedBy"] = uid
-        household(householdId).collection("shoppingList").addDocument(data: data)
+        household(householdId).collection("shoppingList")
+            .addDocument(data: data, completion: reportRejection)
     }
 
     /// A tick is just a tick: it strikes the row through and touches no stock.
@@ -182,11 +211,13 @@ enum Mutations {
             data["checkedAt"] = FieldValue.delete()
             data["checkedBy"] = FieldValue.delete()
         }
-        household(householdId).collection("shoppingList").document(entryId).updateData(data)
+        household(householdId).collection("shoppingList").document(entryId)
+            .updateData(data, completion: reportRejection)
     }
 
     static func removeFromList(householdId: String, entryId: String) {
-        household(householdId).collection("shoppingList").document(entryId).delete()
+        household(householdId).collection("shoppingList").document(entryId)
+            .delete(completion: reportRejection)
     }
 
     struct Purchase {
@@ -256,7 +287,7 @@ enum Mutations {
                 household(householdId).collection("shoppingList").document(purchase.entry.id))
         }
 
-        batch.commit()
+        batch.commit(completion: reportRejection)
     }
 
     // MARK: - Meal plan
@@ -266,14 +297,21 @@ enum Mutations {
     static func ensurePlan(householdId: String, startDate: CalendarDate.Iso, length: PlanLength) async {
         let ref = household(householdId).collection("mealPlans").document(startDate)
         guard let snapshot = try? await ref.getDocument(), !snapshot.exists else { return }
-        try? await ref.setData([
-            "startDate": startDate,
-            "endDate": CalendarDate.periodEnd(startDate: startDate, length: length),
-            "length": length.rawValue,
-            "days": [:],
-            "createdAt": FieldValue.serverTimestamp(),
-            "updatedAt": FieldValue.serverTimestamp(),
-        ])
+        do {
+            try await ref.setData([
+                "startDate": startDate,
+                "endDate": CalendarDate.periodEnd(startDate: startDate, length: length),
+                "length": length.rawValue,
+                "days": [:],
+                "createdAt": FieldValue.serverTimestamp(),
+                "updatedAt": FieldValue.serverTimestamp(),
+            ])
+        } catch {
+            // The read above may legitimately fail (offline, no plan yet) and
+            // stays quiet. A refused WRITE is different: the screen would show
+            // an empty fortnight that exists nowhere.
+            reportRejection(error)
+        }
     }
 
     struct Consumption {
@@ -345,7 +383,7 @@ enum Mutations {
             )
         }
 
-        batch.commit()
+        batch.commit(completion: reportRejection)
     }
 
     static func setPlanDay(
@@ -354,15 +392,19 @@ enum Mutations {
     ) {
         let ref = household(householdId).collection("mealPlans").document(planId)
         if recipeId == nil && label == nil {
-            ref.updateData([
-                "days.\(date)": FieldValue.delete(), "updatedAt": FieldValue.serverTimestamp(),
-            ])
+            ref.updateData(
+                ["days.\(date)": FieldValue.delete(), "updatedAt": FieldValue.serverTimestamp()],
+                completion: reportRejection
+            )
             return
         }
         var day: [String: Any] = ["status": DayStatus.planned.rawValue]
         if let recipeId { day["recipeId"] = recipeId }
         if let label { day["label"] = label }
-        ref.updateData(["days.\(date)": day, "updatedAt": FieldValue.serverTimestamp()])
+        ref.updateData(
+            ["days.\(date)": day, "updatedAt": FieldValue.serverTimestamp()],
+            completion: reportRejection
+        )
     }
 }
 
