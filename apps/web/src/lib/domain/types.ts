@@ -11,8 +11,6 @@ export type Level = 0 | 1 | 2 | 3
 
 export interface Category {
   name: string
-  /** What it is called at home, under the receipt's own name. */
-  nameEs?: string
   /** Material Symbols Rounded ligature. */
   icon: string
   /** Palette name from docs/design-system.md — never a raw colour. */
@@ -44,6 +42,11 @@ export interface Household {
 export interface Item {
   id: string
   name: string
+  /**
+   * What it is called at home, shown under the receipt's own name.
+   * "Leche de soja" under "Coles Regular Soy Milk 1L".
+   */
+  nameEs?: string
   brand?: string
   categoryId: string
   locationId: string
