@@ -67,13 +67,16 @@ export async function pdfToText(file: File): Promise<string> {
     import.meta.url,
   ).toString()
 
-  const doc = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise
+  // Keep the loading task: destroy() lives on it, not on the document, and
+  // without it the worker stays alive after the import screen closes.
+  const task = pdfjs.getDocument({ data: await file.arrayBuffer() })
+  const doc = await task.promise
   const pages: string[] = []
   for (let n = 1; n <= doc.numPages; n++) {
     const page = await doc.getPage(n)
     const content = await page.getTextContent()
     pages.push(layoutPage(content.items as { str: string; transform: number[]; width: number }[]))
   }
-  await doc.destroy()
+  await task.destroy()
   return pages.join('\n')
 }
