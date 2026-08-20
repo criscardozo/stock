@@ -75,28 +75,6 @@ struct MainTabs: View {
     }
 }
 
-/// Title, one line of arithmetic about what you're looking at, and the actions.
-struct ScreenHeader<Actions: View>: View {
-    var title: String
-    var summary: String
-    @ViewBuilder var actions: Actions
-
-    var body: some View {
-        HStack(alignment: .lastTextBaseline) {
-            VStack(alignment: .leading, spacing: 2) {
-                // 18, not 28: the design system titles iOS smaller than the web
-                // (22 there), and never with UIKit's own large title.
-                Text(title).font(.stock(18, .bold))
-                Text(summary).font(.stock(13)).foregroundStyle(Theme.ink2)
-            }
-            Spacer()
-            actions
-        }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 12)
-    }
-}
-
 struct EmptyStateView: View {
     var icon: String
     var title: String

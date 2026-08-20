@@ -21,6 +21,7 @@ extension Item {
         self.init(
             id: document.documentID,
             name: name,
+            nameEs: data["nameEs"] as? String,
             brand: data["brand"] as? String,
             categoryId: categoryId,
             locationId: locationId,
@@ -32,6 +33,7 @@ extension Item {
             minLevel: data["minLevel"] as? Int,
             packSize: data["packSize"] as? String,
             barcodes: data["barcodes"] as? [String] ?? [],
+            receiptNames: data["receiptNames"] as? [String] ?? [],
             expiresAt: data["expiresAt"] as? String,
             snoozedUntil: data["snoozedUntil"] as? String,
             lastPriceCents: data["lastPriceCents"] as? Int,

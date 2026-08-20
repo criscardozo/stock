@@ -34,7 +34,12 @@ export function ItemRow({
 }) {
   const stock = stockStatus(item)
   const expiry = expiryStatus(item, today)
-  const subtitle = [item.brand, item.packSize, location?.name].filter(Boolean).join(' · ')
+  // The Spanish name leads the subtitle: for anything imported from a receipt
+  // the row's title is the shop's English, and this is what makes it readable
+  // at a glance. Falls back to the details when there is no translation.
+  const subtitle = [item.nameEs, item.brand, item.packSize, location?.name]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
     <div

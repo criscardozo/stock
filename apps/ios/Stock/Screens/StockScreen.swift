@@ -148,7 +148,12 @@ struct StockScreen: View {
             .filter { locationId == nil || $0.locationId == locationId }
             .filter {
                 needle.isEmpty
-                    || "\($0.name) \($0.brand ?? "")".lowercased().contains(needle)
+                    // The Spanish name is searchable too: a product imported
+                    // from a receipt is titled in the shop's English, and
+                    // "leche" has to find it.
+                    || "\($0.name) \($0.nameEs ?? "") \($0.brand ?? "")"
+                        .lowercased()
+                        .contains(needle)
             }
             .sorted { $0.name.localizedCompare($1.name) == .orderedAscending }
     }
@@ -267,9 +272,17 @@ struct ItemRow: View {
         } else if wantedByPlan {
             label("fork.knife", "Lo pide el plan", Theme.ink2)
         } else {
-            Text([location?.name, item.packSize].compactMap { $0 }.joined(separator: " · "))
-                .font(.stock(12))
-                .foregroundStyle(Theme.ink3)
+            // The Spanish name leads when there is nothing urgent to say. When
+            // there IS — out of stock, going off — the state wins the line: this
+            // screen is read standing in front of the fridge, and what is
+            // missing matters more than what a product is called.
+            Text(
+                [item.nameEs, location?.name, item.packSize]
+                    .compactMap { $0 }
+                    .joined(separator: " · ")
+            )
+            .font(.stock(12))
+            .foregroundStyle(Theme.ink3)
         }
     }
 

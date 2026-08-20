@@ -28,6 +28,7 @@ export function ItemSheet({
   onDelete?: () => void
 }) {
   const [name, setName] = useState(item?.name ?? '')
+  const [nameEs, setNameEs] = useState(item?.nameEs ?? '')
   const [brand, setBrand] = useState(item?.brand ?? '')
   const [packSize, setPackSize] = useState(item?.packSize ?? '')
   const [categoryId, setCategoryId] = useState(item?.categoryId ?? categories[0]?.[0] ?? '')
@@ -47,6 +48,7 @@ export function ItemSheet({
       categoryId,
       locationId,
       barcodes: item?.barcodes ?? [],
+      ...(nameEs.trim() ? { nameEs: nameEs.trim() } : {}),
       ...(brand.trim() ? { brand: brand.trim() } : {}),
       ...(packSize.trim() ? { packSize: packSize.trim() } : {}),
       ...(expiresAt ? { expiresAt } : {}),
@@ -88,6 +90,14 @@ export function ItemSheet({
           />
         </SheetField>
       </div>
+
+      <SheetField label="Cómo le decimos en casa">
+        <FieldInput
+          value={nameEs}
+          onChange={(e) => setNameEs(e.target.value)}
+          placeholder="opcional — «Leche de soja»"
+        />
+      </SheetField>
 
       <div className="grid grid-cols-2 gap-2.5">
         <SheetField label="Categoría">

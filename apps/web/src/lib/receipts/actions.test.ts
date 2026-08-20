@@ -44,6 +44,22 @@ describe('buildActions', () => {
     expect(action).toMatchObject({ kind: 'create', item: DEFAULTS })
   })
 
+  it('carries the Spanish name through when one was typed', () => {
+    const decisions: Record<string, Decision> = {
+      SOY: { kind: 'create', nameEs: '  Leche de soja  ' },
+    }
+    const [action] = buildActions([unknown(line('SOY'))], decisions, DEFAULTS)
+    expect(action).toMatchObject({ kind: 'create', item: { nameEs: 'Leche de soja' } })
+  })
+
+  it('leaves nameEs off entirely when it is blank', () => {
+    // An empty string would fail the rules' string check for no reason, and
+    // an empty subtitle renders as a stray separator in the row.
+    const [action] = buildActions([unknown(line('X'))], { X: { kind: 'create', nameEs: '   ' } }, DEFAULTS)
+    expect(action.kind).toBe('create')
+    if (action.kind === 'create') expect('nameEs' in action.item).toBe(false)
+  })
+
   it('creates at zero stock: a shop from March is not food in the kitchen', () => {
     const [action] = buildActions([unknown(line('X'))], { X: { kind: 'create' } }, DEFAULTS)
     expect(action).toMatchObject({ kind: 'create', item: { quantity: 0, minQuantity: 0 } })

@@ -62,7 +62,11 @@ export default function StockPage() {
       .filter((item) => (locationId ? item.locationId === locationId : true))
       .filter((item) =>
         needle
-          ? `${item.name} ${item.brand ?? ''}`.toLowerCase().includes(needle)
+          ? // Includes the Spanish name: a product imported from a receipt is
+            // titled in the shop's English, and "leche" has to find it.
+            `${item.name} ${item.nameEs ?? ''} ${item.brand ?? ''}`
+              .toLowerCase()
+              .includes(needle)
           : true,
       )
       .filter((item) => {

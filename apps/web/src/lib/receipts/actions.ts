@@ -15,7 +15,7 @@ export type Decision =
   | { kind: 'skip' }
   | { kind: 'link'; itemId: string }
   /** Category and location are per line: a receipt mixes avocados with chocolate. */
-  | { kind: 'create'; categoryId?: string; locationId?: string }
+  | { kind: 'create'; categoryId?: string; locationId?: string; nameEs?: string }
 
 export interface Defaults {
   categoryId: string
@@ -45,6 +45,7 @@ export function buildActions(
     if (decision.kind === 'create') {
       const item: NewItem = {
         name: line.name,
+        ...(decision.nameEs?.trim() ? { nameEs: decision.nameEs.trim() } : {}),
         // Per line first, the screen default only as a fallback.
         categoryId: decision.categoryId ?? defaults.categoryId,
         locationId: decision.locationId ?? defaults.locationId,

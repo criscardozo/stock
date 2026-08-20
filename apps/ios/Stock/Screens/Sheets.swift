@@ -239,6 +239,7 @@ struct ItemSheet: View {
     var prefill: (name: String, brand: String?, barcode: String)?
 
     @State private var name = ""
+    @State private var nameEs = ""
     @State private var brand = ""
     @State private var categoryId = ""
     @State private var locationId = ""
@@ -254,6 +255,9 @@ struct ItemSheet: View {
             Form {
                 Section {
                     TextField("Nombre", text: $name)
+                    // Anything imported from a receipt is titled in the shop's
+                    // English; this is what makes the row readable and findable.
+                    TextField("Cómo le decimos en casa (opcional)", text: $nameEs)
                     TextField("Marca (opcional)", text: $brand)
                 }
 
@@ -329,6 +333,7 @@ struct ItemSheet: View {
     private func load() {
         if let item {
             name = item.name
+            nameEs = item.nameEs ?? ""
             brand = item.brand ?? ""
             categoryId = item.categoryId
             locationId = item.locationId
@@ -355,6 +360,9 @@ struct ItemSheet: View {
             "locationId": locationId,
             "tracking": tracking.rawValue,
         ]
+        if !nameEs.trimmingCharacters(in: .whitespaces).isEmpty {
+            fields["nameEs"] = nameEs.trimmingCharacters(in: .whitespaces)
+        }
         if !brand.trimmingCharacters(in: .whitespaces).isEmpty {
             fields["brand"] = brand.trimmingCharacters(in: .whitespaces)
         }

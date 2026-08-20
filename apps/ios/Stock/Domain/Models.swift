@@ -71,6 +71,8 @@ struct Household: Codable, Identifiable, Hashable {
 struct Item: Codable, Identifiable, Hashable {
     var id: String
     var name: String
+    /// What it is called at home, shown under the receipt's own name.
+    var nameEs: String?
     var brand: String?
     var categoryId: String
     var locationId: String
@@ -84,6 +86,10 @@ struct Item: Codable, Identifiable, Hashable {
     var minLevel: Level?
     var packSize: String?
     var barcodes: [String]
+    /// Every receipt line matched to this item, verbatim. See shared/schema.md.
+    /// Defaulted: documents written before the importer existed have no such
+    /// field, and neither do the fixtures.
+    var receiptNames: [String] = []
     var expiresAt: CalendarDate.Iso?
     var snoozedUntil: CalendarDate.Iso?
     var lastPriceCents: Int?

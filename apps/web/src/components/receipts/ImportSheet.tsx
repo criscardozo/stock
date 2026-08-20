@@ -388,6 +388,20 @@ export function ImportSheet({
                       </div>
 
                       {decision.kind === 'create' && (
+                        <input
+                          value={decision.nameEs ?? ''}
+                          onChange={(e) =>
+                            setDecisions((d) => ({
+                              ...d,
+                              [line.raw]: { ...decision, nameEs: e.target.value },
+                            }))
+                          }
+                          placeholder="Cómo le decimos en casa (opcional)"
+                          className="rounded-field bg-surface px-3 py-2 text-[12.5px] font-semibold"
+                        />
+                      )}
+
+                      {decision.kind === 'create' && (
                         <div className="flex flex-wrap gap-1.5">
                           <select
                             value={decision.categoryId ?? categoryId}
