@@ -45,18 +45,34 @@ function keywords(text: string): Set<string> {
   return new Set(
     normalise(text)
       .split(' ')
-      .filter((w) => w.length > 2 && !stop.has(w) && !/^\d+$/.test(w)),
+      // Anything starting with a digit is a pack size — "250g", "1litre",
+      // "6x200ml". Two products sharing one are not related; it is the most
+      // common coincidence on a receipt and says the least. Leaving it in made
+      // salted butter look like buttercream icing, both 250g.
+      .filter((w) => w.length > 2 && !stop.has(w) && !/^\d/.test(w)),
   )
 }
 
-/** Shared keywords, as a fraction of the smaller set. 0 when either is empty. */
+/**
+ * Shared keywords, as a fraction of the smaller set. 0 when either is empty.
+ *
+ * A word counts as shared when it is equal to, or a prefix of, a word on the
+ * other side. The till abbreviates: "Coles Regular Soy Milk 1L" online is
+ * "COLES DRINK SOY:REGU 1LITRE" in store, and comparing whole words only finds
+ * "soy" — not enough to offer the right item first. Four characters minimum,
+ * so "sal" does not match "salmón".
+ */
 export function similarity(a: string, b: string): number {
-  const wa = keywords(a)
-  const wb = keywords(b)
-  if (wa.size === 0 || wb.size === 0) return 0
+  const wa = [...keywords(a)]
+  const wb = [...keywords(b)]
+  if (wa.length === 0 || wb.length === 0) return 0
+
+  const matches = (x: string, y: string) =>
+    x === y || (x.length >= 4 && y.startsWith(x)) || (y.length >= 4 && x.startsWith(y))
+
   let shared = 0
-  for (const word of wa) if (wb.has(word)) shared++
-  return shared / Math.min(wa.size, wb.size)
+  for (const word of wa) if (wb.some((other) => matches(word, other))) shared++
+  return shared / Math.min(wa.length, wb.length)
 }
 
 /**

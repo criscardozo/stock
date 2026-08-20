@@ -76,6 +76,17 @@ describe('matchLines', () => {
 })
 
 describe('similarity', () => {
+  it('sees through the abbreviations the till uses', () => {
+    // The case the whole design exists for: same product, two formats.
+    expect(similarity('Coles Regular Soy Milk 1L', 'COLES DRINK SOY:REGU 1LITRE'))
+      .toBeGreaterThanOrEqual(0.6)
+  })
+
+  it('needs four characters before treating a prefix as a match', () => {
+    // "sal" must not swallow "salmón", or a receipt's salt becomes the salmon.
+    expect(similarity('Sal fina', 'Salmón al horno')).toBeLessThan(0.6)
+  })
+
   it('ignores the noise every Coles line carries', () => {
     // "Coles", sizes and units are in every name and say nothing.
     expect(similarity('Coles Simply Salted Butter 250g', 'Coles Simply Snap Frozen Peas 1Kg')).toBeLessThan(0.5)
