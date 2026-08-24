@@ -260,13 +260,21 @@ struct ItemRow: View {
         let stock = ItemState.stock(item)
         let expiry = ItemState.expiry(item, today: today)
 
-        if stock == .out {
+        if stock == .out, item.autoSuggest == false {
+            // "Falta" is a call to action, so it is only true when running out
+            // is a problem to solve. A catalogue-only item at zero is simply
+            // not in the house right now, and it will never reach the list on
+            // its own — red would be promising something that never comes.
+            label("shippingbox", "Sin stock · solo catálogo", Theme.ink2)
+        } else if stock == .out {
             label("exclamationmark.circle.fill", "Falta · mínimo \(minimum)", Theme.dangerDeep)
         } else if expiry == .expired {
             label("xmark.octagon.fill", "Vencido", Theme.dangerDeep)
         } else if expiry == .expiring {
             let days = CalendarDate.daysBetween(today, item.expiresAt ?? today)
             label("clock", days == 0 ? "Vence hoy" : "Vence en \(days) d", Theme.ink2)
+        } else if stock == .low, item.autoSuggest == false {
+            label("shippingbox", "Queda poco · solo catálogo", Theme.ink2)
         } else if stock == .low {
             label("arrow.down", "Poco · mínimo \(minimum)", Theme.primaryDeep)
         } else if wantedByPlan {

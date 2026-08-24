@@ -3,9 +3,17 @@
 import { useState } from 'react'
 import type { Category, Item, Level, Location, Tracking, Unit } from '@/lib/domain/types'
 import { UNIT_NAMES } from '@/lib/domain/quantities'
-import { FieldInput, LevelDial, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
+import { FieldInput, Icon, LevelDial, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
 
-export type ItemDraft = Omit<Item, 'id'>
+export type ItemDraft = Omit<Item, 'id'> & {
+  /**
+   * Fields to REMOVE from an existing document. `updateDoc` merges, so a switch
+   * turned back off is invisible unless the removal is stated: leaving `minSpare`
+   * behind kept a reserve that the form was no longer showing.
+   * Ignored on create — there is nothing to remove yet.
+   */
+  $unset?: string[]
+}
 
 /**
  * New item / edit item. The measurement toggle is the important control on this
@@ -42,6 +50,7 @@ export function ItemSheet({
   const [spare, setSpare] = useState(item?.spare ?? 0)
   const [minSpare, setMinSpare] = useState(item?.minSpare ?? 0)
   const [expiresAt, setExpiresAt] = useState(item?.expiresAt ?? '')
+  const [autoSuggest, setAutoSuggest] = useState(item?.autoSuggest !== false)
 
   const save = () => {
     if (!name.trim()) return
@@ -62,9 +71,20 @@ export function ItemSheet({
             minLevel,
             // `minSpare` is the switch: without it the item behaves exactly as
             // it did before reserves existed, so an untouched field writes
-            // nothing rather than a zero that means the same thing.
+            // nothing rather than a zero that means the same thing. Turning it
+            // OFF has to say so out loud — see `$unset`.
             ...(minSpare > 0 ? { spare, minSpare } : {}),
           }),
+      // Always written, both ways. Storing `true` costs one boolean per item
+      // and buys not having to delete a field to turn the switch back on —
+      // which is the bug the reserve shipped with. Absent still reads as on, so
+      // documents that predate the field are untouched.
+      autoSuggest,
+      // Only the reserve. Switching tracking mode also leaves the other mode's
+      // fields behind, which predates this and is left alone on purpose: the
+      // rules accept them and the domain reads the active pair, so cleaning
+      // that up is a separate change with its own way of going wrong.
+      $unset: minSpare > 0 ? [] : ['spare', 'minSpare'],
     })
   }
 
@@ -246,6 +266,28 @@ export function ItemSheet({
           />
         </SheetField>
       </div>
+
+      <button
+        type="button"
+        onClick={() => setAutoSuggest(!autoSuggest)}
+        aria-pressed={!autoSuggest}
+        className="flex w-full items-start gap-3 rounded-panel bg-ground px-3.5 py-3 text-left"
+      >
+        <span
+          className={`mt-px grid size-5 shrink-0 place-items-center rounded-[6px] ${
+            autoSuggest ? 'border border-line-strong' : 'bg-primary text-on-primary'
+          }`}
+        >
+          {!autoSuggest && <Icon name="check" size={15} />}
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold">Solo catálogo</span>
+          <span className="block text-xs leading-relaxed text-ink-3">
+            Guarda los datos pero no lo pide cuando se termina. Para lo que compramos de vez en
+            cuando. El plan lo sigue pidiendo si una comida lo necesita.
+          </span>
+        </span>
+      </button>
 
       <p className="text-[11.5px] leading-relaxed text-ink-3">
         Enteros siempre. Lo que no se cuenta en enteros va por nivel — vacío, poco, medio, lleno —

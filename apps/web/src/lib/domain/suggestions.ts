@@ -81,13 +81,21 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
     const planned = demand.get(item.id)
     const refs = planned?.refs ?? []
     const belowOwnMin = stockStatus(item) !== 'ok'
+    // Catalogue only: the minimum is silenced, the plan is not. Asking for a
+    // meal is something the user did on purpose, and an ingredient that never
+    // gets bought is a Thursday that does not get cooked. So a silenced item
+    // reaches the list ONLY through the plan, and never carries a number the
+    // minimum produced.
+    const silenced = item.autoSuggest === false
+    const need = planned?.need ?? 0
 
     if (item.tracking === 'level') {
       if (!belowOwnMin) continue
+      if (silenced && refs.length === 0) continue
       // A reserve DOES have a number, and it is not invented: counting sealed
       // bottles is counting units. Without one, the old rule stands — saying
       // "250 ml of oil" is worse than saying nothing.
-      if (item.minSpare !== undefined) {
+      if (item.minSpare !== undefined && !silenced) {
         const missing = Math.max(0, item.minSpare - (item.spare ?? 0))
         out.push({
           itemId: item.id,
@@ -97,15 +105,29 @@ export function suggestions(input: SuggestionInput): Suggestion[] {
         })
         continue
       }
-      out.push({ itemId: item.id, source: 'min', planRefs: refs })
+      out.push({ itemId: item.id, source: silenced ? 'plan' : 'min', planRefs: refs })
       continue
     }
 
     const quantity = item.quantity ?? 0
+    if (silenced) {
+      // What the plan needs beyond what is there. The minimum contributes
+      // nothing — it is the thing that was silenced.
+      if (need === 0 || quantity >= need) continue
+      out.push({
+        itemId: item.id,
+        source: 'plan',
+        quantity: need - quantity,
+        planRefs: refs,
+      })
+      continue
+    }
+
     // The minimum is the cushion you want left AFTER cooking what's planned.
     // Being out counts on its own: a minimum of 0 means "no floor", not
-    // "never tell me" — that's what snooze is for.
-    const threshold = (item.minQuantity ?? 0) + (planned?.need ?? 0)
+    // "never tell me" — that is what autoSuggest is for, and snooze for the
+    // temporary version of it.
+    const threshold = (item.minQuantity ?? 0) + need
     if (!belowOwnMin && quantity >= threshold) continue
 
     const shortfall = Math.max(0, threshold - quantity)

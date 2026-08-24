@@ -15,6 +15,7 @@ final class SuggestionsTests: XCTestCase {
             let minLevel: Int?
             let spare: Int?
             let minSpare: Int?
+            let autoSuggest: Bool?
             let snoozedUntil: String?
         }
         struct RawDay: Decodable {
@@ -88,6 +89,7 @@ final class SuggestionsTests: XCTestCase {
             minLevel: raw.minLevel,
             spare: raw.spare,
             minSpare: raw.minSpare,
+            autoSuggest: raw.autoSuggest,
             packSize: nil,
             barcodes: [],
             expiresAt: nil,
@@ -135,6 +137,18 @@ final class SuggestionsTests: XCTestCase {
                 )
             }
         )
+    }
+
+    /// The vector file is data, so adding cases to it does not change the number
+    /// of XCTest methods — this suite reports "17 tests" whether it ran 29 cases
+    /// or 36. That makes a silently-skipped file indistinguishable from a
+    /// passing one, which is exactly how a green suite ends up proving nothing.
+    /// The count is asserted so a JSON that failed to decode, or a `cases` key
+    /// this struct stopped seeing, fails loudly instead.
+    ///
+    /// Bump it when cases are added, and keep it equal to the TypeScript side.
+    func testEveryVectorIsActuallyRun() throws {
+        XCTAssertEqual(try Self.load().cases.count, 36)
     }
 
     func testSharedVectors() throws {

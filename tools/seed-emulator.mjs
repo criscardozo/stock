@@ -128,6 +128,14 @@ const ITEMS = [
   item('aceite', 'Aceite de oliva', 'almacen', 'alacena', levelled(2)),
   item('sal', 'Sal fina', 'condimentos', 'alacena', levelled(3)),
   item('ajo-polvo', 'Ajo en polvo', 'condimentos', 'alacena', levelled(3)),
+  // Catalogue only, and empty: the case the flag exists for. It has to stay
+  // visible in stock and stay OFF the shopping list.
+  item('curry-verde', 'Pasta de curry verde', 'condimentos', 'alacena', {
+    ...counted('unit', 0, 0),
+    autoSuggest: false,
+    nameEs: 'Curry verde',
+    packSize: 'Pote 114 g',
+  }),
   item('salsa-tacos', 'Salsa de tacos', 'almacen', 'alacena', counted('unit', 0, 1)),
   item('leche-coco', 'Leche de coco', 'almacen', 'alacena', counted('unit', 1, 1, { packSize: 'Lata 400 ml' })),
   item('yerba', 'Yerba', 'desayuno', 'alacena', counted('g', 500, 250, { snoozedUntil: addDays(today, 6) })),

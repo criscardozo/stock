@@ -59,6 +59,13 @@ export interface Item {
   level?: Level
   minLevel?: Level
   /**
+   * False makes the item CATALOGUE ONLY: it keeps every detail and stays in
+   * stock, but running out never puts it on the list. For the things bought
+   * once in a while — running out of them is not a problem to solve. Absent or
+   * true ⇒ exactly the behaviour that predates the field.
+   */
+  autoSuggest?: boolean
+  /**
    * Unopened containers behind the one in use. `level` measures the open one;
    * this counts the sealed ones. Only meaningful with `tracking: 'level'`.
    */

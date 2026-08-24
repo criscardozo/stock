@@ -33,6 +33,7 @@ extension Item {
             minLevel: data["minLevel"] as? Int,
             spare: data["spare"] as? Int,
             minSpare: data["minSpare"] as? Int,
+            autoSuggest: data["autoSuggest"] as? Bool,
             packSize: data["packSize"] as? String,
             barcodes: data["barcodes"] as? [String] ?? [],
             receiptNames: data["receiptNames"] as? [String] ?? [],

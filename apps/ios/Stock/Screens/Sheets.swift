@@ -1,3 +1,4 @@
+import FirebaseFirestore
 import SwiftUI
 
 /// The one place shopping changes stock. Ticking a row in the aisle is just a
@@ -265,6 +266,7 @@ struct ItemSheet: View {
     @State private var minLevel: Level = 1
     @State private var spare = 0
     @State private var minSpare = 0
+    @State private var autoSuggest = true
 
     var body: some View {
         NavigationStack {
@@ -332,6 +334,15 @@ struct ItemSheet: View {
                             : "El nivel mide la que está abierta; la reserva cuenta las cerradas. Con dos de reserva, abrir una ya pone la compra en la lista."
                     )
                 }
+
+                Section {
+                    Toggle("Solo catálogo", isOn: Binding(
+                        get: { !autoSuggest },
+                        set: { autoSuggest = !$0 }
+                    ))
+                } footer: {
+                    Text("Guarda los datos pero no lo pide cuando se termina. Para lo que compramos de vez en cuando. El plan lo sigue pidiendo si una comida lo necesita.")
+                }
             }
             .navigationTitle(item == nil ? "Nuevo ítem" : "Editar")
             .navigationBarTitleDisplayMode(.inline)
@@ -371,6 +382,7 @@ struct ItemSheet: View {
             minLevel = item.minLevel ?? 1
             spare = item.spare ?? 0
             minSpare = item.minSpare ?? 0
+            autoSuggest = item.autoSuggest != false
         } else {
             name = prefill?.name ?? ""
             brand = prefill?.brand ?? ""
@@ -394,6 +406,11 @@ struct ItemSheet: View {
         if !brand.trimmingCharacters(in: .whitespaces).isEmpty {
             fields["brand"] = brand.trimmingCharacters(in: .whitespaces)
         }
+        // Always written, both ways. Storing `true` costs one boolean per item
+        // and buys not having to delete a field to turn the switch back on.
+        // Absent still reads as on, so documents that predate it are untouched.
+        fields["autoSuggest"] = autoSuggest
+
         if tracking == .quantity {
             fields["unit"] = unit.rawValue
             fields["quantity"] = quantity
@@ -407,6 +424,13 @@ struct ItemSheet: View {
             if minSpare > 0 {
                 fields["spare"] = spare
                 fields["minSpare"] = minSpare
+            } else if item != nil {
+                // `updateData` merges, so a reserve turned OFF is invisible
+                // unless the removal is stated — the item would keep a minimum
+                // this form is no longer showing. Only on edit: there is
+                // nothing to delete on a document that does not exist yet.
+                fields["spare"] = FieldValue.delete()
+                fields["minSpare"] = FieldValue.delete()
             }
         }
 

@@ -78,3 +78,29 @@ test('a reserve item shows what is sealed, not just what is open', async ({ page
   await expect(page.getByText('Detergente', { exact: true })).toBeVisible()
   await expect(page.getByText(/1 de 2 sin abrir/)).toBeVisible()
 })
+
+test('a catalogue-only item stays in stock and off the list', async ({ page }) => {
+  await signIn(page)
+  await page.goto('/stock')
+
+  // Seeded empty with autoSuggest false — the thing bought once in a while.
+  // It keeps its details and its place in the catalogue...
+  await expect(page.getByText('Pasta de curry verde', { exact: true })).toBeVisible()
+  // ...and says so instead of raising an alarm nobody can act on.
+  await expect(page.getByText('Sin stock')).toBeVisible()
+
+  // The other empty items DO say "Falta", so this is the flag talking and not
+  // the chip having gone missing everywhere.
+  await expect(page.getByText('Falta').first()).toBeVisible()
+
+  // And it never reaches Falta comprar on its own: the suggestions there are
+  // driven by minimums, which is exactly what the flag silences.
+  //
+  // The control is Servilletas and not Huevos, because these specs share one
+  // seeded household and run in order: the spec above buys the eggs, so by now
+  // they are neither on the list nor short. Servilletas is the row that spec
+  // deliberately leaves alone, which makes it true before and after it.
+  await page.goto('/falta-comprar')
+  await expect(page.getByText('Servilletas').first()).toBeVisible()
+  await expect(page.getByText('Pasta de curry verde')).toBeHidden()
+})

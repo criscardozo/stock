@@ -74,13 +74,21 @@ enum Suggestions {
 
             let refs = planned[item.id]?.refs ?? []
             let belowOwnMin = ItemState.stock(item) != .ok
+            // Catalogue only: the minimum is silenced, the plan is not. Asking
+            // for a meal is something the user did on purpose, and an
+            // ingredient that never gets bought is a Thursday that does not get
+            // cooked. So a silenced item reaches the list ONLY through the plan,
+            // and never carries a number the minimum produced.
+            let silenced = item.autoSuggest == false
+            let need = planned[item.id]?.need ?? 0
 
             if item.tracking == .level {
                 guard belowOwnMin else { continue }
+                if silenced && refs.isEmpty { continue }
                 // A reserve DOES have a number, and it is not invented: counting
                 // sealed bottles is counting units. Without one, the old rule
                 // stands — "250 ml of oil" is worse than saying nothing.
-                if let minSpare = item.minSpare {
+                if let minSpare = item.minSpare, !silenced {
                     let missing = max(0, minSpare - (item.spare ?? 0))
                     out.append(
                         Suggestion(
@@ -88,15 +96,30 @@ enum Suggestions {
                             quantity: missing > 0 ? missing : nil, planRefs: refs))
                     continue
                 }
-                out.append(Suggestion(itemId: item.id, source: .min, quantity: nil, planRefs: refs))
+                out.append(
+                    Suggestion(
+                        itemId: item.id, source: silenced ? .plan : .min,
+                        quantity: nil, planRefs: refs))
                 continue
             }
 
             let quantity = item.quantity ?? 0
+            if silenced {
+                // What the plan needs beyond what is there. The minimum
+                // contributes nothing — it is the thing that was silenced.
+                if need == 0 || quantity >= need { continue }
+                out.append(
+                    Suggestion(
+                        itemId: item.id, source: .plan,
+                        quantity: need - quantity, planRefs: refs))
+                continue
+            }
+
             // The minimum is the cushion you want left AFTER cooking what's
             // planned. Being out counts on its own: a minimum of 0 means "no
-            // floor", not "never tell me" — that's what snooze is for.
-            let threshold = (item.minQuantity ?? 0) + (planned[item.id]?.need ?? 0)
+            // floor", not "never tell me" — that is what autoSuggest is for,
+            // and snooze for the temporary version of it.
+            let threshold = (item.minQuantity ?? 0) + need
             if !belowOwnMin && quantity >= threshold { continue }
 
             let shortfall = max(0, threshold - quantity)

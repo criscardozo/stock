@@ -10,6 +10,7 @@ import type { Item } from '@/lib/domain/types'
 import { PageHeader, FooterNote } from '@/components/PageHeader'
 import { Card, Chip, Icon, PillButton, SectionLabel } from '@/components/ui/primitives'
 import { ItemRow } from '@/components/stock/ItemRow'
+import { deleteField } from 'firebase/firestore'
 import { ItemSheet, type ItemDraft } from '@/components/stock/ItemSheet'
 
 type Filter = 'all' | 'out' | 'low' | 'expiring'
@@ -101,9 +102,18 @@ export default function StockPage() {
 
   if (!household || !householdId || !user) return null
 
-  const save = (draft: ItemDraft) => {
-    if (editing) updateItem(householdId, user.uid, editing.id, draft)
-    else createItem(householdId, user.uid, draft)
+  const save = ({ $unset = [], ...fields }: ItemDraft) => {
+    if (editing) {
+      // `updateDoc` merges, so a field the form stopped sending is simply left
+      // behind. Turning the reserve off has to remove it out loud, or the item
+      // keeps a minimum the form is no longer showing.
+      updateItem(householdId, user.uid, editing.id, {
+        ...fields,
+        ...Object.fromEntries($unset.map((key) => [key, deleteField()])),
+      })
+    } else {
+      createItem(householdId, user.uid, fields)
+    }
     setEditing(null)
     setCreating(false)
   }

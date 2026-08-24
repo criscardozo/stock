@@ -89,6 +89,11 @@ struct Item: Codable, Identifiable, Hashable {
     var spare: Int?
     /// How many sealed ones the household wants to keep.
     var minSpare: Int?
+    /// False makes the item CATALOGUE ONLY: it keeps every detail and stays in
+    /// stock, but running out never puts it on the list. For the things bought
+    /// once in a while — running out of them is not a problem to solve. Absent
+    /// or true ⇒ exactly the behaviour that predates the field.
+    var autoSuggest: Bool?
     var packSize: String?
     var barcodes: [String]
     /// Every receipt line matched to this item, verbatim. See shared/schema.md.

@@ -76,9 +76,13 @@ export function ItemRow({
       )}
 
       <span className="hidden w-[66px] text-right text-xs text-ink-3 sm:block">
-        {item.tracking === 'quantity'
-          ? `mín ${formatQuantity(item.minQuantity ?? 0, item.unit ?? 'unit')}`
-          : `mín ${LEVEL_NAMES[(item.minLevel ?? 1) as Level]}`}
+        {/* A minimum that can never fire is noise, so a catalogue-only item
+            says what it is instead of a threshold nobody acts on. */}
+        {item.autoSuggest === false
+          ? 'catálogo'
+          : item.tracking === 'quantity'
+            ? `mín ${formatQuantity(item.minQuantity ?? 0, item.unit ?? 'unit')}`
+            : `mín ${LEVEL_NAMES[(item.minLevel ?? 1) as Level]}`}
       </span>
 
       <span
@@ -118,8 +122,14 @@ function StatusChip({
   today: IsoDate
   plan: boolean
 }) {
+  // "Falta" is a call to action, so it is only true when running out is a
+  // problem to solve. A catalogue-only item at zero is just not in the house
+  // right now, which is a fact and not an alarm — and it will never reach the
+  // list on its own, so red would be promising something that never comes.
   if (stock === 'out')
-    return (
+    return item.autoSuggest === false ? (
+      <Chip icon="inventory_2">Sin stock</Chip>
+    ) : (
       <Chip icon="error" tone="danger">
         Falta
       </Chip>

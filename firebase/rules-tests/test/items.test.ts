@@ -149,6 +149,15 @@ describe('items: field validation', () => {
     await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { receiptNames: 'COLES' })))
   })
 
+  it('catalogue-only is a flag, not a threshold', async () => {
+    await assertSucceeds(
+      setDoc(item(ALICE, 'ok'), countedItem(ALICE, { autoSuggest: false })),
+    )
+    // A number here would read as "suggest above 0", which is the opposite.
+    await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { autoSuggest: 0 })))
+    await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { autoSuggest: 'no' })))
+  })
+
   it('the reserve is whole containers, never a fraction', async () => {
     await assertSucceeds(setDoc(item(ALICE, 'ok'), levelItem(ALICE, { spare: 2, minSpare: 2 })))
     // Half a sealed bottle is not a thing you can have.
