@@ -160,3 +160,22 @@ schemes:
       config: Debug
       targets:
         - StockTests
+
+  # The domain tests, without the app.
+  #
+  # `StockTests` already compiles Stock/Domain directly rather than depending on
+  # the app target, so the vectors never wait for a Firebase download. The Stock
+  # scheme undoes half of that: it embeds the watch app, so `xcodebuild test`
+  # refuses to run at all without a watchOS runtime installed ("watchOS 26.5
+  # must be installed in order to test the scheme") — a calendar-arithmetic test
+  # blocked on a simulator runtime for a different platform.
+  #
+  # Use this one for the test loop; use Stock to run the app.
+  StockTests:
+    build:
+      targets:
+        StockTests: [test]
+    test:
+      config: Debug
+      targets:
+        - StockTests
