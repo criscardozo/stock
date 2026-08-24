@@ -59,4 +59,18 @@ final class SigningExpiryTests: XCTestCase {
         let expired = calendar.date(byAdding: .day, value: -1, to: Date())!
         XCTAssertEqual(SigningExpiry.daysRemaining(expiry: expired, now: Date()), -1)
     }
+    /// The bug this guards against is a screen that states a date which is not
+    /// the one that matters. The app and the watch app are signed separately and
+    /// Xcode reissues only what is missing, so a watch app added later gets its
+    /// own 7 days — and the shorter profile is what stops working first.
+    func testTheSoonestExpiryWins() {
+        let app = Date(timeIntervalSince1970: 700)
+        let watch = Date(timeIntervalSince1970: 300)
+        XCTAssertEqual(SigningExpiry.earliest(of: [app, watch]), watch)
+        // Order must not matter: the bundle is enumerated, not sorted.
+        XCTAssertEqual(SigningExpiry.earliest(of: [watch, app]), watch)
+        XCTAssertEqual(SigningExpiry.earliest(of: [app]), app)
+        // No profile at all is the Simulator, where the UI hides itself.
+        XCTAssertNil(SigningExpiry.earliest(of: []))
+    }
 }

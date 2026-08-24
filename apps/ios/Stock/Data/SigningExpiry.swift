@@ -41,10 +41,46 @@ enum SigningExpiry {
     }
 
     private static func readEmbeddedProfileExpiry() -> Date? {
-        guard let url = Bundle.main.url(forResource: "embedded", withExtension: "mobileprovision"),
-              let data = try? Data(contentsOf: url)
-        else { return nil }
-        return expiry(fromProfile: data)
+        earliest(of: embeddedProfileURLs().compactMap { url in
+            (try? Data(contentsOf: url)).flatMap(expiry(fromProfile:))
+        })
+    }
+
+    /// EVERY profile in the bundle, not just the app's.
+    ///
+    /// The watch app is signed separately and its profile can carry a different
+    /// date: Xcode reissues only what is missing, so one added later gets its
+    /// own 7 days. Reading just `Bundle.main`'s would report a week left while
+    /// the watch app quietly stops launching days earlier — a screen stating a
+    /// date that is not the one that matters, which is worse than saying
+    /// nothing. `earliest` is the honest answer to "when does this stop
+    /// working".
+    ///
+    /// Extensions are globbed rather than named so a widget added later is
+    /// covered without anyone remembering to come back here.
+    private static func embeddedProfileURLs() -> [URL] {
+        let root = Bundle.main.bundleURL
+        var urls: [URL] = []
+        if let own = Bundle.main.url(forResource: "embedded", withExtension: "mobileprovision") {
+            urls.append(own)
+        }
+        for (directory, ext) in [("Watch", "app"), ("PlugIns", "appex")] {
+            let contents = try? FileManager.default.contentsOfDirectory(
+                at: root.appendingPathComponent(directory),
+                includingPropertiesForKeys: nil
+            )
+            for nested in contents ?? [] where nested.pathExtension == ext {
+                let profile = nested.appendingPathComponent("embedded.mobileprovision")
+                if FileManager.default.fileExists(atPath: profile.path) { urls.append(profile) }
+            }
+        }
+        return urls
+    }
+
+    /// The soonest of several expiries — the testable core. Nil when empty, so
+    /// the Simulator and App Store builds still report nothing.
+    static func earliest(of dates: [Date]) -> Date? {
+        dates.min()
     }
 
     /// `embedded.mobileprovision` is a CMS (PKCS#7) container wrapping a plist.

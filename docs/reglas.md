@@ -234,9 +234,17 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
 - **Reinstalar NO renueva la firma.** El perfil del team gratuito dura 7 días y
   se reusa: el build toma el que ya existe y conserva su vencimiento, así que
   reinstalar el día 6 deja la app viva un día. Para renovar hay que borrar el
-  perfil de `~/Library/Developer/Xcode/UserData/Provisioning Profiles` (los de
-  `dev.cardozo.stock` y `dev.cardozo.stock.watchkitapp`) y recompilar con
-  `-allowProvisioningUpdates`, que emite uno nuevo por 7 días.
+  perfil de `~/Library/Developer/Xcode/UserData/Provisioning Profiles` y
+  recompilar con `-allowProvisioningUpdates`, que emite uno nuevo por 7 días.
+- **Hay que borrar TODOS los perfiles del bundle, no sólo el de la app**, y el
+  que manda es **el más corto**. Cada target se firma por separado y Xcode
+  reemite sólo lo que falta, así que un target agregado después arranca su propia
+  semana: en Gastos el del reloj vencía cinco días más tarde que el de la app.
+  Apartándolos juntos se reemiten en la misma pasada (los de Stock quedaron con
+  dos segundos de diferencia). Y lo primero que deja de andar es lo que firma el
+  perfil que vence antes — el reloj o el widget — sin que la app dé ninguna
+  señal, que es por lo que `SigningExpiry` lee los perfiles de todo el bundle y
+  se queda con el mínimo.
 
 ---
 
