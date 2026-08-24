@@ -187,6 +187,38 @@ mientras se adoptaba, porque no es evidente:
   compara los tres lugares. Se borra el día que Stock genere su tema desde un
   archivo de tokens, porque entonces no van a poder diferir.
 
+### Una escritura parcial tiene que decir qué significa
+
+Regla que salió de que las dos apps cometieran la misma clase de error en la
+misma semana, cada una por la punta opuesta:
+
+- En Stock, `updateDoc` **mergea**: el formulario dejaba de mandar `minSpare` al
+  apagar la reserva y el documento se quedaba con el valor viejo, que la pantalla
+  ya no mostraba. Un switch apagado nunca llegaba a la base.
+- En Gastos, escribir el mapa `defaultBudget` entero **reemplaza**: el payload no
+  incluía `rollover`, así que cambiar el monto desde el teléfono apagaba el
+  arrastre del sobrante en silencio. Estaba vivo en producción.
+
+Las dos formas son válidas y Firestore hace lo que promete. Lo que falla es no
+decidir cuál se quiere: **al escribir, hay que saber qué le pasa a los campos que
+no se mencionan**, y si la respuesta es "se borran" o "sobreviven", que esté
+dicho donde se escribe.
+
+Cómo queda resuelto acá: los campos que se apagan se borran a propósito
+(`deleteField()` en la web, `FieldValue.delete()` en iOS), los flags se escriben
+siempre en las dos posiciones en vez de tener camino de borrado, y los mapas
+anidados del hogar se tocan **por ruta** (`planConfig.length`), nunca enteros.
+Auditado: no queda ninguna escritura de mapa completo fuera del alta.
+
+### Cuidado con `Bundle.main` en código que compila el target de tests
+
+En un bundle de tests, `Bundle.main` es el runner, no la app: los recursos no
+están y el lookup devuelve `nil` sin quejarse, así que el test pasa habiendo
+probado nada. En Gastos esto hizo que `L10n` devolviera la clave en vez del
+texto. Acá `SigningExpiry` lee `Bundle.main`, pero su lógica está partida para
+que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usan
+`Bundle(for: Self.self)` para sus fixtures, que es lo correcto.
+
 ### Dos cosas que cuestan una tarde si no están escritas
 
 - **`-sdk iphonesimulator` se lo impone a *todos* los targets**, incluida la app
@@ -194,6 +226,17 @@ mientras se adoptaba, porque no es evidente:
   any applicable content". Va `-destination` solo.
 - **watchOS rechaza un ícono con canal alfa** (iOS lo tolera). Los PNG del bundle
   de diseño lo traen, así que hay que aplanarlo.
+- **Xcode se actualiza y se lleva la plataforma watchOS**, y como el esquema
+  `Stock` embebe la app del reloj, deja de compilar *todo* iOS — simulador y
+  dispositivo — con "watchOS 26.5 must be installed". Para el loop de tests está
+  el esquema `StockTests`, que no la necesita; para correr la app hay que bajarla
+  con `xcodebuild -downloadPlatform watchOS`.
+- **Reinstalar NO renueva la firma.** El perfil del team gratuito dura 7 días y
+  se reusa: el build toma el que ya existe y conserva su vencimiento, así que
+  reinstalar el día 6 deja la app viva un día. Para renovar hay que borrar el
+  perfil de `~/Library/Developer/Xcode/UserData/Provisioning Profiles` (los de
+  `dev.cardozo.stock` y `dev.cardozo.stock.watchkitapp`) y recompilar con
+  `-allowProvisioningUpdates`, que emite uno nuevo por 7 días.
 
 ---
 
