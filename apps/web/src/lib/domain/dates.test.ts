@@ -7,6 +7,28 @@ import type { PlanLength } from './dates'
 // added here MUST be added there — that is the whole point of the file living
 // in shared/.
 
+/**
+ * The vector file is data, so a group nobody reads is a group nobody runs — and
+ * the suite passes, reporting the same number of tests as before. That is the
+ * failure shape this whole file exists to prevent, applied to the file itself:
+ * a green that means "I ran less than you think".
+ *
+ * Asserting the SET (not the count) so both halves are caught: a group added
+ * and never wired up here, and a group renamed or deleted while a `for` loop
+ * over it quietly iterates nothing. The Swift suite asserts the same set — if
+ * these two ever disagree, one platform is running fewer vectors than the other.
+ */
+describe('the vector file itself', () => {
+  it('has exactly the groups this suite reads', () => {
+    // `$`-prefixed keys are the file's own convention for prose ($comment,
+    // $rules), so they are metadata and not a group anyone should run.
+    const groups = Object.keys(vectors).filter((key) => !key.startsWith('$'))
+    expect(groups.sort()).toEqual(
+      ['addDays', 'daysOf', 'periodEndFor', 'periodStartFor', 'todayIn', 'weekdayOf'].sort(),
+    )
+  })
+})
+
 describe('todayIn', () => {
   for (const c of vectors.todayIn) {
     it(c.name, () => {

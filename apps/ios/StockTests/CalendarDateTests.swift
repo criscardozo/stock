@@ -48,6 +48,33 @@ final class CalendarDateTests: XCTestCase {
         let daysOf: [Days]
     }
 
+    /// The vector file is data, and `Decodable` DISCARDS keys it does not know:
+    /// a group added to the JSON and never wired up here is silently skipped and
+    /// the suite stays green, reporting the same number of tests as before. Same
+    /// failure shape this file is full of tests for — a pass that means "I ran
+    /// less than you think".
+    ///
+    /// The SET is asserted rather than a count, so both halves are caught: a
+    /// group added and never read, and one renamed or removed while `Vectors`
+    /// still declares it. The TypeScript suite asserts the same set; if the two
+    /// ever disagree, one platform is running fewer vectors than the other.
+    func testTheVectorFileHasExactlyTheGroupsThisSuiteReads() throws {
+        let url = try XCTUnwrap(
+            Bundle(for: CalendarDateTests.self).url(
+                forResource: "plan-period-vectors", withExtension: "json"),
+            "falta plan-period-vectors.json en el bundle de tests"
+        )
+        let raw = try JSONSerialization.jsonObject(with: Data(contentsOf: url))
+        // `$`-prefixed keys are the file's own convention for prose ($comment,
+        // $rules), so they are metadata and not a group anyone should run.
+        let groups = Set((raw as? [String: Any] ?? [:]).keys.filter { !$0.hasPrefix("$") })
+        XCTAssertEqual(
+            groups,
+            ["todayIn", "weekdayOf", "addDays", "periodStartFor", "periodEndFor", "daysOf"],
+            "grupo nuevo o renombrado en el JSON: agregalo a Vectors y a su propio test"
+        )
+    }
+
     private static func load() throws -> Vectors {
         let url = try XCTUnwrap(
             Bundle(for: CalendarDateTests.self).url(
