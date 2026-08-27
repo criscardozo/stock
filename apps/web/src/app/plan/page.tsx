@@ -12,6 +12,8 @@ import { dayParts, formatDayMonth, missingText, plural } from '@/lib/domain/form
 import { availabilityOf } from '@/lib/domain/recipes'
 import type { MealPlan, PlanDay, Recipe } from '@/lib/domain/types'
 import { PageHeader, FooterNote } from '@/components/PageHeader'
+import { CalendarImportSheet } from '@/components/plan/CalendarImportSheet'
+import { googleOAuthClientId } from '@/lib/firebase/config'
 import { Chip, Icon, PillButton, SectionLabel, Sheet } from '@/components/ui/primitives'
 import { CookSheet } from '@/components/plan/CookSheet'
 
@@ -19,6 +21,7 @@ export default function PlanPage() {
   const { user } = useAuth()
   const { household, householdId, plan, planStart, recipes, itemsById, today } = useHousehold()
   const [offset, setOffset] = useState(0)
+  const [importing, setImporting] = useState(false)
   const [fetched, setFetched] = useState<{ start: IsoDate | null; plan: MealPlan | null }>({
     start: null,
     plan: null,
@@ -105,6 +108,18 @@ export default function PlanPage() {
                 Volver a hoy
               </button>
             )}
+            {/* Hidden rather than broken when the OAuth client id is unset:
+                the rest of the app does not need it, and a button that always
+                errors is worse than no button. */}
+            {googleOAuthClientId !== null && visible && (
+              <button
+                onClick={() => setImporting(true)}
+                className="flex items-center gap-1.5 rounded-full bg-neutral-soft px-3 py-1.5 text-xs font-semibold text-ink-2"
+              >
+                <Icon name="calendar_month" size={16} />
+                Traer del calendario
+              </button>
+            )}
           </span>
         }
         summary={
@@ -187,6 +202,28 @@ export default function PlanPage() {
           }}
         />
       )}
+      {importing && googleOAuthClientId !== null && visible && (
+        <CalendarImportSheet
+          clientId={googleOAuthClientId}
+          recipes={recipes}
+          startDate={visibleStart}
+          endDate={days.at(-1) ?? visibleStart}
+          onClose={() => setImporting(false)}
+          onApply={(rows) => {
+            // One write per day rather than one batch: they are independent, a
+            // day that fails does not invalidate the others, and setPlanDay is
+            // already the operation the rest of this screen uses.
+            for (const row of rows) {
+              setPlanDay(householdId, visible.id, row.date, {
+                ...(row.recipeId ? { recipeId: row.recipeId } : {}),
+                ...(row.label ? { label: row.label } : {}),
+              })
+            }
+            setImporting(false)
+          }}
+        />
+      )}
+
     </>
   )
 }

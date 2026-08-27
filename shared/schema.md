@@ -106,6 +106,7 @@ fields that already determine them.
 | Field | Type | Notes |
 |---|---|---|
 | `title` | string | 1–120 chars |
+| `shortName?` | string | 1–40 chars. A short handle for the recipe, so a calendar event can say `milanesas` instead of the full title. Matched case- and accent-insensitively. Uniqueness is a client concern — rules cannot compare siblings — and an ambiguous one makes the matcher refuse rather than pick |
 | `servings` | int ≥ 1 | stored but **not used to scale** in the MVP — the recipe is cooked as written |
 | `steps?` | string | free text |
 | `tags` | string[] | e.g. `["rápido", "vegetariano"]` |

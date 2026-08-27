@@ -10,6 +10,7 @@ import { availabilityOf, ingredientStatus, shortfallFor } from '@/lib/domain/rec
 import type { Ingredient, Item, Recipe } from '@/lib/domain/types'
 import { PageHeader, FooterNote } from '@/components/PageHeader'
 import { Card, Chip, HueBadge, Icon, PillButton } from '@/components/ui/primitives'
+import { deleteField } from 'firebase/firestore'
 import { RecipeEditor } from '@/components/recipes/RecipeEditor'
 
 export default function RecipesPage() {
@@ -156,10 +157,16 @@ export default function RecipesPage() {
         <RecipeEditor
           recipe={editing === 'new' ? undefined : editing}
           items={items}
+          recipes={recipes}
           onClose={() => setEditing(null)}
-          onSave={(draft) => {
-            if (editing === 'new') createRecipe(householdId, draft)
-            else updateRecipe(householdId, editing.id, draft)
+          onSave={({ $unset = [], ...fields }) => {
+            if (editing === 'new') createRecipe(householdId, fields)
+            else
+              updateRecipe(householdId, editing.id, {
+                ...fields,
+                // Stated, not implied: see docs/reglas.md on partial writes.
+                ...Object.fromEntries($unset.map((key) => [key, deleteField()])),
+              })
             setEditing(null)
           }}
           onDelete={

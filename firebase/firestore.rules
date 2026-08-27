@@ -209,8 +209,8 @@ service cloud.firestore {
         function validRecipe(d) {
           return d.keys().hasAll(['title', 'servings', 'ingredients', 'tags', 'timesCooked',
                                   'createdAt', 'updatedAt'])
-            && d.keys().hasOnly(['title', 'servings', 'steps', 'ingredients', 'tags', 'icon',
-                                 'timesCooked', 'lastCookedAt', 'createdAt', 'updatedAt'])
+            && d.keys().hasOnly(['title', 'shortName', 'servings', 'steps', 'ingredients', 'tags',
+                                 'icon', 'timesCooked', 'lastCookedAt', 'createdAt', 'updatedAt'])
             && d.title is string && d.title.size() > 0 && d.title.size() <= 120
             && d.servings is int && d.servings >= 1
             && d.ingredients is list && d.ingredients.size() <= 60
@@ -218,7 +218,14 @@ service cloud.firestore {
             && d.timesCooked is int && d.timesCooked >= 0
             && (!('steps' in d) || d.steps is string)
             && (!('lastCookedAt' in d) || isDate(d.lastCookedAt))
-            && (!('icon' in d) || d.icon is string);
+            && (!('icon' in d) || d.icon is string)
+            // What a calendar event can be written as instead of the full
+            // title. Short by definition — a 120-char one would be the title.
+            // Uniqueness is a client concern: rules cannot look at siblings,
+            // and the matcher refuses an ambiguous one rather than guessing.
+            && (!('shortName' in d)
+                || (d.shortName is string
+                    && d.shortName.size() > 0 && d.shortName.size() <= 40));
         }
 
         allow read: if isMember(hid);

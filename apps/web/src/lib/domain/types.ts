@@ -94,6 +94,11 @@ export interface Ingredient {
 export interface Recipe {
   id: string
   title: string
+  /**
+   * A short handle for this recipe, for writing in a calendar event instead of
+   * the full title. Optional: a recipe without one is still matched by title.
+   */
+  shortName?: string
   /** Material Symbols ligature shown on the card; defaults to `restaurant`. */
   icon?: string
   servings: number

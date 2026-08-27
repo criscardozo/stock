@@ -21,6 +21,21 @@ const DEFAULTS = {
 export const useEmulators = process.env.NEXT_PUBLIC_USE_EMULATORS === '1'
 
 /**
+ * The WEB OAuth client id, for asking Google directly for a calendar token.
+ *
+ * Not the same thing as the Firebase config above: signing in goes through
+ * Firebase, but reading the meals calendar needs an access token for a scope
+ * Firebase does not hand out, so that one is requested from Google Identity
+ * Services with this id. Firebase created it when Google Sign-In was enabled —
+ * it is the "Web client (auto created by Google Service)" in the Cloud console's
+ * credentials page. See docs/setup.md.
+ *
+ * Null when unset, and the calendar feature hides itself rather than failing
+ * when someone presses it. Everything else in the app works without it.
+ */
+export const googleOAuthClientId = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID ?? null
+
+/**
  * The emulator suite runs under the `demo-stock` project id (the `demo-` prefix
  * is what tells it to refuse any call to a real Google service). The client has
  * to agree, or its writes land in a different project inside the same emulator

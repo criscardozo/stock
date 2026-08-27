@@ -159,6 +159,17 @@ describe('meal plans', () => {
 })
 
 describe('recipes', () => {
+  it('the short name is a short string, or absent', async () => {
+    await assertSucceeds(
+      setDoc(recipe(ALICE, 'ok'), recipeDoc({ shortName: 'milanesas' })),
+    )
+    // Empty is not "no short name" — absent is. An empty one would match an
+    // empty calendar title and silently claim every blank event.
+    await assertFails(setDoc(recipe(ALICE, 'x'), recipeDoc({ shortName: '' })))
+    await assertFails(setDoc(recipe(ALICE, 'x'), recipeDoc({ shortName: 'a'.repeat(41) })))
+    await assertFails(setDoc(recipe(ALICE, 'x'), recipeDoc({ shortName: 7 })))
+  })
+
   it('a member creates, edits and deletes a recipe', async () => {
     await assertSucceeds(setDoc(recipe(ALICE, 'bolo'), recipeDoc()))
     await assertSucceeds(

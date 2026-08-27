@@ -190,7 +190,40 @@ dispositivos.
 - Para apuntar al emulador, setear `USE_FIREBASE_EMULATORS=1` en el scheme o
   pasar `-useEmulators` como launch argument.
 
-## 7. Backup (Fase 4, gratis)
+## 7. Calendario de comidas (opcional)
+
+La web puede leer el calendario de comidas y proponer el plan de la quincena.
+Es **opcional**: sin configurar, el botón "Traer del calendario" no aparece y
+todo lo demás anda igual.
+
+El calendario es privado (su `.ics` público da 404), así que hace falta un token
+OAuth con scope `calendar.readonly`. Se pide **desde el navegador** y se usa
+desde el navegador — la API de Google manda cabeceras CORS — así que no hay
+backend nuestro en el medio y sigue costando $0.
+
+1. En la [consola de Google Cloud][cred] del proyecto `qcris-stock`, buscá el
+   OAuth client de tipo **Aplicación web** que Firebase creó solo al habilitar
+   Google Sign-In ("Web client (auto created by Google Service)"). Copiá su
+   **Client ID**.
+2. Agregá `https://stock.cardozo.dev` y `http://localhost:3000` a **Orígenes de
+   JavaScript autorizados** de ese client, si no están.
+3. En Vercel, variable de entorno `NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID` con ese
+   valor. Para desarrollo, lo mismo en `apps/web/.env.local`.
+4. En la **pantalla de consentimiento OAuth**, agregá el scope
+   `.../auth/calendar.readonly`. Es un scope **sensible**: en modo *Testing* con
+   hasta 100 usuarios de prueba —que es este caso— no necesita verificación de
+   Google. Si algún día la app se publicara, sí.
+
+El id del calendario está en `apps/web/src/lib/calendar/client.ts`. Es el `cid=`
+del link de Google Calendar decodificado de base64.
+
+Nota de alcance: Firebase no entrega refresh token, así que esto es un botón que
+se aprieta al planificar, no una sincronización de fondo. El primer uso pide
+permiso; los siguientes suelen ser silenciosos.
+
+[cred]: https://console.cloud.google.com/apis/credentials?project=qcris-stock
+
+## 8. Backup (Fase 4, gratis)
 
 Firestore no tiene export gestionado gratis, así que `pnpm backup` va a volcar el
 proyecto entero (hogares + subcolecciones, users, invites) a un JSON con

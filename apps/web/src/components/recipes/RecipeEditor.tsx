@@ -4,8 +4,16 @@ import { useMemo, useState } from 'react'
 import type { Ingredient, Item, Recipe } from '@/lib/domain/types'
 import { formatQuantity } from '@/lib/domain/quantities'
 import { FieldInput, Icon, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
+import { fold } from '@/lib/calendar/match'
 
-type RecipeDraft = Omit<Recipe, 'id' | 'timesCooked'>
+type RecipeDraft = Omit<Recipe, 'id' | 'timesCooked'> & {
+  /**
+   * Fields to REMOVE from an existing document, the same shape ItemSheet uses.
+   * `updateDoc` merges, so a short name cleared in the form is invisible unless
+   * the removal is stated — see docs/reglas.md on partial writes.
+   */
+  $unset?: string[]
+}
 
 /** The set the design drew from — enough to tell six recipes apart at a glance. */
 const ICONS = [
@@ -31,17 +39,23 @@ const ICONS = [
 export function RecipeEditor({
   recipe,
   items,
+  recipes = [],
   onClose,
   onSave,
   onDelete,
 }: {
   recipe?: Recipe
   items: Item[]
+  /** Every recipe in the household, so a short name already taken can be
+   * refused here — rules cannot compare siblings, so this is where uniqueness
+   * lives. */
+  recipes?: Recipe[]
   onClose: () => void
   onSave: (draft: RecipeDraft) => void
   onDelete?: () => void
 }) {
   const [title, setTitle] = useState(recipe?.title ?? '')
+  const [shortName, setShortName] = useState(recipe?.shortName ?? '')
   const [servings, setServings] = useState(recipe?.servings ?? 2)
   const [steps, setSteps] = useState(recipe?.steps ?? '')
   const [tags, setTags] = useState<string[]>(recipe?.tags ?? [])
@@ -49,6 +63,22 @@ export function RecipeEditor({
   const [ingredients, setIngredients] = useState<Ingredient[]>(recipe?.ingredients ?? [])
   const [icon, setIcon] = useState(recipe?.icon ?? 'restaurant')
   const [search, setSearch] = useState('')
+
+  /**
+   * The title of another recipe already using this short name, or null.
+   *
+   * Checked here because the rules cannot: a security rule sees one document,
+   * never its siblings. And the matcher refuses an ambiguous name rather than
+   * picking one, so without this the calendar would simply stop matching that
+   * word — a feature quietly doing nothing, which is the failure this project
+   * keeps running into.
+   */
+  const shortNameTaken = useMemo(() => {
+    const wanted = fold(shortName)
+    if (wanted === '') return null
+    const clash = recipes.find((r) => r.id !== recipe?.id && r.shortName && fold(r.shortName) === wanted)
+    return clash?.title ?? null
+  }, [shortName, recipes, recipe?.id])
 
   const matches = useMemo(() => {
     const needle = search.trim().toLowerCase()
@@ -73,8 +103,14 @@ export function RecipeEditor({
       onClose={onClose}
       footer={
         <div className="flex flex-col gap-3">
+          {shortNameTaken && (
+            <p className="text-[12.5px] font-semibold text-danger-deep">
+              Ese nombre corto ya lo usa «{shortNameTaken}». Tienen que ser distintos, si no el
+              calendario no sabe a cuál te referís.
+            </p>
+          )}
           <PrimaryAction
-            disabled={!title.trim()}
+            disabled={!title.trim() || shortNameTaken !== null}
             onClick={() =>
               onSave({
                 title: title.trim(),
@@ -82,8 +118,12 @@ export function RecipeEditor({
                 tags,
                 icon,
                 ingredients,
+                ...(shortName.trim() ? { shortName: shortName.trim() } : {}),
                 ...(steps.trim() ? { steps: steps.trim() } : {}),
                 ...(recipe?.lastCookedAt ? { lastCookedAt: recipe.lastCookedAt } : {}),
+                // Cleared out loud: `updateDoc` merges, so a short name emptied
+                // in the form would otherwise stay on the document.
+                ...(shortName.trim() ? {} : { $unset: ['shortName'] }),
               })
             }
           >
@@ -100,9 +140,17 @@ export function RecipeEditor({
         </div>
       }
     >
-      <div className="grid grid-cols-[1fr_100px] gap-2.5">
+      <div className="grid grid-cols-[1fr_1fr_100px] gap-2.5">
         <SheetField label="Título">
           <FieldInput value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
+        </SheetField>
+        <SheetField label="Nombre corto (opcional)">
+          <FieldInput
+            value={shortName}
+            onChange={(e) => setShortName(e.target.value)}
+            maxLength={40}
+            placeholder="milanesas"
+          />
         </SheetField>
         <SheetField label="Porciones">
           <FieldInput
