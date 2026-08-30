@@ -236,6 +236,21 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
   reinstalar el día 6 deja la app viva un día. Para renovar hay que borrar el
   perfil de `~/Library/Developer/Xcode/UserData/Provisioning Profiles` y
   recompilar con `-allowProvisioningUpdates`, que emite uno nuevo por 7 días.
+- **Instalar en el teléfono INCLUYE forzar la reemisión, siempre.** No es una
+  decisión que se tome mirando cuántos días quedan: mirarlos es lo que lleva a
+  no hacerlo. Cada instalación que no fuerza gasta días del mismo perfil — el
+  30/08 una instalación normal dejó la app a 23 horas de morir, y reinstalar no
+  la salvaba. Está también en la memoria del proyecto, que es lo que hace que se
+  cumpla sin depender de acordarse.
+- **Si el build falla, restaurar los perfiles apartados antes de terminar**, o la
+  máquina queda sin poder compilar para dispositivo. Y **mirar el exit code del
+  build ANTES de leer las fechas del bundle**: si falló, el `.app` en disco sigue
+  siendo el anterior y sus fechas viejas se leen como "no se renovó" cuando en
+  realidad no se emitió nada. Misma forma que todo lo de esa semana — un dato
+  correcto sobre la pregunta que no era.
+- **Xcode puede perder la sesión de la cuenta al actualizarse**: el build muere
+  con `No Accounts: Add a new account in Accounts settings`. Se arregla en Xcode
+  → Settings → Accounts; la cuenta es `cardozocristian@gmail.com`.
 - **Hay que borrar TODOS los perfiles del bundle, no sólo el de la app**, y el
   que manda es **el más corto**. Cada target se firma por separado y Xcode
   reemite sólo lo que falta, así que un target agregado después arranca su propia
