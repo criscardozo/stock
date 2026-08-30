@@ -250,6 +250,13 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
   siendo el anterior y sus fechas viejas se leen como "no se renovó" cuando en
   realidad no se emitió nada. Misma forma que todo lo de esa semana — un dato
   correcto sobre la pregunta que no era.
+- **Una prueba negativa tiene que decir DÓNDE falló, no sólo que falló.** Probé
+  el camino de error del script tres veces y las tres primeras murieron antes de
+  llegar al paso que creía estar probando —una por un `»` multi-byte comido como
+  nombre de variable, otra por una copia en `/tmp` que no resolvía su ruta
+  relativa— y las tres imprimieron un "exit distinto de cero, perfiles
+  restaurados" perfectamente plausible. Por eso el script nombra la etapa en cada
+  salida.
 - **`xcodebuild ... | grep` devuelve el código de `grep`, no el de xcodebuild.**
   Medido: 0 para un build que falló con 65. Leer "BUILD SUCCEEDED" del texto
   funciona sólo porque xcodebuild lo imprime; el estado se captura antes de

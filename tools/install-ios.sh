@@ -21,10 +21,18 @@
 #      succeeded. When it fails the .app on disk is still the PREVIOUS one, so
 #      its old profile dates read as "it did not renew" when the truth is
 #      "nothing was issued".
-#   3. The profiles come back on ANY exit (trap), so a failed build never leaves
-#      the machine unable to sign.
+#   3. The profiles come back when the build FAILS, so a failure never leaves
+#      the machine unable to sign — and only then. After a success Xcode has
+#      already issued replacements under new filenames, so putting the old ones
+#      back restores nothing and piles up a dead pair every run.
 #   4. It aborts when the freshly issued signature has under a day left — which
 #      is precisely what "the renewal silently did not happen" looks like.
+#
+# And every exit says WHICH STAGE it died at. A negative result has to say
+# where, not just that: the first version of this script failed its own
+# failure-test at stage 1 (a multi-byte `»` swallowed into a variable name) and
+# still printed a plausible "non-zero exit, profiles restored" — the build it
+# claimed to be testing had never run.
 #
 # Ported from the Gastos Diarios script, which shares this problem exactly.
 set -euo pipefail
@@ -37,23 +45,29 @@ PROFILES="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
 BACKUP="$(mktemp -d)"
 APP="$PROJECT_DIR/build-device/Build/Products/Debug-iphoneos/$SCHEME.app"
 
-say() { printf '\n\033[1m%s\033[0m\n' "$*"; }
+STAGE="arranque"
+say() { STAGE="$*"; printf '\n\033[1m%s\033[0m\n' "$*"; }
 
 # Guard 3. ONLY on failure. Xcode issues the new profiles under new filenames,
 # so putting the old ones back after a success does not restore anything — it
 # accumulates a dead pair on disk every single run. Measured: 12 profiles became
 # 16 after two runs before this flag existed.
 renewed=0
-restore_profiles() {
+on_exit() {
+  local code=$?
   if [ "$renewed" -eq 0 ] && compgen -G "$BACKUP/*.mobileprovision" > /dev/null; then
     for f in "$BACKUP"/*.mobileprovision; do
       [ -e "$PROFILES/$(basename "$f")" ] || cp "$f" "$PROFILES/"
     done
     echo "   (perfiles restaurados: no se emitió ninguno nuevo)"
   fi
+  # Where, not just whether. Without this a script that dies before the build
+  # looks exactly like one whose build failed.
+  [ "$code" -ne 0 ] && printf '\n\033[1mFALLÓ en: %s (exit %s)\033[0m\n' "$STAGE" "$code"
   rm -rf "$BACKUP"
+  return 0
 }
-trap restore_profiles EXIT
+trap on_exit EXIT
 
 say "1. Apartando los perfiles de $BUNDLE_ID"
 # All of them together: each target is signed separately and Xcode reissues only
