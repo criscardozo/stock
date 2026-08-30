@@ -236,6 +236,8 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
   reinstalar el día 6 deja la app viva un día. Para renovar hay que borrar el
   perfil de `~/Library/Developer/Xcode/UserData/Provisioning Profiles` y
   recompilar con `-allowProvisioningUpdates`, que emite uno nuevo por 7 días.
+- **Usar `tools/install-ios.sh`**, que hace el procedimiento entero con sus
+  guardas. Lo de abajo es el porqué, no una lista para seguir a mano.
 - **Instalar en el teléfono INCLUYE forzar la reemisión, siempre.** No es una
   decisión que se tome mirando cuántos días quedan: mirarlos es lo que lleva a
   no hacerlo. Cada instalación que no fuerza gasta días del mismo perfil — el
@@ -248,6 +250,15 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
   siendo el anterior y sus fechas viejas se leen como "no se renovó" cuando en
   realidad no se emitió nada. Misma forma que todo lo de esa semana — un dato
   correcto sobre la pregunta que no era.
+- **`xcodebuild ... | grep` devuelve el código de `grep`, no el de xcodebuild.**
+  Medido: 0 para un build que falló con 65. Leer "BUILD SUCCEEDED" del texto
+  funciona sólo porque xcodebuild lo imprime; el estado se captura antes de
+  cualquier pipe.
+- **Restaurar los perfiles apartados sólo tiene sentido si el build FALLÓ.**
+  Xcode emite los nuevos con nombre de archivo nuevo, así que devolver los viejos
+  después de un éxito no restaura nada: acumula un par muerto por corrida.
+  Medido: 12 perfiles pasaron a 16 en dos corridas antes de que el script
+  distinguiera los dos casos.
 - **Xcode puede perder la sesión de la cuenta al actualizarse**: el build muere
   con `No Accounts: Add a new account in Accounts settings`. Se arregla en Xcode
   → Settings → Accounts; la cuenta es `cardozocristian@gmail.com`.
