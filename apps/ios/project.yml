@@ -18,23 +18,35 @@ settings:
     DEVELOPMENT_TEAM: FA737M2U79
 
 packages:
-  # 12.x verified against the emulator on 2026-09-03, because the Gastos
-  # Diarios session had to revert this exact bump: on 12.18.0 its Servicios and
-  # Tarjetas screens hung on "Cargando…" and the emulator answered GOAWAY
-  # ENHANCE_YOUR_CALM / too_many_pings.
+  # 12.x verified against the emulator on 2026-09-03, because the Gastos Diarios
+  # session had to revert this exact bump: on 12.18.0 two of its screens hung on
+  # "Cargando…".
   #
-  # Stock is not exposed, and the reason is architectural rather than luck: all
-  # six of its listeners live in one long-lived `Store` and are opened once at
-  # sign-in. Gastos opens and releases additional streams per screen, and it is
-  # that CHURN the keepalive policy objects to, not the count — Stock runs more
-  # concurrent listeners than it does.
+  # WHAT WAS CHECKED HERE, on an erased simulator against a fresh seed: all four
+  # tabs render server data (the Hoy tab is what exercises the plan listener),
+  # four gRPC connections stay ESTABLISHED across several minutes with nothing
+  # degrading, and firebase-debug.log — which demonstrably records listener
+  # activity, so its silence means something — carries no GOAWAY. Auth was
+  # proven server-side rather than from the screen: the emulator's lastLoginAt
+  # for the seeded user lands two seconds AFTER launch, so it is a real session
+  # and not one restored from the simulator keychain.
   #
-  # What was checked: all four tabs render server data (the Hoy tab exercises
-  # the plan listener), four gRPC connections stay ESTABLISHED across several
-  # minutes, and firebase-debug.log — which demonstrably records listener
-  # activity — carries no GOAWAY. Auth was proven server-side rather than from
-  # the screen: the emulator's lastLoginAt for the seeded user lands two seconds
-  # AFTER the app launched, so it is not a stale keychain session.
+  # WHAT IS NOT KNOWN is why it broke for them, and an earlier version of this
+  # comment claimed to: it said the keepalive policy objects to per-screen
+  # listener churn, which Stock avoids by keeping all six in one long-lived
+  # Store. Their own timeline killed that — the GOAWAY was stamped before any
+  # per-screen store had opened anything, and they later reproduced the hang
+  # with no GOAWAY at all. It was a plausible story written where a measurement
+  # belongs.
+  #
+  # What actually correlates on their side is their in-app DevSeed deleting and
+  # recreating documents at launch, in the collections those screens then
+  # listen to. Stock does none of that: `Seeds.load()` runs only inside
+  # createHousehold, every delete in the app is a user action, and the emulator
+  # seed is a separate Node script that finishes before the app starts.
+  #
+  # So the bump may well be fine for them too. Their revert is caution about an
+  # unexplained failure, not evidence against this pin.
   Firebase:
     url: https://github.com/firebase/firebase-ios-sdk
     from: 12.0.0
