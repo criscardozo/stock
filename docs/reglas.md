@@ -257,6 +257,18 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
   relativa— y las tres imprimieron un "exit distinto de cero, perfiles
   restaurados" perfectamente plausible. Por eso el script nombra la etapa en cada
   salida.
+- **En zsh, un glob sin coincidencias aborta el comando ENTERO, antes de
+  correrlo.** No es que se expanda a nada: los demás argumentos, aunque sean
+  rutas válidas, tampoco se procesan. Demostrado:
+  `zsh -c 'rm -rf noexiste-* a b'` deja `a` y `b` intactos y sólo imprime
+  `no matches found`. Bash hace lo contrario — pasa el patrón literal y sigue.
+  Esto convirtió un `rm -rf ~/…/DerivedData/Stock-* build-sim build-device` en
+  un no-op silencioso, el build siguiente falló por caché vieja, y la app
+  arrancó igual desde un `.app` de una semana antes. `tools/install-ios.sh` no
+  corre ese riesgo porque usa rutas fijas en bash, pero un comando suelto en la
+  terminal sí. La lección de la sesión de Gastos es mejor que el flag:
+  **no dejar nada que limpiar** — compilar en un directorio nuevo en vez de
+  borrar uno viejo.
 - **`xcodebuild ... | grep` devuelve el código de `grep`, no el de xcodebuild.**
   Medido: 0 para un build que falló con 65. Leer "BUILD SUCCEEDED" del texto
   funciona sólo porque xcodebuild lo imprime; el estado se captura antes de
