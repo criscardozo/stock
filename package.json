@@ -22,6 +22,6 @@
     "seed": "pnpm --filter tools seed"
   },
   "devDependencies": {
-    "firebase-tools": "^15.28.1"
+    "firebase-tools": "^15.28.2"
   }
 }

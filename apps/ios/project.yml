@@ -20,10 +20,10 @@ settings:
 packages:
   Firebase:
     url: https://github.com/firebase/firebase-ios-sdk
-    from: 11.0.0
+    from: 12.0.0
   GoogleSignIn:
     url: https://github.com/google/GoogleSignIn-iOS
-    from: 8.0.0
+    from: 9.0.0
 
 targets:
   Stock:
