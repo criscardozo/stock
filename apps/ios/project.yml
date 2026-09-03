@@ -18,6 +18,23 @@ settings:
     DEVELOPMENT_TEAM: FA737M2U79
 
 packages:
+  # 12.x verified against the emulator on 2026-09-03, because the Gastos
+  # Diarios session had to revert this exact bump: on 12.18.0 its Servicios and
+  # Tarjetas screens hung on "Cargando…" and the emulator answered GOAWAY
+  # ENHANCE_YOUR_CALM / too_many_pings.
+  #
+  # Stock is not exposed, and the reason is architectural rather than luck: all
+  # six of its listeners live in one long-lived `Store` and are opened once at
+  # sign-in. Gastos opens and releases additional streams per screen, and it is
+  # that CHURN the keepalive policy objects to, not the count — Stock runs more
+  # concurrent listeners than it does.
+  #
+  # What was checked: all four tabs render server data (the Hoy tab exercises
+  # the plan listener), four gRPC connections stay ESTABLISHED across several
+  # minutes, and firebase-debug.log — which demonstrably records listener
+  # activity — carries no GOAWAY. Auth was proven server-side rather than from
+  # the screen: the emulator's lastLoginAt for the seeded user lands two seconds
+  # AFTER the app launched, so it is not a stale keychain session.
   Firebase:
     url: https://github.com/firebase/firebase-ios-sdk
     from: 12.0.0
