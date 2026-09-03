@@ -187,6 +187,20 @@ mientras se adoptaba, porque no es evidente:
   compara los tres lugares. Se borra el día que Stock genere su tema desde un
   archivo de tokens, porque entonces no van a poder diferir.
 
+### En una nota que queda, separar lo medido de lo que se cree
+
+Un comentario dura más que la sesión que lo escribió y se lee como cosa cerrada,
+así que mezclar una medición con una explicación plausible es peor ahí que en un
+mensaje. Pasó el 03/09 con el pin de Firebase en `apps/ios/project.yml`: las
+mediciones eran buenas —cuatro pestañas con datos del servidor, conexiones
+aguantando minutos, sin GOAWAY en un log calibrado— pero el comentario además
+afirmaba *por qué* fallaba la app hermana, con un mecanismo que nadie había
+reproducido. Su propia timeline lo desmintió media hora después.
+
+La forma que quedó, y que conviene copiar: un bloque de **lo que se verificó**,
+con qué se midió, y otro de **lo que no se sabe**, dicho así. Si el mecanismo no
+está reproducido, va en el segundo.
+
 ### Una escritura parcial tiene que decir qué significa
 
 Regla que salió de que las dos apps cometieran la misma clase de error en la
