@@ -6,6 +6,13 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Two pushes a minute apart used to run twice. The minutes are shared with
+# Gastos Diarios out of one 2,000-a-month allowance, so the older run is
+# cancelled rather than raced.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 # Ubuntu only, by design. macOS runners bill at a 10x minute multiplier, so
 # there is no iOS job here and no iOS workflow anywhere: that app is built and
 # tested on a simulator before each change lands (see CLAUDE.md for the
@@ -21,6 +28,9 @@ jobs:
   web:
     name: Web — typecheck, lint, test, build
     runs-on: ubuntu-latest
+    # A hung emulator or a stuck browser would otherwise burn to the 6-hour
+    # default, out of the same shared allowance.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -43,6 +53,14 @@ jobs:
       # "does it still start with no network" is a release-blocking question.
       # It needs the PRODUCTION build above — `next dev` does not serve the
       # service worker — which is why it lives in this job and not the E2E one.
+      # ~95 MB of Chromium, downloaded twice per run without this. Keyed on the
+      # lockfile because that is what pins @playwright/test, and the browser
+      # build has to match it.
+      - uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       - name: PWA still installs and starts offline
         run: |
           pnpm --filter web exec playwright install --with-deps chromium
@@ -53,6 +71,7 @@ jobs:
   e2e:
     name: Web — Playwright E2E (emulators)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -65,6 +84,14 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: pnpm install --frozen-lockfile
+      # ~95 MB of Chromium, downloaded twice per run without this. Keyed on the
+      # lockfile because that is what pins @playwright/test, and the browser
+      # build has to match it.
+      - uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm --filter web exec playwright install --with-deps chromium
       # Emulators and seed are started here rather than by Playwright's
       # webServer: the suite needs BOTH, and starting them together would hide
@@ -80,6 +107,7 @@ jobs:
   rules:
     name: Firestore rules — emulator tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6

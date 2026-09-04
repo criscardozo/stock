@@ -26,3 +26,13 @@ allowBuilds:
   re2: true
   sharp: false
   unrs-resolver: false
+
+# Transitive fixes the package that pulls them has not shipped yet.
+#
+# fast-uri < 3.1.6 carries four HIGH advisories (host confusion and SSRF via
+# skipped IDN and percent-encoded checks). It arrives through
+# firebase-tools → @modelcontextprotocol/sdk → ajv, so it is dev-only and never
+# runs in the app — but four highs in `pnpm audit` are noise that hides the next
+# real one. Remove when firebase-tools ships a tree without it.
+overrides:
+  fast-uri: '>=3.1.6'
