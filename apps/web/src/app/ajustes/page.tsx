@@ -77,12 +77,17 @@ export default function SettingsPage() {
         <section className="flex flex-col gap-2">
           <SectionLabel>Plan de comidas</SectionLabel>
           <Card className="flex flex-col gap-4 py-4">
+            {/* aria-pressed on all three segmented controls below. Which
+                option is chosen was expressed by colour alone, so the state
+                was unreadable to a screen reader — and untestable, which is
+                how the omission stayed. */}
             <div className="flex flex-wrap items-center gap-3">
               <span className="flex-1 text-sm font-semibold">Largo</span>
               <div className="flex rounded-full bg-ground p-[3px]">
                 {(['weekly', 'fortnightly'] as PlanLength[]).map((value) => (
                   <button
                     key={value}
+                    aria-pressed={household.planConfig.length === value}
                     onClick={() => reportWrite(updateHousehold(householdId, { 'planConfig.length': value }))}
                     className={`rounded-full px-5 py-2 text-[13px] ${
                       household.planConfig.length === value
@@ -101,6 +106,7 @@ export default function SettingsPage() {
                 {WEEKDAYS.map((label, index) => (
                   <button
                     key={label}
+                    aria-pressed={household.planConfig.startWeekday === index}
                     onClick={() =>
                       reportWrite(updateHousehold(householdId, { 'planConfig.startWeekday': index }))
                     }
@@ -136,6 +142,7 @@ export default function SettingsPage() {
               ).map(([value, label]) => (
                 <button
                   key={value}
+                  aria-pressed={theme === value}
                   onClick={() => {
                     writeStoredValue(THEME_STORAGE_KEY, value === 'system' ? null : value)
                     applyTheme(value)

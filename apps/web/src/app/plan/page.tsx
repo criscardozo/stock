@@ -277,7 +277,16 @@ function DayRow({
     >
       <DayStamp weekday={weekday} day={dayNumber} today={isToday} />
 
-      <button onClick={onPick} className="flex min-w-0 flex-1 flex-col items-start leading-tight">
+      {/* The day is in DayStamp, which sits OUTSIDE both buttons — so six planned
+          days give six controls called "Cocinada" and two called "Milanesas 4
+          porciones", with nothing to tell them apart. Naming them by their day
+          is what makes the row operable without seeing it, and what lets a test
+          address one day rather than the first match. */}
+      <button
+        aria-label={`${weekday} ${dayNumber}: ${recipe?.title ?? day?.label ?? 'Sin plan'}`}
+        onClick={onPick}
+        className="flex min-w-0 flex-1 flex-col items-start leading-tight"
+      >
         <span
           className={`truncate text-[15px] ${
             recipe ? 'font-semibold' : 'font-medium text-ink-2 italic'
@@ -310,6 +319,7 @@ function DayRow({
           )}
           {day?.recipeId ? (
             <button
+              aria-label={`Cocinada ${weekday} ${dayNumber}`}
               onClick={() => onCook(recipe)}
               className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[13px] font-bold ${
                 isToday
