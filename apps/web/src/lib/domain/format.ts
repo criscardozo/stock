@@ -26,7 +26,7 @@ export function formatDayShort(date: IsoDate): string {
   return dayShort.format(asUtcDate(date)).replace('.', '')
 }
 
-/** `"2026-08-19"` → `"miércoles 19 de agosto"` */
+/** `"2026-08-19"` → `"miércoles, 19 de agosto"` */
 export function formatDayLong(date: IsoDate): string {
   return dayLong.format(asUtcDate(date))
 }

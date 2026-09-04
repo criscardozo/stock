@@ -12,8 +12,16 @@
  * collapse the columns and make the name run into the numbers.
  */
 
-/** Rebuilds one page's text from positioned fragments. */
-function layoutPage(items: { str: string; transform: number[]; width: number }[]): string {
+/**
+ * Rebuilds one page's text from positioned fragments.
+ *
+ * Exported for tests only — nothing else imports it. It is the one part of this
+ * file that is pure, and the one part where a wrong constant silently produces
+ * text that still LOOKS like a receipt while parse.ts reads the wrong columns
+ * out of it. The half below needs a browser and a 1 MB worker; this half needs
+ * neither, so it gets checked.
+ */
+export function layoutPage(items: { str: string; transform: number[]; width: number }[]): string {
   type Frag = { x: number; y: number; text: string; width: number }
   const frags: Frag[] = items
     // Whitespace-only fragments have to go, not just empty ones: pdfjs emits
