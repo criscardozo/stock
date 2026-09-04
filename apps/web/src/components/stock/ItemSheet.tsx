@@ -216,12 +216,12 @@ export function ItemSheet({
         <div className="grid grid-cols-2 gap-2.5">
           <SheetField label="Ahora">
             <div className="rounded-field bg-ground px-3.5 py-3">
-              <LevelDial level={level} onChange={setLevel} />
+              <LevelDial level={level} onChange={setLevel} name="lo que hay" />
             </div>
           </SheetField>
           <SheetField label="Avisar en">
             <div className="rounded-field bg-ground px-3.5 py-3">
-              <LevelDial level={minLevel} onChange={setMinLevel} />
+              <LevelDial level={minLevel} onChange={setMinLevel} name="el aviso" />
             </div>
           </SheetField>
           <SheetField label="Sin abrir">

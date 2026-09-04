@@ -129,6 +129,7 @@ export function CookSheet({
                       level={levels[item.id] ?? 0}
                       onChange={(next) => setLevels((prev) => ({ ...prev, [item.id]: next }))}
                       showName={false}
+                      name={item.name}
                     />
                   </span>
                 )}

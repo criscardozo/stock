@@ -117,6 +117,7 @@ export function CloseShoppingSheet({
                   <LevelDial
                     level={levels[entry.id] ?? (3 as Level)}
                     onChange={(next) => setLevels((prev) => ({ ...prev, [entry.id]: next }))}
+                    name={entry.label}
                   />
                 </span>
               )}

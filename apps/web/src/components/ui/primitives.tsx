@@ -168,17 +168,31 @@ export function Stepper({
   )
 }
 
-/** Four segments and a word. Never a number — that is the whole point of levels. */
+/** Three segments and a word. Never a number — that is the whole point of levels. */
 export function LevelDial({
   level,
   onChange,
   showName = true,
+  name,
 }: {
   level: Level
   onChange?: (next: Level) => void
   showName?: boolean
+  /**
+   * What this dial adjusts, for the accessible name of its segments.
+   *
+   * Worth a prop because the dial is never alone: the cooking sheet shows one
+   * per level-tracked ingredient, the item sheet shows two side by side (the
+   * level and the minimum), and the stock list shows one per row. Without it
+   * every segment on the screen is called "Poner en poco" and none of them
+   * says which thing it moves.
+   */
+  name?: string
 }) {
-  const segments = ([1, 2, 3, 4] as const).map((step) => step <= level)
+  // Three segments, not four: `Level` is 0-3, so a fourth one can never fill —
+  // 'lleno' left the dial visibly short — and its target was `LEVEL_NAMES[4]`,
+  // which rendered a control called "Poner en undefined".
+  const segments = ([1, 2, 3] as const).map((step) => step <= level)
   return (
     <div className="flex shrink-0 items-center gap-[9px]">
       <div className="flex gap-[3px]">
@@ -189,7 +203,7 @@ export function LevelDial({
             <button
               key={index}
               type="button"
-              aria-label={`Poner en ${LEVEL_NAMES[target]}`}
+              aria-label={`Poner ${name ? `${name} ` : ''}en ${LEVEL_NAMES[target]}`}
               // Clicking the segment you're already at means "one less" — the
               // only way to reach 'vacío' without a separate control.
               onClick={() => onChange(level === target ? ((target - 1) as Level) : target)}

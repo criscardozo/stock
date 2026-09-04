@@ -72,7 +72,7 @@ export function ItemRow({
           onChange={onQuantity}
         />
       ) : (
-        <LevelDial level={(item.level ?? 0) as Level} onChange={onLevel} />
+        <LevelDial level={(item.level ?? 0) as Level} onChange={onLevel} name={item.name} />
       )}
 
       <span className="hidden w-[66px] text-right text-xs text-ink-3 sm:block">

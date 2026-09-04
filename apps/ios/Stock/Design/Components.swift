@@ -117,7 +117,10 @@ struct LevelDial: View {
     var body: some View {
         HStack(spacing: 9) {
             HStack(spacing: 3) {
-                ForEach(1...3 + 1, id: \.self) { step in
+                // 1...3 and not 1...4: `Level` is 0-3, so a fourth segment
+                // can never fill — 'lleno' left the dial visibly short — and
+                // tapping it passed a Level of 4 to `onChange`.
+                ForEach(1...3, id: \.self) { step in
                     RoundedRectangle(cornerRadius: 3)
                         .fill(step <= level ? Theme.primary : Theme.track)
                         .frame(width: 14, height: 8)
