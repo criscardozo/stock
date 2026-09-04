@@ -13,7 +13,12 @@ import { expect, test, type Page } from '@playwright/test'
  * editing firestore.rules, so the repo is never touched and a failed run cannot
  * leave the file mutated.
  */
-const RULES_URL = 'http://127.0.0.1:8085/emulator/v1/projects/demo-stock:securityRules'
+// Same override the app and the seeder honour. Hardcoding 8085 worked until
+// the sibling project's emulators were up: Gastos Diarios claims Auth 9099 and
+// UI 4000, so running both at once means moving Stock's ports, and this was the
+// one place in the repo that could not follow.
+const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8085'
+const RULES_URL = `http://127.0.0.1:${FIRESTORE_PORT}/emulator/v1/projects/demo-stock:securityRules`
 
 const DENY_WRITES = `rules_version = '2';
 service cloud.firestore {
