@@ -83,3 +83,38 @@ function normaliseExpected(raw: Record<string, unknown>) {
     planRefs: raw.planRefs ?? [],
   }
 }
+
+/**
+ * Not a vector: the vectors describe documents this app writes, and this is a
+ * document it used to write. `Dejarlo sin plan` stored a literal null under the
+ * day's key instead of removing the key, so iterating the keys found it and
+ * `day.status` threw — one tap blanked every screen that reads suggestions. The
+ * write is fixed; these documents are already out there, on both clients.
+ */
+describe('a day cleared by an older build', () => {
+  it('is skipped rather than thrown on', () => {
+    const plan = {
+      id: '2026-08-15',
+      startDate: '2026-08-15',
+      endDate: '2026-08-28',
+      length: 'fortnightly',
+      days: {
+        '2026-08-16': null,
+        '2026-08-17': { status: 'planned', recipeId: 'tarta' },
+      },
+    } as unknown as MealPlan
+
+    const items = [
+      { id: 'huevos', name: 'Huevos', tracking: 'quantity', unit: 'unit', quantity: 0 },
+    ] as unknown as Item[]
+    const recipes = [
+      { id: 'tarta', title: 'Tarta', servings: 2, ingredients: [{ itemId: 'huevos', quantity: 6, unit: 'unit' }] },
+    ] as unknown as Recipe[]
+
+    const result = suggestions({ items, recipes, plan, listItemIds: [], today: '2026-08-15' })
+
+    // Not merely "did not throw": the day AFTER the null is still read, so the
+    // guard skips one entry rather than abandoning the loop.
+    expect(result.some((s: Suggestion) => s.itemId === 'huevos')).toBe(true)
+  })
+})

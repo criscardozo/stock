@@ -87,8 +87,13 @@ extension MealPlan {
             let length = PlanLength(rawValue: lengthRaw)
         else { return nil }
 
+        // Cast the map loosely and each entry individually: as
+        // `[String: [String: Any]]` the whole cast fails when a single value is
+        // not a dictionary — an older build's cleared day wrote a literal null
+        // — and the fortnight came back empty rather than short one day.
         var days: [CalendarDate.Iso: PlanDay] = [:]
-        for (date, raw) in data["days"] as? [String: [String: Any]] ?? [:] {
+        for (date, value) in data["days"] as? [String: Any] ?? [:] {
+            guard let raw = value as? [String: Any] else { continue }
             days[date] = PlanDay(
                 recipeId: raw["recipeId"] as? String,
                 label: raw["label"] as? String,

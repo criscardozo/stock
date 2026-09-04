@@ -13,6 +13,7 @@
 import {
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -409,7 +410,12 @@ export function setPlanDay(
 ) {
   const ref = doc(db(), HOUSEHOLDS, householdId, 'mealPlans', planId)
   if (!day) {
-    return updateDoc(ref, { [`days.${date}`]: null, updatedAt: serverTimestamp() })
+    // Removed, not nulled. The schema's "nothing planned" is an ABSENT key, and
+    // a literal null read back as a day: the web crashed computing suggestions
+    // (`day.status` on null) and iOS lost the whole fortnight, because casting
+    // the map to `[String: [String: Any]]` fails outright when one value is
+    // NSNull. One tap on "Dejarlo sin plan" did both.
+    return updateDoc(ref, { [`days.${date}`]: deleteField(), updatedAt: serverTimestamp() })
   }
   return updateDoc(ref, {
     [`days.${date}`]: { ...stripUndefined(day), status: 'planned' },

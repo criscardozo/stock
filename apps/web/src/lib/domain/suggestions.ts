@@ -53,7 +53,11 @@ function demandFromPlan(input: SuggestionInput): Map<string, PlanDemand> {
   for (const date of dates) {
     if (date < input.today) continue
     const day = input.plan.days[date]
-    if (day.status !== 'planned' || !day.recipeId) continue
+    // `!day` and not just the status check: a day cleared by an older
+    // build wrote a literal null under a key that is still present, so
+    // iterating the keys finds it and reading `.status` threw. Fixed at
+    // the write too, but those documents are already out there.
+    if (!day || day.status !== 'planned' || !day.recipeId) continue
 
     const recipe = byId.get(day.recipeId)
     if (!recipe) continue // a deleted recipe is ignored, not a crash
