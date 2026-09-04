@@ -17,7 +17,7 @@ type Filter = 'all' | 'out' | 'low' | 'expiring'
 
 export default function StockPage() {
   const { user } = useAuth()
-  const { household, householdId, items, today, suggestions } = useHousehold()
+  const { household, householdId, items, today, suggestions, reportWrite} = useHousehold()
   const [search, setSearch] = useState('')
   const [locationId, setLocationId] = useState('')
   const [filter, setFilter] = useState<Filter>('all')
@@ -107,12 +107,12 @@ export default function StockPage() {
       // `updateDoc` merges, so a field the form stopped sending is simply left
       // behind. Turning the reserve off has to remove it out loud, or the item
       // keeps a minimum the form is no longer showing.
-      updateItem(householdId, user.uid, editing.id, {
+      reportWrite(updateItem(householdId, user.uid, editing.id, {
         ...fields,
         ...Object.fromEntries($unset.map((key) => [key, deleteField()])),
-      })
+      }))
     } else {
-      createItem(householdId, user.uid, fields)
+      reportWrite(createItem(householdId, user.uid, fields))
     }
     setEditing(null)
     setCreating(false)
@@ -204,8 +204,8 @@ export default function StockPage() {
                   wantedByPlan={wantedByPlan.has(item.id)}
                   last={index === rows.length - 1}
                   onOpen={() => setEditing(item)}
-                  onQuantity={(next) => adjustStock(householdId, user.uid, item, { quantity: next })}
-                  onLevel={(next) => adjustStock(householdId, user.uid, item, { level: next })}
+                  onQuantity={(next) => reportWrite(adjustStock(householdId, user.uid, item, { quantity: next }))}
+                  onLevel={(next) => reportWrite(adjustStock(householdId, user.uid, item, { level: next }))}
                 />
               ))}
             </Card>
@@ -236,7 +236,7 @@ export default function StockPage() {
           onDelete={
             editing
               ? () => {
-                  deleteItem(householdId, editing.id)
+                  reportWrite(deleteItem(householdId, editing.id))
                   setEditing(null)
                 }
               : undefined

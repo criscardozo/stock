@@ -33,7 +33,7 @@ const SNOOZE_DAYS = 7
 
 export default function ShoppingPage() {
   const { user } = useAuth()
-  const { household, householdId, list, suggestions, items, itemsById, recipes, today } =
+  const { household, householdId, list, suggestions, items, itemsById, recipes, today, reportWrite} =
     useHousehold()
   const [closing, setClosing] = useState(false)
   const [manual, setManual] = useState('')
@@ -173,8 +173,8 @@ export default function ShoppingPage() {
                   }
                   memberName={household.members[entry.addedBy]?.displayName}
                   last={index === section.rows.length - 1}
-                  onToggle={() => setChecked(householdId, user.uid, entry.id, !entry.checked)}
-                  onRemove={() => removeFromList(householdId, entry.id)}
+                  onToggle={() => reportWrite(setChecked(householdId, user.uid, entry.id, !entry.checked))}
+                  onRemove={() => reportWrite(removeFromList(householdId, entry.id))}
                 />
               ))}
             </Card>
@@ -187,7 +187,7 @@ export default function ShoppingPage() {
             event.preventDefault()
             const label = manual.trim()
             if (!label) return
-            addToList(householdId, user.uid, { label, source: 'manual' })
+            reportWrite(addToList(householdId, user.uid, { label, source: 'manual' }))
             setManual('')
           }}
         >
@@ -210,11 +210,11 @@ export default function ShoppingPage() {
               <span className="flex-1" />
               <button
                 onClick={() =>
-                  addManyToList(
+                  reportWrite(addManyToList(
                     householdId,
                     user.uid,
                     suggestions.map(entryFor).filter((entry): entry is NewEntry => !!entry),
-                  )
+                  ))
                 }
                 className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-bold text-ink"
               >
@@ -265,7 +265,7 @@ export default function ShoppingPage() {
                       title="Esta vuelta no"
                       aria-label="Esta vuelta no"
                       onClick={() =>
-                        snoozeItem(householdId, user.uid, item.id, addDays(today, SNOOZE_DAYS))
+                        reportWrite(snoozeItem(householdId, user.uid, item.id, addDays(today, SNOOZE_DAYS)))
                       }
                       className="text-ink-4"
                     >
@@ -308,7 +308,7 @@ export default function ShoppingPage() {
           itemsById={itemsById}
           onClose={() => setClosing(false)}
           onConfirm={(purchases) => {
-            closeShopping(householdId, user.uid, purchases)
+            reportWrite(closeShopping(householdId, user.uid, purchases))
             setClosing(false)
           }}
         />

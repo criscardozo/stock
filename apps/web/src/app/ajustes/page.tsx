@@ -17,7 +17,7 @@ const WEEKDAYS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb']
 
 export default function SettingsPage() {
   const { user, signOut } = useAuth()
-  const { household, householdId, items } = useHousehold()
+  const { household, householdId, items, reportWrite} = useHousehold()
   const [copied, setCopied] = useState(false)
   const [importing, setImporting] = useState(false)
 
@@ -64,7 +64,7 @@ export default function SettingsPage() {
       input.value = household.name
       return
     }
-    updateHousehold(householdId, { name })
+    reportWrite(updateHousehold(householdId, { name }))
   }
 
   return (
@@ -83,7 +83,7 @@ export default function SettingsPage() {
                 {(['weekly', 'fortnightly'] as PlanLength[]).map((value) => (
                   <button
                     key={value}
-                    onClick={() => updateHousehold(householdId, { 'planConfig.length': value })}
+                    onClick={() => reportWrite(updateHousehold(householdId, { 'planConfig.length': value }))}
                     className={`rounded-full px-5 py-2 text-[13px] ${
                       household.planConfig.length === value
                         ? 'bg-primary font-bold text-on-primary'
@@ -102,7 +102,7 @@ export default function SettingsPage() {
                   <button
                     key={label}
                     onClick={() =>
-                      updateHousehold(householdId, { 'planConfig.startWeekday': index })
+                      reportWrite(updateHousehold(householdId, { 'planConfig.startWeekday': index }))
                     }
                     className={`h-9 w-11 rounded-full text-[12.5px] ${
                       household.planConfig.startWeekday === index
@@ -313,7 +313,7 @@ export default function SettingsPage() {
           locations={locations}
           onClose={() => setImporting(false)}
           onApply={(actions, deleteItemIds) => {
-            applyReceipt(householdId, user.uid, actions, deleteItemIds)
+            reportWrite(applyReceipt(householdId, user.uid, actions, deleteItemIds))
             setImporting(false)
           }}
         />

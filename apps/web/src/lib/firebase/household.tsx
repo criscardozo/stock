@@ -35,6 +35,25 @@ interface HouseholdState {
    * the house is empty; with it set, it must not.
    */
   loadError: string | null
+  /**
+   * A WRITE the server REFUSED, in the user's words. Never set by being
+   * offline — Firestore queues those and sends them later — so anything here
+   * means the change the user just made is saved nowhere while the screen shows
+   * it as applied. Cleared by dismissing it.
+   */
+  writeError: string | null
+  /** Dismisses the write error. */
+  clearWriteError: () => void
+  /**
+   * Hands a mutation's promise somewhere it can be heard.
+   *
+   * The UI must NOT await these: Firestore only resolves a write once the
+   * server acknowledges it, so awaiting freezes the screen while the data is
+   * already saved locally, and the second tap that follows is how you end up
+   * with two of everything. Not awaiting and not catching are different things
+   * — this catches without waiting.
+   */
+  reportWrite: (promise: Promise<unknown>) => void
 }
 
 const Ctx = createContext<HouseholdState | null>(null)
@@ -158,6 +177,14 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
   const [loadError, setLoadError] = useState<string | null>(null)
   const fail = useCallback((error: Error) => setLoadError(error.message), [])
 
+  const [writeError, setWriteError] = useState<string | null>(null)
+  const clearWriteError = useCallback(() => setWriteError(null), [])
+  const reportWrite = useCallback((promise: Promise<unknown>) => {
+    void promise.catch((error: unknown) =>
+      setWriteError(error instanceof Error ? error.message : 'No se pudo guardar'),
+    )
+  }, [])
+
   // `households.memberIds` is the authorisation source of truth; this field is
   // just how a client finds which household to open.
   const householdId = useScoped<string | null>(
@@ -209,6 +236,9 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
       planStart,
       today,
       loadError,
+      writeError,
+      clearWriteError,
+      reportWrite,
       suggestions: suggestions({
         today,
         items,
@@ -217,7 +247,21 @@ export function HouseholdProvider({ children }: { children: ReactNode }) {
         listItemIds: list.map((e) => e.itemId).filter((id): id is string => !!id),
       }),
     }),
-    [authReady, householdId, household, items, recipes, list, plan, planStart, today, loadError],
+    [
+      authReady,
+      householdId,
+      household,
+      items,
+      recipes,
+      list,
+      plan,
+      planStart,
+      today,
+      loadError,
+      writeError,
+      clearWriteError,
+      reportWrite,
+    ],
   )
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>

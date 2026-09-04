@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
 function Gate({ children }: { children: React.ReactNode }) {
   const { user, ready } = useAuth()
-  const { household, householdId, loadError } = useHousehold()
+  const { household, householdId, loadError, writeError, clearWriteError } = useHousehold()
 
   // Waiting for onAuthStateChanged. Rendering the login here is the classic
   // flash of "signed out" on every single reload.
@@ -62,6 +62,38 @@ function Gate({ children }: { children: React.ReactNode }) {
           <span className="min-w-0 truncate">No pude leer los datos. {loadError}</span>
         </p>
       )}
+      {/* A write the server REFUSED. A dialog and not a band, unlike loadError
+          above: a failed read means the screen may be showing LESS than there
+          is, and the cache under it is often still usable — but a refused write
+          means it is showing something that exists NOWHERE, so it has to
+          interrupt. Offline never lands here: Firestore queues those. */}
+      {writeError !== null && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="write-error-title"
+          className="fixed inset-0 z-50 grid place-items-center bg-ink/40 px-4"
+        >
+          <div className="w-full max-w-sm rounded-panel bg-surface p-5 shadow-lg">
+            <h2 id="write-error-title" className="flex items-center gap-2 text-base font-bold">
+              <Icon name="error" size={20} className="text-danger-deep" />
+              No se pudo guardar
+            </h2>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink-2">{writeError}</p>
+            <p className="mt-2 text-[11.5px] leading-relaxed text-ink-3">
+              El cambio quedó en esta pantalla pero no en el servidor. Probá de nuevo.
+            </p>
+            <button
+              onClick={clearWriteError}
+              autoFocus
+              className="mt-4 w-full rounded-full bg-primary px-4 py-2.5 text-sm font-bold text-on-primary"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex min-h-0 flex-1">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col px-4 pt-5 pb-24 lg:px-7 lg:pt-6 lg:pb-0">

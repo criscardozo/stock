@@ -19,7 +19,7 @@ import { CookSheet } from '@/components/plan/CookSheet'
 
 export default function PlanPage() {
   const { user } = useAuth()
-  const { household, householdId, plan, planStart, recipes, itemsById, today } = useHousehold()
+  const { household, householdId, plan, planStart, recipes, itemsById, today, reportWrite} = useHousehold()
   const [offset, setOffset] = useState(0)
   const [importing, setImporting] = useState(false)
   const [fetched, setFetched] = useState<{ start: IsoDate | null; plan: MealPlan | null }>({
@@ -181,7 +181,7 @@ export default function PlanPage() {
           current={visible.days?.[picking]}
           onClose={() => setPicking(null)}
           onPick={(day) => {
-            setPlanDay(householdId, visible.id, picking, day)
+            reportWrite(setPlanDay(householdId, visible.id, picking, day))
             setPicking(null)
           }}
         />
@@ -193,11 +193,11 @@ export default function PlanPage() {
           itemsById={itemsById}
           onClose={() => setCooking(null)}
           onJustMark={() => {
-            markCooked(householdId, user.uid, visible.id, cooking.date, cooking.recipe, [])
+            reportWrite(markCooked(householdId, user.uid, visible.id, cooking.date, cooking.recipe, []))
             setCooking(null)
           }}
           onConfirm={(consumption: Consumption[]) => {
-            markCooked(householdId, user.uid, visible.id, cooking.date, cooking.recipe, consumption)
+            reportWrite(markCooked(householdId, user.uid, visible.id, cooking.date, cooking.recipe, consumption))
             setCooking(null)
           }}
         />
@@ -214,10 +214,10 @@ export default function PlanPage() {
             // day that fails does not invalidate the others, and setPlanDay is
             // already the operation the rest of this screen uses.
             for (const row of rows) {
-              setPlanDay(householdId, visible.id, row.date, {
+              reportWrite(setPlanDay(householdId, visible.id, row.date, {
                 ...(row.recipeId ? { recipeId: row.recipeId } : {}),
                 ...(row.label ? { label: row.label } : {}),
-              })
+              }))
             }
             setImporting(false)
           }}

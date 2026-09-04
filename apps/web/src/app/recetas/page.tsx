@@ -15,7 +15,7 @@ import { RecipeEditor } from '@/components/recipes/RecipeEditor'
 
 export default function RecipesPage() {
   const { user } = useAuth()
-  const { household, householdId, recipes, items, itemsById } = useHousehold()
+  const { household, householdId, recipes, items, itemsById, reportWrite} = useHousehold()
   const [search, setSearch] = useState('')
   const [open, setOpen] = useState<Recipe | null>(null)
   const [editing, setEditing] = useState<Recipe | 'new' | null>(null)
@@ -138,7 +138,7 @@ export default function RecipesPage() {
           onSendToList={(ingredients) => {
             for (const ingredient of ingredients) {
               const item = ingredient.itemId ? itemsById.get(ingredient.itemId) : undefined
-              addToList(householdId, user.uid, {
+              reportWrite(addToList(householdId, user.uid, {
                 label: item?.name ?? ingredient.label,
                 ...(item ? { itemId: item.id } : {}),
                 ...(item?.tracking === 'quantity'
@@ -146,7 +146,7 @@ export default function RecipesPage() {
                   : {}),
                 source: 'plan',
                 reason: `para ${open.title}`,
-              })
+              }))
             }
             setOpen(null)
           }}
@@ -162,18 +162,18 @@ export default function RecipesPage() {
           onSave={({ $unset = [], ...fields }) => {
             if (editing === 'new') createRecipe(householdId, fields)
             else
-              updateRecipe(householdId, editing.id, {
+              reportWrite(updateRecipe(householdId, editing.id, {
                 ...fields,
                 // Stated, not implied: see docs/reglas.md on partial writes.
                 ...Object.fromEntries($unset.map((key) => [key, deleteField()])),
-              })
+              }))
             setEditing(null)
           }}
           onDelete={
             editing === 'new'
               ? undefined
               : () => {
-                  deleteRecipe(householdId, editing.id)
+                  reportWrite(deleteRecipe(householdId, editing.id))
                   setEditing(null)
                 }
           }
