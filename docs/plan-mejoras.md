@@ -28,6 +28,44 @@ cobertura. P2 accesibilidad. P3 producto prometido y no hecho. P4 higiene.
 
 ---
 
+## Estado
+
+Ejecutado el 04/09/2026 en esta rama. Lo hecho lleva su commit; lo que queda
+sigue con la evidencia y la verificación tal como se escribieron.
+
+| Tarea | Estado |
+| --- | --- |
+| 0.1 canal de error de escritura (web) | hecho |
+| 0.2 tope de notificaciones (iOS) | hecho |
+| 0.3 atomicidad de `closeShopping` | hecho |
+| 1.1 backup | hecho |
+| 1.2 Dependabot | hecho, sin bloque `swift` — ver la tarea |
+| 1.3 E2E de `/plan`, `/recetas`, `/ajustes` | pendiente |
+| 1.4 tests de módulos que cargan peso | hecho |
+| 1.5 topes de tamaño en reglas | hecho, con una salvedad medida — ver la tarea |
+| 2.1 Dynamic Type y etiquetas (iOS) | pendiente |
+| 2.2 movimiento y foco (web) | pendiente |
+| 3.1 / 3.2 / 3.3 producto | pendiente, cada una necesita decidirse antes |
+| 4.1 audit | hecho |
+| 4.2 CI | hecho |
+| 4.3 `error.tsx` | pendiente |
+| 4.4 cabeceras de seguridad | pendiente |
+| 4.5 código muerto en iOS | pendiente |
+| 4.6 tamaño del bundle | pendiente |
+
+Dos cosas que salieron de ejecutarlo y valen más que las tareas mismas:
+
+- **`format.test.ts` no podía fallar.** Las aserciones sobre zona horaria
+  pasaban en esta máquina (`Australia/Sydney`, +10) hicieras lo que hicieras con
+  el código. Hace falta `Pacific/Kiritimati` (+14) y `Pacific/Honolulu` (−10)
+  para acorralarlo; está medido en la cabecera de `format.timezone.test.ts`.
+- **Un detector de fallos mal escrito reportó los 11 tests como caídos en las
+  seis mutaciones**, porque matcheaba las líneas de ejecución y no las de error.
+  Antes de creerle a una sonda, corrésela contra el árbol limpio y exigí que
+  diga cero.
+
+---
+
 ## P0 — Bugs reales
 
 ### 0.1 · Web: una escritura rechazada no se lo dice a nadie
