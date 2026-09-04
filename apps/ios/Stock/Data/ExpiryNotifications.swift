@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import UserNotifications
 
 /// Expiry reminders, scheduled LOCALLY.
@@ -11,6 +12,7 @@ enum ExpiryNotifications {
     private static let enabledKey = "expiry.alerts.enabled"
     private static let daysKey = "expiry.alerts.days"
     private static let prefix = "expiry."
+    private static let log = Logger(subsystem: "dev.cardozo.stock", category: "notifications")
 
     static var isEnabled: Bool {
         get { UserDefaults.standard.bool(forKey: enabledKey) }
@@ -42,10 +44,18 @@ enum ExpiryNotifications {
 
         guard isEnabled, await requestPermission() else { return }
 
-        for item in items {
-            guard let expiresAt = item.expiresAt, expiresAt >= today else { continue }
+        // Capped and ordered by ExpiryReminders, because iOS keeps 64 pending
+        // notifications and DISCARDS the rest without a word. Left to chance,
+        // the ones lost would be whichever the listener delivered last.
+        let wanted = ExpiryReminders.scheduled(items: items, today: today, daysAhead: daysAhead)
+        if wanted.count < items.filter({ $0.expiresAt != nil }).count {
+            log.debug("scheduling \(wanted.count) of \(items.count) items")
+        }
+
+        for item in wanted {
+            guard let expiresAt = item.expiresAt else { continue }
             let warnOn = CalendarDate.adding(-daysAhead, to: expiresAt)
-            guard warnOn >= today, let fireDate = date(warnOn) else { continue }
+            guard let fireDate = date(warnOn) else { continue }
 
             let content = UNMutableNotificationContent()
             content.title = item.name
@@ -58,10 +68,16 @@ enum ExpiryNotifications {
                 [.year, .month, .day, .hour], from: fireDate)
             let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
 
-            try? await center.add(
-                UNNotificationRequest(
-                    identifier: "\(prefix)\(item.id)", content: content, trigger: trigger)
-            )
+            do {
+                try await center.add(
+                    UNNotificationRequest(
+                        identifier: "\(prefix)\(item.id)", content: content, trigger: trigger))
+            } catch {
+                // A reminder that could not be scheduled is information, not
+                // noise: it is the difference between "no alerts because
+                // nothing expires" and "no alerts because they all failed".
+                log.error("could not schedule \(item.id, privacy: .public): \(error.localizedDescription, privacy: .public)")
+            }
         }
     }
 

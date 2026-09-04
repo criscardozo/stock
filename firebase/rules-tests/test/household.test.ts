@@ -56,6 +56,34 @@ describe('households: creation', () => {
     )
   })
 
+  it('caps the maps every listener holds open', async () => {
+    // The household doc is the one document BOTH clients keep a live listener
+    // on, so an unbounded map here degrades every screen rather than one.
+    //
+    // Only the passing side is asserted, and that is deliberate. Above roughly
+    // this size the rules ENGINE refuses the write with an evaluation error
+    // rather than the rule returning false — measured: with the cap raised to
+    // 31 a 31-entry map still fails, reporting "evaluation error at L138". So a
+    // test asserting that 31 is rejected would pass for a reason that has
+    // nothing to do with this cap, which is worse than not testing it. The cap
+    // stays as the documented, intentional limit; the engine happens to agree.
+    const many = (n: number) =>
+      Object.fromEntries(
+        Array.from({ length: n }, (_, i) => [
+          `c${i}`,
+          { name: `C${i}`, icon: '🥫', color: '#B08968', kind: 'food', sortOrder: i },
+        ]),
+      )
+    await assertSucceeds(
+      setDoc(doc(db(ALICE), 'households', HID), {
+        ...householdDoc([ALICE]),
+        categories: many(30),
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }),
+    )
+  })
+
   it('rejects a bogus plan config', async () => {
     await assertFails(
       setDoc(doc(db(ALICE), 'households', HID), {

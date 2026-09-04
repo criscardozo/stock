@@ -525,18 +525,47 @@ function stripUndefined<T extends object>(value: T): Record<string, unknown> {
   return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined))
 }
 
-/** A batch caps at 500 operations. A shop is ~90, but the cap is not negotiable. */
+/**
+ * ONE batch, or nothing.
+ *
+ * This used to commit every 100 rows in sequence, which quietly made
+ * `Cerrar compra` non-atomic above that: if the second commit failed the first
+ * was already on the server, leaving half a shop applied. CLAUDE.md promises
+ * these are atomic, and the promise is worth more than the extra rows.
+ *
+ * Firestore caps a batch at 500 operations and the heaviest caller writes 3 per
+ * row (item update, move, delete of the list row), so 166 rows fit. Past that
+ * it REFUSES rather than splitting, because splitting is exactly the behaviour
+ * that broke the guarantee. A shopping list that long is not a real one; the
+ * message says what to do about it.
+ */
+export const MAX_BATCH_ROWS = 166
+
+/**
+ * The guard, separated so it can be tested without standing up Firestore.
+ * Returns the message when the batch is too big, null when it fits — a string
+ * rather than a throw so the check itself has no side effect to mock away.
+ */
+export function batchTooBig(rowCount: number): string | null {
+  if (rowCount <= MAX_BATCH_ROWS) return null
+  return (
+    `Son ${rowCount} filas y el máximo por operación es ${MAX_BATCH_ROWS}. ` +
+    'Cerrá la compra en dos tandas.'
+  )
+}
+
 async function inBatches<T>(
   rows: T[],
   write: (batch: ReturnType<typeof writeBatch>, row: T) => void,
-  perBatch = 100,
 ) {
-  const database: Firestore = db()
-  for (let i = 0; i < rows.length; i += perBatch) {
-    const batch = writeBatch(database)
-    for (const row of rows.slice(i, i + perBatch)) write(batch, row)
-    await batch.commit()
-  }
+  // Before anything is written: refusing after the first commit would just be
+  // a slower version of the bug this replaced.
+  const tooBig = batchTooBig(rows.length)
+  if (tooBig !== null) throw new Error(tooBig)
+
+  const batch = writeBatch(db() as Firestore)
+  for (const row of rows) write(batch, row)
+  await batch.commit()
 }
 
 /** What the receipt review screen decided for one line. */

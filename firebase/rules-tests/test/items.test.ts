@@ -149,6 +149,11 @@ describe('items: field validation', () => {
     await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { receiptNames: 'COLES' })))
   })
 
+  it('free text is capped, so one document cannot degrade every listener', async () => {
+    await assertSucceeds(setDoc(item(ALICE, 'ok'), countedItem(ALICE, { notes: 'x'.repeat(500) })))
+    await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { notes: 'x'.repeat(501) })))
+  })
+
   it('catalogue-only is a flag, not a threshold', async () => {
     await assertSucceeds(
       setDoc(item(ALICE, 'ok'), countedItem(ALICE, { autoSuggest: false })),

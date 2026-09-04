@@ -42,8 +42,8 @@ config, the categories and the locations, so a single listener covers all of it.
 | `currency` | string | `"AUD"`. Only used to format the optional reference price |
 | `memberIds` | string[] | **max 2**, enforced in the rules. The authorisation boundary |
 | `members` | map | `{ [uid]: { displayName, photoURL? } }` — denormalised for display, so showing "agregado por Cris" costs no extra read. Keys must match `memberIds` |
-| `locations` | map | `{ [id]: { name, icon, hue, sortOrder } }` |
-| `categories` | map | `{ [id]: { name, icon, hue, kind, sortOrder } }`, `kind: "food" \| "household"` — only `food` categories are offered as recipe ingredients |
+| `locations` | map | `{ [id]: { name, icon, hue, sortOrder } }` **≤ 20 entradas.** |
+| `categories` | map | `{ [id]: { name, icon, hue, kind, sortOrder } }`, `kind: "food" \| "household"` — only `food` categories are offered as recipe ingredients **≤ 30 entradas** — este doc lo escucha cada cliente, así que un mapa desbocado degrada todas las pantallas, no una. |
 | `planConfig` | map | `{ length: "weekly" \| "fortnightly", startWeekday: 0-6 }` where **0 = Sunday** (JS convention). Default `6` (Saturday): the plan is written on Friday and shopped on the weekend |
 | `createdAt`, `updatedAt` | timestamp | server |
 
@@ -83,7 +83,7 @@ and "stock level" — for a two-person household the indirection only buys write
 | `expiresAt?` | date | the one expiry that matters (the soonest). **Not a batch ledger** — see PLAN §5 |
 | `snoozedUntil?` | date | silences the *suggestion* until this date. Does not affect the list |
 | `lastPriceCents?` | int ≥ 0 | reference only. No totals, no budget — that's Gastos Diarios' job |
-| `notes?` | string | |
+| `notes?` | string | ≤ 500 chars. |
 | `createdAt`, `updatedAt` | timestamp | server |
 | `updatedBy` | string | uid. Attribution, not ownership: either member may edit anything |
 
@@ -108,8 +108,8 @@ fields that already determine them.
 | `title` | string | 1–120 chars |
 | `shortName?` | string | 1–40 chars. A short handle for the recipe, so a calendar event can say `milanesas` instead of the full title. Matched case- and accent-insensitively. Uniqueness is a client concern — rules cannot compare siblings — and an ambiguous one makes the matcher refuse rather than pick |
 | `servings` | int ≥ 1 | stored but **not used to scale** in the MVP — the recipe is cooked as written |
-| `steps?` | string | free text |
-| `tags` | string[] | e.g. `["rápido", "vegetariano"]` |
+| `steps?` | string | free text ≤ 5000 chars. |
+| `tags` | string[] | e.g. `["rápido", "vegetariano"]` ≤ 20 entradas. |
 | `icon?` | string | Material Symbols ligature for the card (`ramen_dining`, `oven_gen`, …). Defaults to `restaurant` |
 | `ingredients` | array of maps | see below |
 | `timesCooked` | int ≥ 0 | |

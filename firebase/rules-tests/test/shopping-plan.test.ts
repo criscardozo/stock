@@ -159,6 +159,14 @@ describe('meal plans', () => {
 })
 
 describe('recipes', () => {
+  it('tags and steps are capped', async () => {
+    await assertSucceeds(
+      setDoc(recipe(ALICE, 'ok'), recipeDoc({ tags: Array(20).fill('t'), steps: 'x'.repeat(5000) })),
+    )
+    await assertFails(setDoc(recipe(ALICE, 'x'), recipeDoc({ tags: Array(21).fill('t') })))
+    await assertFails(setDoc(recipe(ALICE, 'x'), recipeDoc({ steps: 'x'.repeat(5001) })))
+  })
+
   it('the short name is a short string, or absent', async () => {
     await assertSucceeds(
       setDoc(recipe(ALICE, 'ok'), recipeDoc({ shortName: 'milanesas' })),

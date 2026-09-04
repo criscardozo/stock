@@ -110,7 +110,8 @@ contracts in `shared/`.
   Friday). Changing the config only affects future periods.
 - **Cooking and buying are `writeBatch` operations** (items + moves + plan/recipe in one atomic
   write), and the UI never awaits the write promise — Firestore only resolves it on server
-  confirmation.
+  confirmation. Genuinely ONE batch: `inBatches` refuses past 166 rows rather than splitting,
+  because splitting is what would break the guarantee this line makes.
 
 ## Family with Gastos Diarios
 

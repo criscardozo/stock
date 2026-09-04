@@ -89,8 +89,10 @@ service cloud.firestore {
           && d.currency is string
           && d.memberIds is list && d.memberIds.size() >= 1 && d.memberIds.size() <= 2
           && d.members is map
-          && d.locations is map
-          && d.categories is map
+          && d.locations is map && d.locations.size() <= 20
+          // Capped because the household doc is the one EVERY listener on both
+          // clients holds open: an unbounded map here degrades every screen.
+          && d.categories is map && d.categories.size() <= 30
           && d.planConfig is map
           && d.planConfig.length in ['weekly', 'fortnightly']
           && d.planConfig.startWeekday is int
@@ -160,6 +162,7 @@ service cloud.firestore {
             // one product genuinely has several names (online vs in-store).
             && (!('receiptNames' in d) || (d.receiptNames is list && d.receiptNames.size() <= 20))
             && (!('nameEs' in d) || (d.nameEs is string && d.nameEs.size() <= 80))
+            && (!('notes' in d) || (d.notes is string && d.notes.size() <= 500))
             // Sealed containers behind the open one, and how many to keep.
             // Integers like every other count in this schema.
             && (!('spare' in d) || (d.spare is int && d.spare >= 0))
@@ -214,9 +217,9 @@ service cloud.firestore {
             && d.title is string && d.title.size() > 0 && d.title.size() <= 120
             && d.servings is int && d.servings >= 1
             && d.ingredients is list && d.ingredients.size() <= 60
-            && d.tags is list
+            && d.tags is list && d.tags.size() <= 20
             && d.timesCooked is int && d.timesCooked >= 0
-            && (!('steps' in d) || d.steps is string)
+            && (!('steps' in d) || (d.steps is string && d.steps.size() <= 5000))
             && (!('lastCookedAt' in d) || isDate(d.lastCookedAt))
             && (!('icon' in d) || d.icon is string)
             // What a calendar event can be written as instead of the full
