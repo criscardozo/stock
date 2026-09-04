@@ -225,9 +225,32 @@ permiso; los siguientes suelen ser silenciosos.
 
 ## 8. Backup (Fase 4, gratis)
 
-Firestore no tiene export gestionado gratis, así que `pnpm backup` va a volcar el
-proyecto entero (hogares + subcolecciones, users, invites) a un JSON con
-timestamp en `backups/` (gitignored), usando una service account generada en
-Project settings → **Service accounts** y guardada fuera del repo. El mismo
-script corre semanalmente en GitHub Actions (Ubuntu) guardando el dump como
-artifact por 90 días.
+Firestore no tiene export gestionado gratis (eso necesita Blaze), así que
+`pnpm backup` vuelca el proyecto entero —hogares con todas sus subcolecciones,
+`users`, `invites`— a un JSON con timestamp en `backups/` (gitignored).
+
+**Para que el backup semanal corra hace falta un paso de consola, una sola vez:**
+
+1. Firebase console → Project settings → **Service accounts** → *Generate new
+   private key*. Guardala **fuera del repo** (o en `firebase/service-account.json`,
+   que está gitignoreado).
+2. GitHub → Settings → Secrets and variables → Actions → **New repository
+   secret**, nombre `FIREBASE_SERVICE_ACCOUNT`, y pegá el JSON entero.
+
+Sin ese secret el workflow **falla en el primer paso con un mensaje explícito**
+en vez de correr y no guardar nada.
+
+De a ratos, a mano: `GOOGLE_APPLICATION_CREDENTIALS=/ruta/key.json pnpm backup`.
+Contra el emulador, para ensayar sin tocar producción:
+`FIRESTORE_EMULATOR_HOST=127.0.0.1:8085 BACKUP_PROJECT_ID=demo-stock pnpm backup`.
+
+`.github/workflows/backup.yml` lo corre los jueves a la mañana de Sídney (el
+cron está en UTC y tiene el offset explicado al lado) y guarda el dump como
+artifact por 90 días, que es el techo del tier gratuito. Cuesta un par de los
+2000 minutos mensuales.
+
+**El mismo job chequea que las reglas desplegadas coincidan con el repo**
+(`scripts/check-rules-drift.mjs`). Las reglas son el único límite de seguridad
+del proyecto y se despliegan a mano, así que un arreglo escrito, revisado,
+mergeado y nunca desplegado se lee como hecho en todos los lugares donde alguien
+miraría. Una diferencia **falla el job**, que es lo que manda el mail.

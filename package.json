@@ -19,9 +19,11 @@
     "verify:pwa": "pnpm --filter web verify:pwa",
     "test": "pnpm test:web && pnpm test:rules",
     "emulators": "firebase emulators:start --only auth,firestore --config firebase/firebase.json --project demo-stock",
-    "seed": "pnpm --filter tools seed"
+    "seed": "pnpm --filter tools seed",
+    "backup": "node scripts/backup.mjs"
   },
   "devDependencies": {
+    "firebase-admin": "^14.3.0",
     "firebase-tools": "^15.28.2"
   }
 }
