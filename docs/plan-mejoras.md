@@ -40,11 +40,11 @@ sigue con la evidencia y la verificación tal como se escribieron.
 | 0.3 atomicidad de `closeShopping` | hecho |
 | 1.1 backup | hecho |
 | 1.2 Dependabot | hecho, sin bloque `swift` — ver la tarea |
-| 1.3 E2E de `/plan`, `/recetas`, `/ajustes` | pendiente |
+| 1.3 E2E de `/plan`, `/recetas`, `/ajustes` | hecho |
 | 1.4 tests de módulos que cargan peso | hecho |
 | 1.5 topes de tamaño en reglas | hecho, con una salvedad medida — ver la tarea |
 | 2.1 Dynamic Type y etiquetas (iOS) | pendiente |
-| 2.2 movimiento y foco (web) | pendiente |
+| 2.2 movimiento y foco (web) | pendiente; la parte de nombres accesibles salió sola al escribir 1.3 |
 | 3.1 / 3.2 / 3.3 producto | pendiente, cada una necesita decidirse antes |
 | 4.1 audit | hecho |
 | 4.2 CI | hecho |
@@ -52,6 +52,21 @@ sigue con la evidencia y la verificación tal como se escribieron.
 | 4.4 cabeceras de seguridad | pendiente |
 | 4.5 código muerto en iOS | pendiente |
 | 4.6 tamaño del bundle | pendiente |
+
+Escribir los e2e de 1.3 destapó tres bugs que ninguna lectura había
+encontrado, porque los tres se ven como una pantalla normal:
+
+- **«Dejarlo sin plan» dejaba la app en blanco.** Escribía un `null` literal
+  bajo la clave del día. La web reventaba calculando sugerencias; iOS perdía
+  **la quincena entera** en silencio, porque el cast del mapa falla completo si
+  un valor es NSNull. Arreglado en la escritura y en ambas lecturas: los docs
+  ya escritos siguen ahí.
+- **El dial de nivel nunca podía llenarse.** Cuatro segmentos para una escala
+  de cuatro valores (0–3) con `step <= level`: «lleno» dejaba el dial corto, y
+  el cuarto segmento se llamaba «Poner en undefined». En las dos plataformas.
+- **Controles que sólo el color distinguía.** Los tres segmentados de Ajustes
+  sin `aria-pressed`, y seis botones «Cocinada» idénticos en el plan. No es
+  sólo accesibilidad: es lo que hacía imposible escribir el test.
 
 Dos cosas que salieron de ejecutarlo y valen más que las tareas mismas:
 
@@ -63,6 +78,13 @@ Dos cosas que salieron de ejecutarlo y valen más que las tareas mismas:
   seis mutaciones**, porque matcheaba las líneas de ejecución y no las de error.
   Antes de creerle a una sonda, corrésela contra el árbol limpio y exigí que
   diga cero.
+- **Los emuladores de Stock y de Gastos Diarios no pueden convivir**: los dos
+  reclaman Auth 9099 y UI 4000. Los puertos son configurables en los tres lados
+  (`client.ts`, `seed-emulator.mjs`, `StockApp.swift`), así que se levanta el
+  suite con un config alternativo en vez de matar el del otro proyecto:
+  `firebase emulators:start --only auth,firestore --config <alt>.json` y después
+  `AUTH_EMULATOR_PORT=… FIRESTORE_EMULATOR_PORT=… pnpm seed` y
+  `NEXT_PUBLIC_AUTH_EMULATOR_PORT=… pnpm test:e2e`.
 
 ---
 
