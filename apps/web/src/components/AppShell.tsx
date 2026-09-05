@@ -37,7 +37,12 @@ function Gate({ children }: { children: React.ReactNode }) {
   if (!ready) {
     return (
       <div className="grid min-h-dvh place-items-center bg-ground">
-        <span className="animate-pulse">
+        {/* The one animation in the app, and it runs on the screen somebody
+            sees on every single load. `motion-reduce` is not decoration: a
+            pulse is exactly the kind of movement that triggers nausea for
+            people who have asked the system to stop it. Without it the mark
+            still says "waiting" — it is centred on an otherwise empty screen. */}
+        <span className="animate-pulse motion-reduce:animate-none">
           <AppMark size={64} radius={20} />
         </span>
       </div>

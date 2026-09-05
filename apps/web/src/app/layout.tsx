@@ -36,9 +36,15 @@ export const viewport: Viewport = {
   // Extend under the notch and the home indicator; every edge the content must
   // avoid is then handled explicitly with env(safe-area-inset-*).
   viewportFit: 'cover',
-  // A fixed-height shell: zooming only breaks the layout, and an accidental
-  // double-tap zoom while ticking things off in a supermarket is pure friction.
-  maximumScale: 1,
+  // No `maximumScale`. It used to be 1, to stop an accidental double-tap zoom
+  // while ticking things off in a supermarket — a real annoyance, but the price
+  // was pinch-zoom, for everyone, including the people who most need it in a
+  // badly lit aisle. It is the one accessibility failure Lighthouse reports on
+  // /stock: 93 with it.
+  //
+  // The double tap is handled where it belongs instead: `touch-action:
+  // manipulation` in globals.css turns off double-tap-to-zoom on the controls
+  // without touching pinch.
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

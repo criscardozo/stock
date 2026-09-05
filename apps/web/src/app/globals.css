@@ -366,6 +366,23 @@ body {
   }
 }
 
+/*
+ * Kills double-tap-to-zoom on things you tap, and nothing else.
+ *
+ * The viewport used to carry `maximum-scale=1` for this, which also took
+ * pinch-zoom away from everyone — the accessibility failure Lighthouse reports.
+ * This is the narrow version of the same intent: a double tap on a tick in a
+ * supermarket does what a double tap should, and two fingers still zoom.
+ *
+ * Unlayered, like the focus rule below and for the same reason.
+ */
+button,
+a,
+[role='checkbox'],
+summary {
+  touch-action: manipulation;
+}
+
 *:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
