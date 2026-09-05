@@ -365,14 +365,16 @@ son la frontera**. Inicializar Firebase solo en componentes cliente y esperar la
 
 ## Fases de implementación
 
-> **Estado (17/8/2026):** fases 0 a 3 hechas. La web está viva en
-> `stock.cardozo.dev` y la app iOS corre en el simulador contra los emuladores.
-> La 4 (PWA) está a medias: manifest, íconos y service worker con arranque
-> offline verificado; falta el widget. La 5 sigue sin decidirse.
+> **Estado (5/9/2026):** fases 0 a 4 hechas. La web está viva en
+> `stock.cardozo.dev` y la app iOS está sideloadeada, con el watch y el widget
+> embebidos. Los tres pasos de consola están hechos: reglas deployadas a
+> `qcris-stock` (una lectura anónima da 403), dominio sirviendo el handler de
+> auth same-origin, y la app iOS registrada.
 >
-> Lo que **no** está hecho y no es código: deployar las reglas a `qcris-stock`,
-> whitelistear el dominio en Firebase Auth y registrar la app iOS. Ver
-> `docs/setup.md`.
+> De la Fase 4 quedaba el widget, el historial de movimientos y la gestión de
+> categorías y ubicaciones — las tres hechas el 5/9/2026, con el detalle de qué
+> las destapó en `docs/plan-mejoras.md`. Lo que sigue abierto de esa fase es el
+> layout adaptativo para iPad. La 5 sigue sin decidirse.
 
 ### Fase 0 — Fundaciones (quemar el riesgo primero) ✅
 

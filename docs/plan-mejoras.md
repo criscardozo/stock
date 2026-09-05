@@ -45,7 +45,9 @@ sigue con la evidencia y la verificación tal como se escribieron.
 | 1.5 topes de tamaño en reglas | hecho, con una salvedad medida — ver la tarea |
 | 2.1 Dynamic Type y etiquetas (iOS) | pendiente |
 | 2.2 movimiento y foco (web) | pendiente; la parte de nombres accesibles salió sola al escribir 1.3 |
-| 3.1 / 3.2 / 3.3 producto | pendiente, cada una necesita decidirse antes |
+| 3.1 widget «qué se cocina hoy» | hecho |
+| 3.2 historial de movimientos | hecho, web e iOS |
+| 3.3 gestión de categorías y ubicaciones | hecho — eran **sólo lectura**, no había mutación en todo el repo |
 | 4.1 audit | hecho |
 | 4.2 CI | hecho |
 | 4.3 `error.tsx` | pendiente |
@@ -84,7 +86,29 @@ Dos cosas que salieron de ejecutarlo y valen más que las tareas mismas:
   suite con un config alternativo en vez de matar el del otro proyecto:
   `firebase emulators:start --only auth,firestore --config <alt>.json` y después
   `AUTH_EMULATOR_PORT=… FIRESTORE_EMULATOR_PORT=… pnpm seed` y
-  `NEXT_PUBLIC_AUTH_EMULATOR_PORT=… pnpm test:e2e`.
+  `NEXT_PUBLIC_AUTH_EMULATOR_PORT=… pnpm test:e2e`. **Resuelto de raíz el
+  5/9/2026:** los puertos de Stock se movieron a Auth 9098 / UI 4001, así que
+  los dos emuladores conviven sin overrides.
+
+## Lo que P3 destapó
+
+- **`moves` se escribía en 7 lugares y no lo leía nadie**, ni siquiera el índice
+  compuesto que ya estaba desplegado para esa consulta. iOS no tenía ni el
+  modelo. Ahora lo lee el sheet del ítem en las dos plataformas.
+- **Categorías y ubicaciones eran sólo lectura.** No había *ninguna* mutación
+  para esos mapas en todo el repo: eran lo que sembró `shared/*.json` al crear
+  el hogar. Los topes que se habían agregado a las reglas protegían campos que
+  ninguna pantalla podía hacer crecer.
+- **`sortOrder` es accidentalmente redundante en la web.** Aplanarlo a cero no
+  hace fallar *ninguna* aserción de navegador: el mapa vuelve de Firestore en el
+  orden en que se escribió y un sort estable sobre claves iguales no hace nada.
+  Donde carga peso es en el teléfono, porque iOS lo decodifica a un `Dictionary`
+  de Swift, que no tiene orden. Por eso está fijado en un test unitario y no en
+  el e2e — está medido, no supuesto.
+- **La zona horaria vuelve a esconderse.** El chequeo de caducidad del widget
+  leyendo la zona del *dispositivo* en vez de la del hogar no rompía nada,
+  porque esta máquina **es** `Australia/Sydney`. Igual que `format.test.ts` esta
+  mañana. El caso que muerde describe un hogar en Honolulu.
 
 ---
 
