@@ -160,6 +160,28 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
 
+### Y ahora en la otra dirección (05/09/2026)
+
+El primer lote que va de Stock a Gastos Diarios, avisado a esa sesión el
+05/09/2026 después de verificar cada punto contra *su* repo, no contra el
+nuestro:
+
+- **La app iOS no renderizaba en Outfit, en ninguna de las dos.**
+  `Outfit-Variable.ttf` registra la familia `Outfit` y la instancia por defecto
+  `Outfit-Thin` — iOS no registra las instancias con nombre de una fuente
+  variable. `UIFont(name: "Outfit-Regular")` devuelve `nil`, y todo caía al
+  system rounded. Hay que pedir la FAMILIA y aplicar el peso con `.weight()`.
+- **Ese mismo fallback no tenía `relativeTo:`**, así que Dynamic Type no hacía
+  nada — y eso tapaba lo anterior: la tipografía "se veía bien" porque nadie
+  podía agrandarla para notar que no era la que creía.
+- **`maximum-scale=1` cuesta el pinch-zoom** y es el único fallo de
+  accesibilidad que reporta Lighthouse. `touch-action: manipulation` mata el
+  doble toque sin llevarse el pinch.
+- **Un `onTapGesture` sobre una forma no existe para VoiceOver.** No hay qué
+  enfocar ni qué nombrar. Tiene que ser un `Button`.
+- **Los puertos de los emuladores chocaban.** Stock movió los suyos (Auth 9098,
+  UI 4001); Gastos se queda con 9099/4000. Ahora conviven.
+
 ### El sistema es compartido, y eso tiene reglas propias
 
 Desde agosto de 2026 las dos apps siguen un design system común, que Stock
