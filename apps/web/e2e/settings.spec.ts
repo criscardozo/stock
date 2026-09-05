@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { rangeLabel } from './seeded-plan'
 
 /**
  * The period length, which is the one setting with a visible consequence.
@@ -12,6 +13,10 @@ import { expect, test, type Page } from '@playwright/test'
  *
  * Restores the household to fortnightly at the end: the specs share one seeded
  * household and later ones read the plan.
+ *
+ * Ranges are computed from the seeded period's start, not written down. The
+ * seed builds that period from today, so a spec naming "12 sept – 25 sept"
+ * reports the date it was written on.
  */
 async function signIn(page: Page, path = '/ajustes') {
   await page.goto(path)
@@ -42,19 +47,21 @@ test('the period length reshapes the next period and leaves the current one alon
 }) => {
   await signIn(page)
 
-  // Seeded fortnightly, starting Saturday. The current period runs 29 ago to
-  // 11 sept and is already written.
-  await expect(await nextPeriod(page)).toContainText('12 sept – 25 sept')
+  // Seeded fortnightly, starting Saturday, and already written to Firestore.
+  // The period after it is the next fortnight.
+  await expect(await nextPeriod(page)).toContainText(rangeLabel(14, 14))
 
   await setLength(page, 'Semanal')
 
   // The one that exists is untouched...
   await page.goto('/plan')
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('29 ago – 11 sept')
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(rangeLabel(0, 14))
 
-  // ...and the next one is seven days, from the same Saturday start.
-  await expect(await nextPeriod(page)).toContainText('5 sept – 11 sept')
+  // ...and the next one is seven days. Weekly periods are computed from the
+  // same Saturday start, so "next" is the week beginning one week in, not the
+  // fortnight's second half.
+  await expect(await nextPeriod(page)).toContainText(rangeLabel(7, 7))
 
   await setLength(page, 'Quincenal')
-  await expect(await nextPeriod(page)).toContainText('12 sept – 25 sept')
+  await expect(await nextPeriod(page)).toContainText(rangeLabel(14, 14))
 })

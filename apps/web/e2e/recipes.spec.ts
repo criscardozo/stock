@@ -37,6 +37,13 @@ test('a new recipe is created with a short name', async ({ page }) => {
 test('a second recipe cannot take the same short name', async ({ page }) => {
   await signIn(page)
 
+  // Wait for the recipe the test above created to be ON SCREEN before opening
+  // the editor. The clash is computed against the household's recipes as the
+  // listener has them so far, so typing before they arrive finds nothing to
+  // clash with and the check looks broken. Locally the snapshot beats the
+  // typing and this passed; CI is slower and it did not.
+  await expect(page.getByRole('button', { name: /Guiso de lentejas/ })).toBeVisible()
+
   await page.getByRole('button', { name: 'Nueva receta' }).click()
   const editor = page.getByRole('dialog', { name: 'Nueva receta' })
   await editor.getByRole('textbox', { name: 'Título' }).fill('Guiso de porotos')

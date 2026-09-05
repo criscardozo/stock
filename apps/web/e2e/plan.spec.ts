@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { dayLabel, EMPTY, LEVEL_RECIPE, SALMON } from './seeded-plan'
 
 /**
  * The plan screen: assigning a day, and cooking one.
@@ -13,8 +14,9 @@ import { expect, test, type Page } from '@playwright/test'
  * exactly like a correct one.
  *
  * Runs against the seeded household, in file order, sharing state with the
- * other specs — see shopping.spec.ts. The day used for cooking (mar 8) is one
- * no other spec asserts on.
+ * other specs — see shopping.spec.ts. Days come from `seeded-plan.ts` by their
+ * offset in the period, because the seed builds that period from today: a spec
+ * naming "mar 8" passes on the day it is written and fails the next morning.
  */
 async function signIn(page: Page, path = '/plan') {
   await page.goto(path)
@@ -34,7 +36,7 @@ test('the level dial names every step it can reach', async ({ page }) => {
   // dial used to offer four segments for a scale of four VALUES (0-3): the
   // fourth could never fill, so 'lleno' left the dial visibly short, and its
   // label read "Poner en undefined". Both platforms had it.
-  await page.getByRole('button', { name: 'Cocinada dom 30' }).click()
+  await page.getByRole('button', { name: `Cocinada ${dayLabel(LEVEL_RECIPE)}` }).click()
   await expect(page.getByRole('dialog')).toBeVisible()
 
   // Named by ingredient, which is the other half of the same defect: Pastel de
@@ -53,15 +55,17 @@ test('the level dial names every step it can reach', async ({ page }) => {
 test('an empty day takes a recipe and gives it back', async ({ page }) => {
   await signIn(page)
 
-  // dom 6 is seeded with no plan, and no other spec touches it.
-  await page.getByRole('button', { name: /dom 6 Sin plan/ }).click()
+  // Seeded with no plan, and no other spec touches it.
+  const empty = new RegExp(`${dayLabel(EMPTY)} Sin plan`)
+  await page.getByRole('button', { name: empty }).click()
   await page.getByRole('button', { name: 'Salmón al horno Todo' }).click()
-  await expect(page.getByRole('button', { name: 'dom 6: Salmón al horno' })).toBeVisible()
+  const assigned = `${dayLabel(EMPTY)}: Salmón al horno`
+  await expect(page.getByRole('button', { name: assigned })).toBeVisible()
 
   // Clearing it is a write too, not just closing the sheet.
-  await page.getByRole('button', { name: 'dom 6: Salmón al horno' }).click()
+  await page.getByRole('button', { name: assigned }).click()
   await page.getByRole('button', { name: 'Dejarlo sin plan' }).click()
-  await expect(page.getByRole('button', { name: /dom 6 Sin plan/ })).toBeVisible()
+  await expect(page.getByRole('button', { name: empty })).toBeVisible()
 })
 
 test('cooking deducts the ingredient and counts the recipe', async ({ page }) => {
@@ -72,7 +76,7 @@ test('cooking deducts the ingredient and counts the recipe', async ({ page }) =>
   await expect(count(page, 'Salmón')).toHaveText('2 u')
 
   await page.goto('/plan')
-  await page.getByRole('button', { name: 'Cocinada mar 8' }).click()
+  await page.getByRole('button', { name: `Cocinada ${dayLabel(SALMON)}` }).click()
   await expect(page.getByRole('dialog', { name: /Cocinaste Salmón al horno/ })).toBeVisible()
   await page.getByRole('button', { name: 'Descontar y marcar' }).click()
 
@@ -88,5 +92,5 @@ test('cooking deducts the ingredient and counts the recipe', async ({ page }) =>
 
   // And the day itself is struck through rather than still offering to cook.
   await page.goto('/plan')
-  await expect(page.getByRole('button', { name: 'Cocinada mar 8' })).toBeHidden()
+  await expect(page.getByRole('button', { name: `Cocinada ${dayLabel(SALMON)}` })).toBeHidden()
 })
