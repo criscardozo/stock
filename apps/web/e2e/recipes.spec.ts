@@ -12,7 +12,30 @@ import { expect, test, type Page } from '@playwright/test'
  * The comparison is folded, so it must also catch a clash that differs only by
  * case or accent. Nothing in the seed has a short name, so this spec creates
  * the recipe it then collides with.
+ *
+ * That creation is confirmed AGAINST THE SERVER, not against the screen. The
+ * app never awaits its writes — Firestore only resolves them on server
+ * confirmation — so the new row appears from the local cache the instant it is
+ * queued. Asserting it on screen therefore passes whether the write left the
+ * browser or not, which is exactly what happened: the row was visible here and
+ * gone in the next test's context, because Playwright gives each test a fresh
+ * IndexedDB and the pending write died with the old one.
  */
+const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8085'
+const RECIPES_URL =
+  `http://127.0.0.1:${FIRESTORE_PORT}/v1/projects/demo-stock/databases/` +
+  '(default)/documents/households/casa-cardozo/recipes'
+
+/** Short names the emulator actually holds. Reads go through rules, hence the owner token. */
+async function shortNamesOnServer(): Promise<string[]> {
+  const response = await fetch(RECIPES_URL, { headers: { Authorization: 'Bearer owner' } })
+  const body = (await response.json()) as {
+    documents?: { fields?: { shortName?: { stringValue?: string } } }[]
+  }
+  return (body.documents ?? [])
+    .map((d) => d.fields?.shortName?.stringValue)
+    .filter((name): name is string => name !== undefined)
+}
 async function signIn(page: Page) {
   await page.goto('/recetas')
   await page.getByRole('button', { name: 'Entrar como cristian' }).click()
@@ -32,16 +55,18 @@ test('a new recipe is created with a short name', async ({ page }) => {
 
   await expect(editor).toBeHidden()
   await expect(page.getByRole('button', { name: /Guiso de lentejas/ })).toBeVisible()
+
+  // And it is on the server, which the row above does not prove.
+  await expect.poll(shortNamesOnServer, { timeout: 15_000 }).toContain('guisó')
 })
 
 test('a second recipe cannot take the same short name', async ({ page }) => {
   await signIn(page)
 
-  // Wait for the recipe the test above created to be ON SCREEN before opening
-  // the editor. The clash is computed against the household's recipes as the
-  // listener has them so far, so typing before they arrive finds nothing to
-  // clash with and the check looks broken. Locally the snapshot beats the
-  // typing and this passed; CI is slower and it did not.
+  // Wait for the recipe the test above created to reach THIS context before
+  // opening the editor. The clash is computed against the recipes the listener
+  // has delivered so far, so typing before they arrive finds nothing to clash
+  // with and the check reads as broken rather than as a race.
   await expect(page.getByRole('button', { name: /Guiso de lentejas/ })).toBeVisible()
 
   await page.getByRole('button', { name: 'Nueva receta' }).click()
