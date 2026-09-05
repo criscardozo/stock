@@ -218,6 +218,12 @@ targets:
       # whether a barcode is unknown or the phone simply could not ask.
       - path: Stock/Data/OpenFoodFacts.swift
       - path: StockWidget/MealSnapshot.swift
+      # The font itself, as a test resource. A test bundle has no UIAppFonts,
+      # so FontLoadingTests registers it at runtime and then asserts that the
+      # name AppFont asks for actually resolves — which is exactly what was
+      # wrong, unnoticed, for as long as the file has been in the app.
+      - path: Stock/Resources/Fonts/Outfit-Variable.ttf
+        buildPhase: resources
       # SwiftUI and UIKit only. Compiled in so the symbol map can be checked
       # against what SF Symbols actually ships.
       - path: Stock/Design/Theme.swift

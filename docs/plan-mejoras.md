@@ -42,7 +42,7 @@ sigue con la evidencia y la verificación tal como se escribieron.
 | 1.2 Dependabot | hecho, sin bloque `swift` — ver la tarea |
 | 1.3 E2E de `/plan`, `/recetas`, `/ajustes` | hecho |
 | 1.4 tests de módulos que cargan peso | hecho |
-| 1.5 topes de tamaño en reglas | hecho, con una salvedad medida — ver la tarea |
+| 1.5 topes de tamaño en reglas | hecho; la «salvedad medida» era falsa — ver la corrección |
 | 2.1 Dynamic Type y etiquetas (iOS) | hecho — y destapó que la app **nunca usó Outfit** |
 | 2.2 movimiento y foco (web) | hecho — Lighthouse a11y **100** en las cinco pantallas (partida: 93) |
 | 3.1 widget «qué se cocina hoy» | hecho |
@@ -126,16 +126,30 @@ sola pasada. Cubiertos desde entonces:
 - `name.size() <= 60` del hogar — el que destapó el método
 - `locations.size() <= 20` — el mapa que ahora Ajustes puede editar
 
-Y dos que **no** se cubrieron, con el motivo:
+- `categories.size() <= 30` — por los **dos** lados. Ver abajo.
 
-- `categories.size() <= 30`: sólo se afirma el lado que pasa. El motor de reglas
-  se niega a evaluar un mapa de más de ~31 entradas con un `PERMISSION_DENIED`
-  idéntico al del tope, así que una aserción del lado que falla pasaría exista o
-  no el tope.
+Y uno que **no** se cubrió, con el motivo:
+
 - `memberIds.size() <= 2` en `validHousehold`: el tope que trabaja es
   `before.memberIds.size() < 2` en el camino de *join*, y el test de invitación
   ya lo cubre de punta a punta. El de validación es su cinturón, inalcanzable
   mientras la otra regla se sostenga.
+
+### Corrección: el motor de reglas no se planta en 31 entradas
+
+Este archivo afirmaba, desde el 04/09/2026, que el motor se niega a evaluar un
+mapa de más de ~31 entradas con un `PERMISSION_DENIED` idéntico al del tope, y
+que por eso el lado que falla de `categories` no se podía afirmar. **Es falso.**
+
+Lo remedí el 05/09/2026 después de que la sesión de Gastos Diarios no pudiera
+reproducirlo: con el tope subido a 500, un hogar con **120 categorías se escribe
+sin problema**. Y con el tope real de 30, 31 y 60 fallan — por el tope. El test
+afirma las dos direcciones y cae si se saca el tope.
+
+No sé qué produjo aquel `PERMISSION_DENIED`; lo que sé es que no era el tamaño
+del mapa. La lección no es sobre Firestore: **una medición que explica por qué
+algo no se puede probar merece más escrutinio que una que prueba algo**, porque
+su conclusión es que dejes de mirar.
 
 Siguen sin red, todos del mismo tipo (largo de string o de lista, sin
 consecuencia más allá del tamaño): `displayName` 100, `name` 80 e `ingredients`

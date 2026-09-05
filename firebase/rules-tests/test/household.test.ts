@@ -75,23 +75,30 @@ describe('households: creation', () => {
     await assertSucceeds(setDoc(doc(db(ALICE), 'households', HID), withLocations(20)))
     await assertFails(setDoc(doc(db(ALICE), 'households', 'h2'), withLocations(21)))
 
-    // Categories are capped at 30 and only the PASSING side is asserted. The
-    // rules engine refuses to evaluate a map past ~31 entries at all, with a
-    // PERMISSION_DENIED that looks exactly like the cap firing — so a failing
-    // assertion here would pass whether the cap existed or not. Measured on
-    // 2026-09-04; see docs/plan-mejoras.md §1.5.
-    const categories: Record<string, unknown> = {}
-    for (let i = 0; i < 30; i += 1) {
-      categories[`c${i}`] = { name: `C${i}`, icon: 'inventory_2', hue: 'violet', kind: 'food', sortOrder: i }
-    }
-    await assertSucceeds(
-      setDoc(doc(db(ALICE), 'households', 'h3'), {
+    // Both sides, including the one a note in this repo claimed could not be
+    // asserted. That note said the rules engine refuses to evaluate a map past
+    // ~31 entries at all, so a failing assertion would pass whether the cap
+    // existed or not. Re-measured after Gastos Diarios could not reproduce it:
+    // with the cap raised to 500, a household with 120 categories WRITES FINE.
+    // The engine has no such limit; whatever produced that PERMISSION_DENIED on
+    // 2026-09-04, it was not the map size.
+    const withCategories = (count: number) => {
+      const categories: Record<string, unknown> = {}
+      for (let i = 0; i < count; i += 1) {
+        categories[`c${i}`] = {
+          name: `C${i}`, icon: 'inventory_2', hue: 'violet', kind: 'food', sortOrder: i,
+        }
+      }
+      return {
         ...householdDoc([ALICE]),
         categories,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      }),
-    )
+      }
+    }
+
+    await assertSucceeds(setDoc(doc(db(ALICE), 'households', 'h3'), withCategories(30)))
+    await assertFails(setDoc(doc(db(ALICE), 'households', 'h4'), withCategories(31)))
   })
 
   it('cannot create a household you are not in', async () => {

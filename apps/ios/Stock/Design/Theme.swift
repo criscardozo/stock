@@ -197,7 +197,10 @@ enum AppFont {
     /// long as the font has been in the bundle. Measured at runtime —
     /// `UIFont(name: "Outfit-Regular")` is nil and `UIFont(name: "Outfit")` is
     /// not.
-    private static let familyName = "Outfit"
+    /// Internal, not private, so a test can assert that this exact name still
+    /// resolves. The name being wrong is the whole of the bug this comment
+    /// describes, and it survived months because nothing checked it.
+    static let familyName = "Outfit"
     private static let available: Bool = UIFont(name: familyName, size: 12) != nil
 
     /// The UIKit style matching a SwiftUI one, for scaling the fallback.
