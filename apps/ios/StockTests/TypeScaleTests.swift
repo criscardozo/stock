@@ -62,7 +62,25 @@ final class TypeScaleTests: XCTestCase {
         // measuring the machine, not the code.
         let normal = UITraitCollection(preferredContentSizeCategory: .large)
         for size in [11, 13, 15, 17, 34] as [CGFloat] {
-            XCTAssertEqual(AppFont.scaledSymbol(size, traits: normal), size, accuracy: 0.5)
+            XCTAssertEqual(AppFont.scaledSymbol(size, traits: normal), size)
+        }
+    }
+
+    func testHalfPointsComeBackOnTheNextThird() {
+        // `UIFontMetrics.scaledValue` quantises to thirds of a point, so the
+        // app's half-point sizes do NOT come back untouched: 11.5 becomes
+        // 11.667. Stated as an equality and not a tolerance on purpose — an
+        // `accuracy:` wide enough to swallow 0.167 is wide enough to swallow a
+        // real regression, and this test existed with `accuracy: 0.5` while the
+        // quantisation went unnoticed. Gastos Diarios found it first.
+        let normal = UITraitCollection(preferredContentSizeCategory: .large)
+        for size in [11.5, 14.5] as [CGFloat] {
+            XCTAssertEqual(
+                AppFont.scaledSymbol(size, traits: normal),
+                (size * 3).rounded(.up) / 3,
+                accuracy: 0.0001
+            )
+            XCTAssertNotEqual(AppFont.scaledSymbol(size, traits: normal), size)
         }
     }
 

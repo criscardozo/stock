@@ -264,11 +264,20 @@ enum AppFont {
             let scaled = UIFontMetrics(forTextStyle: metrics(for: style)).scaledValue(for: size)
             return .system(size: scaled, weight: weight, design: .rounded)
         }
-        // `relativeTo:` and not `fixedSize:`. The layout IS drawn at specific
-        // sizes measured by hand — and it still is: at the default Dynamic Type
-        // setting this renders at exactly `size`, byte for byte what fixedSize
-        // gave. The difference only appears when somebody has asked for larger
-        // text, which is the one case the old comment was choosing to ignore.
+        // `relativeTo:` and not `fixedSize:`. The layout is drawn at sizes
+        // measured by hand and at the default setting it still is — for the
+        // ELEVEN of thirteen sizes that are whole points.
+        //
+        // Not for the other two. Measured on this SDK: `UIFontMetrics` quantises,
+        // and the two paths quantise differently. `scaledValue`, which the symbol
+        // helper below uses, snaps to thirds of a point (11.5 → 11.667);
+        // `scaledFont`, which is what a scaled FONT goes through, rounds to whole
+        // points (11.5 → 12, 14.5 → 15). So the app's four half-point sizes are
+        // not byte-for-byte what `fixedSize` gave — this comment used to claim
+        // they were, and Gastos Diarios caught the same claim in their own commit.
+        // Half a point at 3x is a pixel and a half; it is worth knowing rather
+        // than worth fixing, and knowing it is the difference between a design
+        // decision and a surprise.
         //
         // The weight is applied to the family rather than baked into the name,
         // which is what a variable font is for.

@@ -113,6 +113,34 @@ pintado— cambia el arranque a costa de un parpadeo de "deslogueado" en cada
 carga, que es exactamente lo que `AppShell` evita a propósito. Si algún día
 importa, el número a mover es el LCP y el experimento a hacer es ése.
 
+## Topes de reglas sin cobertura (05/09/2026)
+
+Método de Gastos Diarios, que es más barato que mutar de a uno: aflojar **todos**
+los topes a la vez (`sed 's/size() <= [0-9]*/size() <= 999999/'`) y correr la
+suite. Los tests que caen te dicen qué está cubierto; el resto es la lista de
+candidatos, que se confirma en UNA corrida aflojando sólo ésos.
+
+De 17 topes, 6 tenían red. Los 9 candidatos se confirmaron sin cobertura en una
+sola pasada. Cubiertos desde entonces:
+
+- `name.size() <= 60` del hogar — el que destapó el método
+- `locations.size() <= 20` — el mapa que ahora Ajustes puede editar
+
+Y dos que **no** se cubrieron, con el motivo:
+
+- `categories.size() <= 30`: sólo se afirma el lado que pasa. El motor de reglas
+  se niega a evaluar un mapa de más de ~31 entradas con un `PERMISSION_DENIED`
+  idéntico al del tope, así que una aserción del lado que falla pasaría exista o
+  no el tope.
+- `memberIds.size() <= 2` en `validHousehold`: el tope que trabaja es
+  `before.memberIds.size() < 2` en el camino de *join*, y el test de invitación
+  ya lo cubre de punta a punta. El de validación es su cinturón, inalcanzable
+  mientras la otra regla se sostenga.
+
+Siguen sin red, todos del mismo tipo (largo de string o de lista, sin
+consecuencia más allá del tamaño): `displayName` 100, `name` 80 e `ingredients`
+60 de ítems y recetas, `title` 120, `days` 14 del plan, `label` 80 de la lista.
+
 ## Lo que P3 destapó
 
 - **`moves` se escribía en 7 lugares y no lo leía nadie**, ni siquiera el índice

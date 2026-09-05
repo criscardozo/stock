@@ -54,6 +54,46 @@ describe('households: creation', () => {
     await assertFails(setDoc(doc(db(ALICE), 'households', 'h3'), named('')))
   })
 
+  it('caps the two maps every listener holds open', async () => {
+    // `memberIds.size() <= 2` is NOT tested here, deliberately. The cap that
+    // does the work is `before.memberIds.size() < 2` on the join path, and the
+    // invite test below already covers it end to end — Carol cannot become a
+    // third member. The one in validHousehold is its belt: unreachable while
+    // the join rule holds, so a test for it would assert nothing the suite does
+    // not already know.
+    // The household doc is the one document BOTH clients keep a live listener
+    // on, so an unbounded map here is re-read by every screen on every start.
+    // Now that Ajustes can actually edit these, the cap is reachable.
+    const withLocations = (count: number) => {
+      const locations: Record<string, unknown> = {}
+      for (let i = 0; i < count; i += 1) {
+        locations[`l${i}`] = { name: `L${i}`, icon: 'inventory_2', hue: 'violet', sortOrder: i * 10 }
+      }
+      return { ...householdDoc([ALICE]), locations, createdAt: serverTimestamp(), updatedAt: serverTimestamp() }
+    }
+
+    await assertSucceeds(setDoc(doc(db(ALICE), 'households', HID), withLocations(20)))
+    await assertFails(setDoc(doc(db(ALICE), 'households', 'h2'), withLocations(21)))
+
+    // Categories are capped at 30 and only the PASSING side is asserted. The
+    // rules engine refuses to evaluate a map past ~31 entries at all, with a
+    // PERMISSION_DENIED that looks exactly like the cap firing — so a failing
+    // assertion here would pass whether the cap existed or not. Measured on
+    // 2026-09-04; see docs/plan-mejoras.md §1.5.
+    const categories: Record<string, unknown> = {}
+    for (let i = 0; i < 30; i += 1) {
+      categories[`c${i}`] = { name: `C${i}`, icon: 'inventory_2', hue: 'violet', kind: 'food', sortOrder: i }
+    }
+    await assertSucceeds(
+      setDoc(doc(db(ALICE), 'households', 'h3'), {
+        ...householdDoc([ALICE]),
+        categories,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      }),
+    )
+  })
+
   it('cannot create a household you are not in', async () => {
     await assertFails(
       setDoc(doc(db(ALICE), 'households', HID), {
