@@ -12,18 +12,32 @@ import Foundation
 ///
 /// A test bundle has no `UIAppFonts`, which is why this has to happen at all.
 enum TestFonts {
-    private static let registered: Bool = {
+    /// Why it did or did not work.
+    ///
+    /// Not a `Bool`. "The .ttf was never copied into the bundle" and "the file
+    /// is there and CoreText refused it" are different problems with different
+    /// fixes — one is a line in project.yml, the other is the font file — and a
+    /// single `false` made the test message assert the first while knowing
+    /// neither. Gastos Diarios found the same conflation on their side, where
+    /// it was live.
+    enum Outcome: Equatable {
+        case registered
+        case resourceMissing
+        case registrationFailed
+    }
+
+    private static let outcome: Outcome = {
         guard let url = Bundle(for: Marker.self)
             .url(forResource: "Outfit-Variable", withExtension: "ttf")
-        else { return false }
+        else { return .resourceMissing }
         return CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+            ? .registered
+            : .registrationFailed
     }()
 
     /// Idempotent — the work happens once, on first touch.
-    /// Returns false when the resource is not in the bundle at all, which is a
-    /// different failure from the font not resolving and is reported as one.
     @discardableResult
-    static func register() -> Bool { registered }
+    static func register() -> Outcome { outcome }
 
     /// Only exists to give `Bundle(for:)` a class in this bundle.
     private final class Marker {}

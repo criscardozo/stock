@@ -22,12 +22,18 @@ final class FontLoadingTests: XCTestCase {
     }
 
     func testTheFontFileIsInThisBundleAtAll() {
-        // Checked separately, so "the font does not resolve" and "the resource
-        // was not copied" cannot be read as the same failure.
-        XCTAssertTrue(
-            TestFonts.register(),
-            "Outfit-Variable.ttf is not in the test bundle — check project.yml"
-        )
+        // First, and separate, so that among the assertions a missing resource
+        // knocks over there is one whose message names the build phase. The
+        // others cannot tell the two causes apart — that is not what makes this
+        // useful. What makes it useful is that it sends you to the right file.
+        switch TestFonts.register() {
+        case .registered:
+            break
+        case .resourceMissing:
+            XCTFail("Outfit-Variable.ttf is not a resource of StockTests — check project.yml")
+        case .registrationFailed:
+            XCTFail("Outfit-Variable.ttf is in the bundle and CoreText refused it — check the file")
+        }
     }
 
     func testTheNameTheAppAsksForResolves() {
