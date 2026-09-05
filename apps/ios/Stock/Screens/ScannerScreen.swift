@@ -98,10 +98,11 @@ struct ScannerScreen: View {
                             Stepper(
                                 value: known.quantity ?? 0,
                                 step: (known.unit ?? .unit).step,
-                                label: Quantities.format(known.quantity ?? 0, known.unit ?? .unit)
+                                label: Quantities.format(known.quantity ?? 0, known.unit ?? .unit),
+                                name: known.name
                             ) { adjust(known, quantity: $0) }
                         } else {
-                            LevelDial(level: known.level ?? 0) { adjust(known, level: $0) }
+                            LevelDial(level: known.level ?? 0, name: known.name) { adjust(known, level: $0) }
                         }
                     }
 

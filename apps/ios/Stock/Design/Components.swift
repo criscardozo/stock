@@ -18,6 +18,10 @@ struct HueBadge: View {
                     .font(.system(size: size * 0.42, weight: .semibold))
                     .foregroundStyle(colours.fg)
             )
+            // Decorative. The icon and its colour repeat what the row's text
+            // already says, so announcing them adds a stop on every row and
+            // tells the listener nothing new.
+            .accessibilityHidden(true)
     }
 }
 
@@ -73,6 +77,11 @@ struct Stepper: View {
     var value: Int
     var step: Int
     var label: String
+    /// What this adjusts. Required rather than defaulted, because a default is
+    /// how a control ends up shipping with no name: the two buttons are icons,
+    /// so without it VoiceOver reads "más" and "menos" with nothing to say what
+    /// of.
+    var name: String
     var onChange: (Int) -> Void
 
     var body: some View {
@@ -87,11 +96,23 @@ struct Stepper: View {
             }
             .buttonStyle(.plain)
             .disabled(value == 0)
+            // Named one by one, the same words the web uses, rather than
+            // collapsed into a single adjustable element with
+            // `accessibilityElement(children: .ignore)`. That was tried first
+            // and the runtime tree still listed two buttons called "Add" and
+            // "Remove" — iOS's default names for the plus and minus symbols.
+            // Whatever the modifier does to the VoiceOver tree, what can be
+            // MEASURED is these labels, and they match Gastos Diarios and the
+            // web besides.
+            .accessibilityLabel("Restar \(name)")
 
             Text(label)
                 .font(.stock(14, .bold))
                 .monospacedDigit()
                 .frame(minWidth: 58)
+                // The reading is the value of the thing named on either side of
+                // it, not a loose number in the middle of the row.
+                .accessibilityLabel("\(name): \(label)")
 
             Button {
                 onChange(value + step)
@@ -102,16 +123,21 @@ struct Stepper: View {
                     .frame(width: 34, height: 30)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Sumar \(name)")
         }
         .padding(3)
         .background(Capsule().fill(Theme.ground))
     }
 }
 
-/// Four segments and a word. Never a number — that is the point of levels.
+/// Three segments and a word. Never a number — that is the point of levels.
 struct LevelDial: View {
     var level: Level
     var showName: Bool = true
+    /// What this adjusts. The dial is never alone — the cooking sheet draws one
+    /// per level-tracked ingredient and the item sheet two side by side — so
+    /// without it every segment on the screen is the same nameless control.
+    var name: String = ""
     var onChange: ((Level) -> Void)?
 
     var body: some View {
@@ -121,15 +147,24 @@ struct LevelDial: View {
                 // can never fill — 'lleno' left the dial visibly short — and
                 // tapping it passed a Level of 4 to `onChange`.
                 ForEach(1...3, id: \.self) { step in
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(step <= level ? Theme.primary : Theme.track)
-                        .frame(width: 14, height: 8)
-                        .onTapGesture {
-                            // Tapping the segment you're already at means "one
-                            // less" — the only way to reach 'vacío' without a
-                            // separate control.
-                            onChange?(level == step ? step - 1 : step)
-                        }
+                    // A Button and not a tap gesture on a shape. A gesture is
+                    // invisible to VoiceOver — there was nothing to focus and
+                    // nothing to name, so the dial simply did not exist for
+                    // anyone not looking at it.
+                    Button {
+                        // Tapping the segment you're already at means "one
+                        // less" — the only way to reach 'vacío' without a
+                        // separate control.
+                        onChange?(level == step ? step - 1 : step)
+                    } label: {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(step <= level ? Theme.primary : Theme.track)
+                            .frame(width: 14, height: 8)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(onChange == nil)
+                    // Same words as the web's dial.
+                    .accessibilityLabel("Poner \(name) en \(Levels.name(step))")
                 }
             }
             if showName {
@@ -137,6 +172,7 @@ struct LevelDial: View {
                     .font(.stock(12, .semibold))
                     .foregroundStyle(Theme.ink2)
                     .frame(width: 40, alignment: .leading)
+                    .accessibilityLabel("\(name): \(Levels.name(level))")
             }
         }
     }

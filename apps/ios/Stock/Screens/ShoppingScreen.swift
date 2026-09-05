@@ -284,6 +284,15 @@ struct ShoppingRow: View {
                         .frame(width: 26, height: 26)
                 }
                 .buttonStyle(.plain)
+                // The same words the web uses, so the two apps read the same to
+                // someone who moves between them. A tick is shared state — the
+                // row that carries one offers to undo it — and the label has to
+                // say which of the two it is doing, because the shape alone
+                // does not survive being read aloud.
+                .accessibilityLabel(
+                    entry.checked ? "Destildar \(entry.label)" : "Tildar \(entry.label)"
+                )
+                .accessibilityAddTraits(entry.checked ? .isSelected : [])
 
                 HueBadge(icon: category?.icon ?? "inventory_2", hue: category?.hue, size: 32)
 

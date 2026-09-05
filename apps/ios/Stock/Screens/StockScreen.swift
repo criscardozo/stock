@@ -68,8 +68,13 @@ struct StockScreen: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
+                    // Named, because a toolbar of bare symbols reads as
+                    // "Scan Barcode" and "Add" — iOS's names for the glyphs,
+                    // not for what they do here.
                     Button { scanning = true } label: { Image(systemName: "barcode.viewfinder") }
+                        .accessibilityLabel("Escanear un código de barras")
                     Button { creating = true } label: { Image(systemName: "plus") }
+                        .accessibilityLabel("Agregar un ítem")
                 }
             }
             .sheet(isPresented: $scanning) { ScannerScreen() }
@@ -215,6 +220,14 @@ struct FilterPill: View {
 /// One item, one row — the catalogue and the stock are the same document, so the
 /// row that tells you what you have is also the row you change it in.
 struct ItemRow: View {
+    /// At the accessibility sizes the row cannot stay one line: the stepper is
+    /// ~130pt of fixed width — two 34pt targets and a 58pt reading — and what
+    /// is left over is narrower than a word. Measured at
+    /// `accessibility-extra-large`: "Bolsa de espinacas" broke across lines as
+    /// "espinaca / s". So past that threshold the control moves under the name
+    /// instead of beside it.
+    @Environment(\.dynamicTypeSize) private var typeSize
+
     var item: Item
     var category: Category?
     var location: Location?
@@ -225,29 +238,51 @@ struct ItemRow: View {
     var onLevel: (Level) -> Void
     var onOpen: () -> Void
 
+    @ViewBuilder private var control: some View {
+        if item.tracking == .quantity {
+            Stepper(
+                value: item.quantity ?? 0,
+                step: (item.unit ?? .unit).step,
+                label: Quantities.format(item.quantity ?? 0, item.unit ?? .unit),
+                name: item.name,
+                onChange: onQuantity
+            )
+        } else {
+            LevelDial(level: item.level ?? 0, name: item.name, onChange: onLevel)
+        }
+    }
+
+    private var nameAndSubtitle: some View {
+        Button(action: onOpen) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.name).font(.stock(15, .semibold)).foregroundStyle(Theme.ink)
+                subtitle
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.plain)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 12) {
-                HueBadge(icon: category?.icon ?? "inventory_2", hue: category?.hue)
-
-                Button(action: onOpen) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(item.name).font(.stock(15, .semibold)).foregroundStyle(Theme.ink)
-                        subtitle
+            // Group, because a bare if/else in a ViewBuilder has no single view
+            // to hang `.padding` on.
+            Group {
+                if typeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 12) {
+                            HueBadge(icon: category?.icon ?? "inventory_2", hue: category?.hue)
+                            nameAndSubtitle
+                        }
+                        control
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .buttonStyle(.plain)
-
-                if item.tracking == .quantity {
-                    Stepper(
-                        value: item.quantity ?? 0,
-                        step: (item.unit ?? .unit).step,
-                        label: Quantities.format(item.quantity ?? 0, item.unit ?? .unit),
-                        onChange: onQuantity
-                    )
                 } else {
-                    LevelDial(level: item.level ?? 0, onChange: onLevel)
+                    HStack(spacing: 12) {
+                        HueBadge(icon: category?.icon ?? "inventory_2", hue: category?.hue)
+                        nameAndSubtitle
+                        control
+                    }
                 }
             }
             .padding(.vertical, 10)

@@ -30,7 +30,8 @@ struct CloseShoppingSheet: View {
                                             value: amounts[entry.id] ?? 0,
                                             step: (item.unit ?? .unit).step,
                                             label: Quantities.format(
-                                                amounts[entry.id] ?? 0, item.unit ?? .unit)
+                                                amounts[entry.id] ?? 0, item.unit ?? .unit),
+                                            name: entry.label
                                         ) { amounts[entry.id] = $0 }
                                     } else if let item, item.minSpare != nil {
                                         // Sealed containers, so the question is
@@ -43,12 +44,14 @@ struct CloseShoppingSheet: View {
                                             Stepper(
                                                 value: amounts[entry.id] ?? 0,
                                                 step: 1,
-                                                label: "+\(amounts[entry.id] ?? 0)"
+                                                label: "+\(amounts[entry.id] ?? 0)",
+                                                name: "\(entry.label), sin abrir"
                                             ) { amounts[entry.id] = $0 }
                                         }
                                     } else if let item, item.tracking == .level {
                                         LevelDial(
-                                            level: levels[entry.id] ?? 3, showName: false
+                                            level: levels[entry.id] ?? 3, showName: false,
+                                            name: entry.label
                                         ) { levels[entry.id] = $0 }
                                     } else {
                                         Text("suelto").font(.stock(12)).foregroundStyle(Theme.ink3)
@@ -165,11 +168,13 @@ struct CookSheet: View {
                                                         value: amounts[item.id] ?? 0,
                                                         step: (item.unit ?? .unit).step,
                                                         label: Quantities.format(
-                                                            amounts[item.id] ?? 0, item.unit ?? .unit)
+                                                            amounts[item.id] ?? 0, item.unit ?? .unit),
+                                                        name: item.name
                                                     ) { amounts[item.id] = $0 }
                                                 } else {
                                                     LevelDial(
-                                                        level: levels[item.id] ?? 0, showName: false
+                                                        level: levels[item.id] ?? 0, showName: false,
+                                                        name: item.name
                                                     ) { levels[item.id] = $0 }
                                                 }
                                             } else {
@@ -306,23 +311,25 @@ struct ItemSheet: View {
                         LabeledContent("Cantidad") {
                             Stepper(
                                 value: quantity, step: unit.step,
-                                label: Quantities.format(quantity, unit)
+                                label: Quantities.format(quantity, unit),
+                                name: "Cantidad"
                             ) { quantity = $0 }
                         }
                         LabeledContent("Mínimo") {
                             Stepper(
                                 value: minQuantity, step: unit.step,
-                                label: Quantities.format(minQuantity, unit)
+                                label: Quantities.format(minQuantity, unit),
+                                name: "Mínimo"
                             ) { minQuantity = $0 }
                         }
                     } else {
-                        LabeledContent("Ahora") { LevelDial(level: level) { level = $0 } }
-                        LabeledContent("Avisar en") { LevelDial(level: minLevel) { minLevel = $0 } }
+                        LabeledContent("Ahora") { LevelDial(level: level, name: "Lo que hay") { level = $0 } }
+                        LabeledContent("Avisar en") { LevelDial(level: minLevel, name: "Avisar en") { minLevel = $0 } }
                         LabeledContent("Sin abrir") {
-                            Stepper(value: spare, step: 1, label: "\(spare)") { spare = $0 }
+                            Stepper(value: spare, step: 1, label: "\(spare)", name: "Sin abrir") { spare = $0 }
                         }
                         LabeledContent("Tener siempre") {
-                            Stepper(value: minSpare, step: 1, label: "\(minSpare)") { minSpare = $0 }
+                            Stepper(value: minSpare, step: 1, label: "\(minSpare)", name: "Tener siempre") { minSpare = $0 }
                         }
                     }
                 } header: {

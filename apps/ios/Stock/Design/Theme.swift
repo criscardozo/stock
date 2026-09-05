@@ -186,21 +186,81 @@ enum Theme {
 /// Falls back to the system rounded face if the font ever fails to register,
 /// which is a wobble in tone rather than a broken screen.
 enum AppFont {
-    private static let available: Bool = UIFont(name: "Outfit-Regular", size: 12) != nil
+    /// The FAMILY, not a static weight.
+    ///
+    /// `Outfit-Variable.ttf` is one variable file, and iOS registers a variable
+    /// font under its family plus its default instance — here `Outfit` and
+    /// `Outfit-Thin`. It does not register the named instances. So the
+    /// `Outfit-Regular` / `-SemiBold` / `-Bold` this used to ask for resolved to
+    /// nil, every one of them, and the whole app quietly rendered in the system
+    /// rounded fallback: not Outfit at all, in either weight or shape, for as
+    /// long as the font has been in the bundle. Measured at runtime —
+    /// `UIFont(name: "Outfit-Regular")` is nil and `UIFont(name: "Outfit")` is
+    /// not.
+    private static let familyName = "Outfit"
+    private static let available: Bool = UIFont(name: familyName, size: 12) != nil
 
-    private static func name(for weight: Font.Weight) -> String {
-        switch weight {
-        case .bold, .heavy, .black: return "Outfit-Bold"
-        case .semibold, .medium: return "Outfit-SemiBold"
-        default: return "Outfit-Regular"
+    /// The UIKit style matching a SwiftUI one, for scaling the fallback.
+    private static func metrics(for style: Font.TextStyle) -> UIFont.TextStyle {
+        switch style {
+        case .caption2: .caption2
+        case .caption: .caption1
+        case .footnote: .footnote
+        case .subheadline: .subheadline
+        case .callout: .callout
+        case .title3: .title3
+        case .title2: .title2
+        case .title: .title1
+        case .largeTitle: .largeTitle
+        default: .body
+        }
+    }
+
+    /// The text style this size scales against.
+    ///
+    /// Roughly the nearest of Apple's own defaults — 11 caption2, 12 caption,
+    /// 13 footnote, 15 subheadline, 16 callout, 17 body, 20 title3, 22 title2,
+    /// 28 title — because that is what makes the growth feel like the rest of
+    /// iOS: a caption and a title do not grow by the same number of points.
+    ///
+    /// It deviates from pure nearest-anchor in one way, deliberately. This app
+    /// draws several pairs half a point apart — 11 and 11.5, 14 and 14.5 — and
+    /// pure nearest would split each pair across two styles. Those pairs are
+    /// the same size to the eye and usually sit in the same row, so at larger
+    /// text one label would outgrow its neighbour and the row would come apart
+    /// for no reason a reader could see. Each pair shares an anchor.
+    static func style(for size: CGFloat) -> Font.TextStyle {
+        switch size {
+        case ..<12: .caption2      // 11, 11.5
+        case ..<13: .caption       // 12
+        case ..<15: .footnote      // 13, 14, 14.5
+        case ..<16: .subheadline   // 15
+        case ..<17: .callout       // 16
+        case ..<19: .body          // 17, 18
+        case ..<21: .title3
+        case ..<25: .title2
+        default: .title            // 26, 28, 30
         }
     }
 
     static func font(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
-        guard available else { return .system(size: size, weight: weight, design: .rounded) }
-        // fixedSize: the layout is drawn at specific sizes; Dynamic Type would
-        // reflow rows the design measured by hand.
-        return .custom(name(for: weight), fixedSize: size)
+        let style = style(for: size)
+        guard available else {
+            // The fallback scales too. A fallback that silently stops honouring
+            // larger text is how the whole app came to ignore Dynamic Type
+            // without anything looking wrong.
+            let scaled = UIFontMetrics(forTextStyle: metrics(for: style)).scaledValue(for: size)
+            return .system(size: scaled, weight: weight, design: .rounded)
+        }
+        // `relativeTo:` and not `fixedSize:`. The layout IS drawn at specific
+        // sizes measured by hand — and it still is: at the default Dynamic Type
+        // setting this renders at exactly `size`, byte for byte what fixedSize
+        // gave. The difference only appears when somebody has asked for larger
+        // text, which is the one case the old comment was choosing to ignore.
+        //
+        // The weight is applied to the family rather than baked into the name,
+        // which is what a variable font is for.
+        return .custom(familyName, size: size, relativeTo: style).weight(weight)
     }
 }
 
