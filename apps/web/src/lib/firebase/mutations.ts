@@ -22,6 +22,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  Timestamp,
   updateDoc,
   where,
   writeBatch,
@@ -249,7 +250,13 @@ export async function recentMoves(householdId: string, itemId: string, max = 20)
       limit(max),
     ),
   )
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Move)
+  // `at` arrives as a Firestore Timestamp, and `Move.at` is typed `Date` — a
+  // cast alone made that a lie, and the first thing to format it threw
+  // "Invalid time value". Converted here so the domain type is true.
+  return snap.docs.map((d) => {
+    const { at, ...rest } = d.data()
+    return { id: d.id, ...rest, at: at instanceof Timestamp ? at.toDate() : undefined } as Move
+  })
 }
 
 // ── shopping list ──────────────────────────────────────────────────────────

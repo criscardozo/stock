@@ -4,6 +4,8 @@ import { useState } from 'react'
 import type { Category, Item, Level, Location, Tracking, Unit } from '@/lib/domain/types'
 import { UNIT_NAMES } from '@/lib/domain/quantities'
 import { FieldInput, Icon, LevelDial, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
+import { MoveHistory } from './MoveHistory'
+import { useHousehold } from '@/lib/firebase/household'
 
 export type ItemDraft = Omit<Item, 'id'> & {
   /**
@@ -51,6 +53,7 @@ export function ItemSheet({
   const [minSpare, setMinSpare] = useState(item?.minSpare ?? 0)
   const [expiresAt, setExpiresAt] = useState(item?.expiresAt ?? '')
   const [autoSuggest, setAutoSuggest] = useState(item?.autoSuggest !== false)
+  const { householdId, household } = useHousehold()
 
   const save = () => {
     if (!name.trim()) return
@@ -293,6 +296,15 @@ export function ItemSheet({
         Enteros siempre. Lo que no se cuenta en enteros va por nivel — vacío, poco, medio, lleno —
         no con un decimal.
       </p>
+
+      {/* Only for an item that exists: a draft has no history. The read is
+          made here, when the sheet opens, rather than alongside the item list,
+          so opening one item does not pay for the history of all of them. */}
+      {item && householdId && (
+        <SheetField label="Últimos movimientos">
+          <MoveHistory householdId={householdId} item={item} members={household?.members ?? {}} />
+        </SheetField>
+      )}
     </Sheet>
   )
 }

@@ -66,6 +66,14 @@ test('closing the shop consumes the ticked rows and keeps the rest', async ({ pa
   // with the stock write removed. Verified by mutation this time.
   await page.goto('/stock')
   await expect(page.getByLabel('Huevos: 12 u')).toBeVisible()
+
+  // And the move it wrote is now readable, which until this release nothing
+  // did: `moves` was written on every purchase, cook and adjustment by both
+  // clients and read by no screen at all. Same batch, same nine eggs, so the
+  // sign matters — "+9" and "9" are opposite events for a purchase.
+  await page.getByRole('button', { name: /^Huevos/ }).click()
+  const history = page.getByRole('listitem').filter({ hasText: 'Compra' }).first()
+  await expect(history).toContainText('+9 u')
 })
 
 test('a reserve item shows what is sealed, not just what is open', async ({ page }) => {
