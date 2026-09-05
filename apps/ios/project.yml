@@ -214,6 +214,9 @@ targets:
       # the original. Two structs kept in sync BY HAND is exactly the thing that
       # drifts without anything failing.
       - path: Stock/Data/WidgetBridge.swift
+      # The Open Food Facts client, for `classify` — which is what decides
+      # whether a barcode is unknown or the phone simply could not ask.
+      - path: Stock/Data/OpenFoodFacts.swift
       - path: StockWidget/MealSnapshot.swift
       # SwiftUI and UIKit only. Compiled in so the symbol map can be checked
       # against what SF Symbols actually ships.

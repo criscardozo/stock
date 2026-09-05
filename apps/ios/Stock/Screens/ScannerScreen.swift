@@ -15,7 +15,7 @@ struct ScannerScreen: View {
 
     @State private var barcode: String?
     @State private var known: Item?
-    @State private var lookedUp: OpenFoodFacts.Product?
+    @State private var lookedUp: OpenFoodFacts.Lookup?
     @State private var searching = false
     @State private var creating = false
     @State private var permission = AVCaptureDevice.authorizationStatus(for: .video)
@@ -50,7 +50,11 @@ struct ScannerScreen: View {
                 ItemSheet(
                     item: nil,
                     prefill: barcode.map {
-                        (name: lookedUp?.name ?? "", brand: lookedUp?.brand, barcode: $0)
+                        (
+                            name: lookedUp?.product?.name ?? "",
+                            brand: lookedUp?.product?.brand,
+                            barcode: $0
+                        )
                     }
                 )
             }
@@ -114,10 +118,12 @@ struct ScannerScreen: View {
                     ProgressView("Buscando…").font(.stock(14))
                 } else {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(lookedUp?.name ?? "No está en el catálogo").font(.stock(17, .bold))
-                        Text(lookedUp == nil
-                            ? "\(code) · tampoco en Open Food Facts"
-                            : "\(code) · encontrado en Open Food Facts")
+                        Text(lookedUp?.product?.name ?? "No está en el catálogo")
+                            .font(.stock(17, .bold))
+                        // Says which of the two happened. "Tampoco en Open Food
+                        // Facts" was shown even when the phone never reached
+                        // them, which is the opposite of what to do next.
+                        Text(subtitle(for: code))
                             .font(.stock(12))
                             .foregroundStyle(Theme.ink2)
                     }
@@ -149,6 +155,15 @@ struct ScannerScreen: View {
         Task {
             lookedUp = await OpenFoodFacts.lookup(code)
             searching = false
+        }
+    }
+
+    private func subtitle(for code: String) -> String {
+        switch lookedUp {
+        case .found: "\(code) · encontrado en Open Food Facts"
+        case .unknown: "\(code) · tampoco en Open Food Facts"
+        case .unreachable: "\(code) · sin conexión, no se pudo consultar"
+        case nil: code
         }
     }
 
@@ -203,40 +218,5 @@ struct BarcodeScanner: UIViewControllerRepresentable {
                 }
             }
         }
-    }
-}
-
-/// Open Food Facts: free, no API key, and never load-bearing.
-enum OpenFoodFacts {
-    struct Product {
-        var name: String
-        var brand: String?
-        var quantity: String?
-    }
-
-    static func lookup(_ barcode: String) async -> Product? {
-        guard let url = URL(
-            string: "https://world.openfoodfacts.org/api/v2/product/\(barcode).json?fields=product_name,brands,quantity"
-        ) else { return nil }
-
-        var request = URLRequest(url: url)
-        // Their guidance: identify yourself, so a misbehaving client can be told
-        // apart from everyone else's.
-        request.setValue("Stock/0.1 (dev.cardozo.stock)", forHTTPHeaderField: "User-Agent")
-        request.timeoutInterval = 6
-
-        guard let (data, _) = try? await URLSession.shared.data(for: request),
-              let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let product = root["product"] as? [String: Any],
-              let name = product["product_name"] as? String, !name.isEmpty
-        else { return nil }
-
-        return Product(
-            name: name,
-            brand: (product["brands"] as? String)?.split(separator: ",").first.map {
-                $0.trimmingCharacters(in: .whitespaces)
-            },
-            quantity: product["quantity"] as? String
-        )
     }
 }

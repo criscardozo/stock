@@ -311,28 +311,13 @@ enum Mutations {
     }
 
     // MARK: - Meal plan
-
-    /// Materialised lazily, with the start date as the document id — so if both
-    /// clients open the app at the same moment they write the same document.
-    static func ensurePlan(householdId: String, startDate: CalendarDate.Iso, length: PlanLength) async {
-        let ref = household(householdId).collection("mealPlans").document(startDate)
-        guard let snapshot = try? await ref.getDocument(), !snapshot.exists else { return }
-        do {
-            try await ref.setData([
-                "startDate": startDate,
-                "endDate": CalendarDate.periodEnd(startDate: startDate, length: length),
-                "length": length.rawValue,
-                "days": [:],
-                "createdAt": FieldValue.serverTimestamp(),
-                "updatedAt": FieldValue.serverTimestamp(),
-            ])
-        } catch {
-            // The read above may legitimately fail (offline, no plan yet) and
-            // stays quiet. A refused WRITE is different: the screen would show
-            // an empty fortnight that exists nowhere.
-            reportRejection(error)
-        }
-    }
+    //
+    // Nothing here. A period's document is materialised by whoever opens the
+    // plan first, and that is always the web: iOS has no plan editor, it reads
+    // the fortnight and marks meals cooked. `ensurePlan` existed on this side
+    // too and was called from nowhere — a second implementation of a
+    // deterministic write, kept in step by hand, for a screen that does not
+    // exist. Deleted rather than left as a decoy.
 
     struct Consumption {
         var item: Item
