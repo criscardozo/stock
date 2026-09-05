@@ -145,7 +145,10 @@ say "4. Instalando"
 for attempt in 1 2 3; do
   if xcrun devicectl device install app --device "$DEVICE" "$APP" > "$BACKUP/install.log" 2>&1; then
     grep -E "bundleID" "$BACKUP/install.log" | head -1 | sed 's/^/   /'
-    echo "   watch: $(ls "$APP/Watch/" 2>/dev/null || echo 'no embebido')"
+    echo "   watch:  $(ls "$APP/Watch/" 2>/dev/null || echo 'no embebido')"
+    # Named for the same reason as the watch: an extension that failed to embed
+    # installs a perfectly working app with no widget, and nothing else says so.
+    echo "   widget: $(ls "$APP/PlugIns/" 2>/dev/null || echo 'no embebido')"
     say "Listo. Vence en $days días."
     exit 0
   fi

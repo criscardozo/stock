@@ -213,6 +213,34 @@ final class Store {
             today: todaysRecipe?.title ?? todaysDay?.label,
             todayNote: todaysDay == nil ? nil : DayFormat.long(today)
         )
+        publishWidget()
+    }
+
+    /// Hands the home screen tonight's dinner.
+    ///
+    /// Called from the same place as the watch push, because it answers the
+    /// same question from the same state. Everything the widget will ever know
+    /// is written here: it cannot sign in, so it has no other source.
+    private func publishWidget() {
+        let day = todaysDay
+        let recipe = todaysRecipe
+        let availability = recipe.map {
+            RecipeAvailability.of($0, itemsById: Dictionary(uniqueKeysWithValues: items.map { ($0.id, $0) }))
+        }
+        WidgetBridge.publish(
+            WidgetBridge.Snapshot(
+                title: recipe?.title ?? day?.label,
+                isRecipe: recipe != nil,
+                // `unknown` means the recipe links no items, so there is no
+                // count — which must not be published as zero, because zero
+                // reads as "you have everything".
+                missing: availability.flatMap { $0.unknown ? nil : $0.missing },
+                cooked: day?.status == .cooked,
+                date: today,
+                timezone: timezone,
+                updatedAtEpoch: Int(Date().timeIntervalSince1970)
+            )
+        )
     }
 
     private func attachPlan() {

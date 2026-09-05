@@ -101,6 +101,14 @@ targets:
         # URL scheme Google calls back on, and a mismatch means the sign-in
         # leaves and never returns.
         GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.176221729478-irdlooa4ls67ocn58vm5o0crvmkdtu2p
+    entitlements:
+      path: Stock/Stock.entitlements
+      properties:
+        # The only thing this buys: a defaults suite the widget can read. The
+        # widget cannot sign in — an extension has no browser — so the app is
+        # its only source of data.
+        com.apple.security.application-groups:
+          - group.dev.cardozo.stock
     dependencies:
       - package: Firebase
         product: FirebaseAuth
@@ -110,9 +118,50 @@ targets:
         product: GoogleSignIn
       - package: GoogleSignIn
         product: GoogleSignInSwift
+      - target: StockWidget
       # Embeds the watch app so it installs alongside the phone app.
       - target: StockWatch
         embed: true
+
+  # Tonight's dinner on the home screen — the piece of Phase 4 that was named
+  # and never built.
+  #
+  # Like the watch app it cannot sign in and therefore never talks to Firebase:
+  # it reads a snapshot the app leaves in the shared app-group defaults. That is
+  # why the snapshot carries the DATE it describes — a widget goes on rendering
+  # long after the app last ran, and a stale one does not look stale.
+  #
+  # A third target is a THIRD provisioning profile. `tools/install-ios.sh`
+  # already sweeps `PlugIns/*.appex` and `SigningExpiry` already reads every
+  # profile in the bundle, so neither needs changing — but the install should
+  # now report three, sharing one expiry.
+  StockWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: StockWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cardozo.stock.widget
+        PRODUCT_NAME: StockWidget
+        MARKETING_VERSION: '0.1'
+        CURRENT_PROJECT_VERSION: '1'
+        TARGETED_DEVICE_FAMILY: '1'
+        SKIP_INSTALL: YES
+        SWIFT_VERSION: '5.10'
+    info:
+      path: StockWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Stock
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: StockWidget/StockWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.dev.cardozo.stock
 
   # watchOS companion — the shopping list on the wrist, which is the one place
   # the phone is genuinely in the way: both hands are on the trolley.
@@ -161,6 +210,11 @@ targets:
       # Pure Foundation despite living in Data/ — no Firebase, so the tests can
       # compile it without waiting for an SDK.
       - path: Stock/Data/SigningExpiry.swift
+      # Both halves of the widget handoff, so the mirror can be checked against
+      # the original. Two structs kept in sync BY HAND is exactly the thing that
+      # drifts without anything failing.
+      - path: Stock/Data/WidgetBridge.swift
+      - path: StockWidget/MealSnapshot.swift
       # SwiftUI and UIKit only. Compiled in so the symbol map can be checked
       # against what SF Symbols actually ships.
       - path: Stock/Design/Theme.swift
