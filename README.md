@@ -176,7 +176,7 @@ anything that would want a server runs in a client.
 
 ```sh
 pnpm install
-pnpm emulators      # Auth 9099, Firestore 8085, UI 4000
+pnpm emulators      # Auth 9098, Firestore 8085, UI 4001
 pnpm seed           # a household that looks real, in the emulator
 NEXT_PUBLIC_USE_EMULATORS=1 pnpm dev      # then use the "Emulador" sign-in buttons
 pnpm test           # domain vectors + Firestore rules (needs Java)

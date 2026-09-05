@@ -17,7 +17,7 @@ const EMULATOR_HOST = '127.0.0.1'
 // Overridable because Cristian's own Docker stack has been known to claim
 // these ports; the defaults are what firebase/firebase.json uses.
 const FIRESTORE_PORT = Number(process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? 8085)
-const AUTH_PORT = Number(process.env.NEXT_PUBLIC_AUTH_EMULATOR_PORT ?? 9099)
+const AUTH_PORT = Number(process.env.NEXT_PUBLIC_AUTH_EMULATOR_PORT ?? 9098)
 
 function createApp() {
   if (getApps().length) return getApp()

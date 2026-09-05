@@ -144,8 +144,12 @@ before inventing a pattern this project has already met.**
 - CI runs the web checks, the rules tests, the E2E suite and the PWA check on every push
   (`.github/workflows/ci.yml`). Ubuntu only: a macOS runner bills at 10x, so **the iOS tests
   are not in CI** and have to be run locally before a change lands.
-- `pnpm emulators` — local emulator suite (Auth 9099, Firestore **8085**, UI 4000). 8085 and not
-  the usual 8080 because Cristian's own Docker stack (`ecko`/`holocron`) lives there.
+- `pnpm emulators` — local emulator suite (Auth **9098**, Firestore **8085**, UI **4001**). None of
+  the three is the stock port, and both reasons are other things already on this machine:
+  Firestore is off 8080 because Cristian's own Docker stack (`ecko`/`holocron`) lives there, and
+  Auth and the UI are off 9099/4000 because Gastos Diarios' emulators claim them. Sharing a port
+  does not fail loudly — the suite comes up half-started and the tests fail as if the code were
+  broken.
 - iOS: `cd apps/ios && xcodegen && open Stock.xcodeproj`. CLI tests:
   `xcodebuild test -project Stock.xcodeproj -scheme Stock -destination 'platform=iOS Simulator,name=<iPhone>' -only-testing:StockTests`.
   `StockTests` compiles `Stock/Domain` directly rather than depending on the app

@@ -23,10 +23,11 @@ struct StockApp: App {
 
             // The simulator reaches the host as localhost; a device would need
             // the machine's LAN address. Ports are overridable because
-            // Cristian's own Docker stack has claimed 8085 and 9099 before —
-            // and when it does, the app silently talks to the wrong emulator
-            // and reports "no user record" as if the seed had failed.
-            let authPort = Self.port(for: "-authPort", default: 9099)
+            // The defaults are not the stock emulator ports; see
+            // firebase/firebase.json. When two projects share a port the app
+            // silently talks to the wrong emulator and reports "no user
+            // record" as if the seed had failed.
+            let authPort = Self.port(for: "-authPort", default: 9098)
             let firestorePort = Self.port(for: "-firestorePort", default: 8085)
             Auth.auth().useEmulator(withHost: "127.0.0.1", port: authPort)
             let settings = Firestore.firestore().settings

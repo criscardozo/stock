@@ -136,7 +136,7 @@ Las dos leen los mismos datos, así que se usan indistintamente.
 
 ```sh
 pnpm install
-pnpm emulators          # Auth 9099, Firestore 8085, UI 4000
+pnpm emulators          # Auth 9098, Firestore 8085, UI 4001
 pnpm seed               # un hogar de mentira pero realista, en el emulador
 pnpm dev                # Next.js en :3000 — NEXT_PUBLIC_USE_EMULATORS=1 para apuntar al emulador
 pnpm test:rules         # tests de security rules (levanta su propio emulador, necesita Java)
