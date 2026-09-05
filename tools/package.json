@@ -7,7 +7,7 @@
     "seed": "node seed-emulator.mjs"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^5.0.1",
-    "firebase": "^12.17.1"
+    "@firebase/rules-unit-testing": "catalog:",
+    "firebase": "catalog:"
   }
 }

@@ -16,6 +16,11 @@ catalog:
   # 24 and not 26: it is the LTS line, and nothing here needs newer typings.
   "@types/node": ^24.13.3
   firebase: ^12.18.0
+  # Also in two places until now, at two different versions (5.0.1 in tools,
+  # 5.0.2 in rules-tests). It is what the rules tests assert THROUGH, so a
+  # seed written by one version and rules exercised by another is a
+  # difference nothing would have reported.
+  "@firebase/rules-unit-testing": ^5.0.2
   vitest: ^4.1.11
 
 # Native/postinstall builds we explicitly trust. re2 is what firebase-tools uses
