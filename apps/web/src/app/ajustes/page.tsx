@@ -6,6 +6,7 @@ import { applyTheme, asThemePref, THEME_STORAGE_KEY, type ThemePref } from '@/li
 import { useAuth } from '@/lib/firebase/auth'
 import { useHousehold } from '@/lib/firebase/household'
 import { applyReceipt, createInvite, updateHousehold } from '@/lib/firebase/mutations'
+import { TaxonomySheet } from '@/components/settings/TaxonomySheet'
 import type { PlanLength } from '@/lib/domain/dates'
 import { plural } from '@/lib/domain/format'
 import { PageHeader } from '@/components/PageHeader'
@@ -20,6 +21,9 @@ export default function SettingsPage() {
   const { household, householdId, items, reportWrite} = useHousehold()
   const [copied, setCopied] = useState(false)
   const [importing, setImporting] = useState(false)
+  const [editingTaxonomy, setEditingTaxonomy] = useState<'categories' | 'locations' | null>(
+    null,
+  )
 
   // The blocking script in layout.tsx already applied the stored theme; this
   // only reflects it in the control. Read through the same external-store hook
@@ -44,6 +48,14 @@ export default function SettingsPage() {
   const perLocation = useMemo(() => {
     const counts = new Map<string, number>()
     for (const item of items) counts.set(item.locationId, (counts.get(item.locationId) ?? 0) + 1)
+    return counts
+  }, [items])
+
+  // The same count for categories, which until now nothing needed: it is what
+  // decides whether an entry can be deleted without orphaning items.
+  const perCategory = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const item of items) counts.set(item.categoryId, (counts.get(item.categoryId) ?? 0) + 1)
     return counts
   }, [items])
 
@@ -161,7 +173,15 @@ export default function SettingsPage() {
         </section>
 
         <section className="flex flex-col gap-2">
-          <SectionLabel>Ubicaciones</SectionLabel>
+          <div className="flex items-center justify-between">
+            <SectionLabel>Ubicaciones</SectionLabel>
+            <button
+              onClick={() => setEditingTaxonomy('locations')}
+              className="text-[13px] font-bold text-primary-deep"
+            >
+              Editar
+            </button>
+          </div>
           <Card>
             {locations.map(([id, location], index) => (
               <div
@@ -181,7 +201,15 @@ export default function SettingsPage() {
         </section>
 
         <section className="flex flex-col gap-2">
-          <SectionLabel>Categorías</SectionLabel>
+          <div className="flex items-center justify-between">
+            <SectionLabel>Categorías</SectionLabel>
+            <button
+              onClick={() => setEditingTaxonomy('categories')}
+              className="text-[13px] font-bold text-primary-deep"
+            >
+              Editar
+            </button>
+          </div>
           <Card>
             <div className="flex flex-wrap gap-2 py-4">
               {categories.map(([id, category]) => (
@@ -322,6 +350,19 @@ export default function SettingsPage() {
           onApply={(actions, deleteItemIds) => {
             reportWrite(applyReceipt(householdId, user.uid, actions, deleteItemIds))
             setImporting(false)
+          }}
+        />
+      )}
+
+      {editingTaxonomy && (
+        <TaxonomySheet
+          kind={editingTaxonomy}
+          entries={editingTaxonomy === 'categories' ? categories : locations}
+          counts={editingTaxonomy === 'categories' ? perCategory : perLocation}
+          onClose={() => setEditingTaxonomy(null)}
+          onSave={(next) => {
+            reportWrite(updateHousehold(householdId, { [editingTaxonomy]: next }))
+            setEditingTaxonomy(null)
           }}
         />
       )}
