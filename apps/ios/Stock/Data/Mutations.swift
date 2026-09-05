@@ -17,6 +17,26 @@ enum Mutations {
         db.collection("households").document(id)
     }
 
+    /// What happened to one item, newest first.
+    ///
+    /// The only READ in this file, and it is here because it is the mirror of
+    /// the writes above: `moves` grows forever, so it is fetched once with a
+    /// hard limit and never listened to. The composite index this needs
+    /// (`itemId` ascending, `at` descending) is already deployed.
+    static func recentMoves(
+        householdId: String,
+        itemId: String,
+        max: Int = 20
+    ) async throws -> [Move] {
+        let snapshot = try await household(householdId)
+            .collection("moves")
+            .whereField("itemId", isEqualTo: itemId)
+            .order(by: "at", descending: true)
+            .limit(to: max)
+            .getDocuments()
+        return snapshot.documents.compactMap(Move.init(document:))
+    }
+
     /// Called when the SERVER refuses a write.
     ///
     /// Firestore does not fail a write for being offline — it queues it locally

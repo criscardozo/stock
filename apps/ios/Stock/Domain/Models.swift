@@ -176,3 +176,25 @@ enum MoveType: String, Codable {
     case adjust
     case waste
 }
+
+/// One thing that happened to one item.
+///
+/// Written on every purchase, every meal cooked and every manual adjustment,
+/// and — until the item sheet grew a history — read by nothing at all. The
+/// collection grows forever, so it is only ever read with a hard limit.
+struct Move: Identifiable, Hashable {
+    var id: String
+    var itemId: String
+    var type: MoveType
+    /// Signed, for counted items. The sign IS the message: `+9` and `-9` are
+    /// opposite events, so nothing that renders it may drop it.
+    var delta: Int?
+    var levelFrom: Level?
+    var levelTo: Level?
+    var recipeId: String?
+    var planDate: CalendarDate.Iso?
+    var by: String
+    /// A real instant, not one of the household's calendar dates. Absent for a
+    /// row this device wrote and the server has not stamped yet.
+    var at: Date?
+}

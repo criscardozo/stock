@@ -343,6 +343,11 @@ struct ItemSheet: View {
                 } footer: {
                     Text("Guarda los datos pero no lo pide cuando se termina. Para lo que compramos de vez en cuando. El plan lo sigue pidiendo si una comida lo necesita.")
                 }
+
+                // Only for an item that exists: a draft has no history.
+                if let item, let householdId = store.householdId {
+                    MoveHistorySection(householdId: householdId, item: item)
+                }
             }
             .navigationTitle(item == nil ? "Nuevo ítem" : "Editar")
             .navigationBarTitleDisplayMode(.inline)
@@ -496,5 +501,121 @@ struct PickMealSheet: View {
             recipeId: recipeId, label: label
         )
         dismiss()
+    }
+}
+
+/// What happened to one item, inside its edit sheet.
+///
+/// The mirror of the web's `MoveHistory`: `moves` is written on every purchase,
+/// every meal cooked and every adjustment by both clients, and was read by
+/// neither. Fetched once when the section appears, never listened to — the
+/// collection grows forever.
+struct MoveHistorySection: View {
+    @Environment(Store.self) private var store
+
+    var householdId: String
+    var item: Item
+
+    @State private var moves: [Move]?
+    @State private var failed = false
+
+    var body: some View {
+        Section("Últimos movimientos") {
+            if failed {
+                Text("No pude leer el historial.")
+                    .font(.stock(12))
+                    .foregroundStyle(Theme.ink3)
+            } else if let moves {
+                if moves.isEmpty {
+                    Text("Todavía no se movió desde que está en la casa.")
+                        .font(.stock(12))
+                        .foregroundStyle(Theme.ink3)
+                } else {
+                    ForEach(moves) { move in
+                        row(move)
+                    }
+                }
+            } else {
+                Text("Buscando…")
+                    .font(.stock(12))
+                    .foregroundStyle(Theme.ink3)
+            }
+        }
+        .task {
+            do {
+                moves = try await Mutations.recentMoves(householdId: householdId, itemId: item.id)
+            } catch {
+                // A history that cannot be read is not a broken item sheet.
+                failed = true
+            }
+        }
+    }
+
+    private func row(_ move: Move) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: Self.icon(move.type))
+                .font(.system(size: 13))
+                .foregroundStyle(Theme.ink2)
+                .frame(width: 26, height: 26)
+                .background(Theme.ground, in: Circle())
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(Self.label(move.type))
+                    .font(.stock(13, .semibold))
+                Text(subtitle(move))
+                    .font(.stock(11.5))
+                    .foregroundStyle(Theme.ink3)
+            }
+
+            Spacer(minLength: 8)
+
+            Text(amount(move))
+                .font(.stock(13, .bold))
+                .monospacedDigit()
+        }
+    }
+
+    private func subtitle(_ move: Move) -> String {
+        let who = store.household?.members[move.by]?.displayName ?? "alguien"
+        guard let at = move.at else { return "recién · \(who)" }
+        return "\(Self.day.string(from: at)) · \(who)"
+    }
+
+    /// What the move did, in the item's own terms.
+    private func amount(_ move: Move) -> String {
+        if let to = move.levelTo {
+            guard let from = move.levelFrom else { return "a \(Levels.name(to))" }
+            return "\(Levels.name(from)) → \(Levels.name(to))"
+        }
+        guard let delta = move.delta, delta != 0 else { return "—" }
+        // The sign is the whole message: "+9 u" and "−9 u" are opposite events,
+        // and a bare "9 u" reads as a level.
+        let sign = delta > 0 ? "+" : "−"
+        return sign + Quantities.format(abs(delta), item.unit ?? .unit)
+    }
+
+    private static let day: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "es_AR")
+        formatter.setLocalizedDateFormatFromTemplate("d MMM")
+        return formatter
+    }()
+
+    private static func label(_ type: MoveType) -> String {
+        switch type {
+        case .purchase: "Compra"
+        case .cook: "Cocina"
+        case .adjust: "Ajuste"
+        case .waste: "Se tiró"
+        }
+    }
+
+    private static func icon(_ type: MoveType) -> String {
+        switch type {
+        case .purchase: "cart"
+        case .cook: "fork.knife"
+        case .adjust: "slider.horizontal.3"
+        case .waste: "trash"
+        }
     }
 }

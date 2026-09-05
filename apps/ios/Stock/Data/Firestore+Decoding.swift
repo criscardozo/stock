@@ -52,3 +52,14 @@ extension Household {
         self.init(id: id, data: data)
     }
 }
+
+extension Move {
+    init?(document: DocumentSnapshot) {
+        guard let (id, data) = document.payload else { return nil }
+        // The one field this layer has to translate: `Domain` knows `Date` and
+        // not `Timestamp`, which is what keeps it compilable without the SDK.
+        var payload = data
+        if let at = payload["at"] as? Timestamp { payload["at"] = at.dateValue() }
+        self.init(id: id, data: payload)
+    }
+}

@@ -119,3 +119,63 @@ final class DocumentDecodingTests: XCTestCase {
         XCTAssertNil(Household(id: "h1", data: ["memberIds": ["u1"]]))
     }
 }
+
+/// The move decoder.
+///
+/// Separate because its failure mode is different: an item that fails to decode
+/// leaves an empty screen, but a move that decodes WRONG shows a number with a
+/// sign, which reads as a fact about the cupboard. `+9` and `-9` are opposite
+/// events and both look entirely plausible.
+final class MoveDecodingTests: XCTestCase {
+    private var minimal: [String: Any] {
+        ["itemId": "huevos", "type": "purchase", "by": "u1"]
+    }
+
+    func testNeedsAnItemATypeAndAnAuthor() {
+        XCTAssertNotNil(Move(id: "m1", data: minimal))
+        for missing in ["itemId", "type", "by"] {
+            var data = minimal
+            data.removeValue(forKey: missing)
+            XCTAssertNil(Move(id: "m1", data: data), "decoded a move with no \(missing)")
+        }
+    }
+
+    func testRejectsAKindItDoesNotKnow() {
+        // No default: an unknown kind would be drawn with some icon and some
+        // word, both invented, next to a real number.
+        var data = minimal
+        data["type"] = "borrowed"
+        XCTAssertNil(Move(id: "m1", data: data))
+    }
+
+    func testKeepsTheSignOfTheDelta() {
+        var data = minimal
+        data["delta"] = -9
+        XCTAssertEqual(Move(id: "m1", data: data)?.delta, -9)
+        data["delta"] = 9
+        XCTAssertEqual(Move(id: "m1", data: data)?.delta, 9)
+    }
+
+    func testAnUnstampedMoveHasNoDateRatherThanNow() {
+        // `at` is a server timestamp, absent on a row this device just wrote.
+        // Defaulting it to `Date()` would date every pending move to whenever
+        // the sheet happened to be opened.
+        XCTAssertNil(Move(id: "m1", data: minimal)?.at)
+
+        let when = Date(timeIntervalSince1970: 1_770_000_000)
+        var data = minimal
+        data["at"] = when
+        XCTAssertEqual(Move(id: "m1", data: data)?.at, when)
+    }
+
+    func testALevelMoveCarriesBothEnds() {
+        var data = minimal
+        data["type"] = "cook"
+        data["levelFrom"] = 3
+        data["levelTo"] = 1
+        let move = Move(id: "m1", data: data)
+        XCTAssertEqual(move?.levelFrom, 3)
+        XCTAssertEqual(move?.levelTo, 1)
+        XCTAssertNil(move?.delta)
+    }
+}

@@ -193,3 +193,32 @@ extension Household {
         )
     }
 }
+
+extension Move {
+    init?(id: String, data: [String: Any]) {
+        guard
+            let itemId = data["itemId"] as? String,
+            let typeRaw = data["type"] as? String,
+            let type = MoveType(rawValue: typeRaw),
+            let by = data["by"] as? String
+        else { return nil }
+
+        self.init(
+            id: id,
+            itemId: itemId,
+            type: type,
+            delta: data["delta"] as? Int,
+            levelFrom: data["levelFrom"] as? Level,
+            levelTo: data["levelTo"] as? Level,
+            recipeId: data["recipeId"] as? String,
+            planDate: data["planDate"] as? String,
+            by: by,
+            // A `Date`, not a Firestore `Timestamp`: this file stays free of
+            // the SDK so StockTests can compile it, so the adapter in `Data/`
+            // converts before calling in. Left nil rather than defaulted to
+            // now — a move whose server stamp has not landed did not happen
+            // this instant, and "recién" is the honest thing to show for it.
+            at: data["at"] as? Date
+        )
+    }
+}
