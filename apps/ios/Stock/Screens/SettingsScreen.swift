@@ -241,7 +241,7 @@ struct SettingsScreen: View {
                             Text("Abrir la web").font(.stock(14.5, .semibold))
                             Spacer()
                             Image(systemName: "arrow.up.forward.square")
-                                .font(.system(size: 15))
+                                .font(.stockSymbol(15))
                                 .foregroundStyle(Theme.ink3)
                         }
                     }
@@ -260,7 +260,7 @@ struct SettingsScreen: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.stockSymbol(16, .semibold))
                 Text("Cerrar sesión").font(.stock(14.5, .semibold))
                 Spacer()
             }

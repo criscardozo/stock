@@ -3,7 +3,22 @@ import SwiftUI
 struct LoginView: View {
     @Environment(Session.self) private var session
 
+    @Environment(\.dynamicTypeSize) private var typeSize
+
     var body: some View {
+        // Scrollable past the accessibility sizes. The headline is 30pt and
+        // three lines; scaled by an accessibility category it does not fit
+        // between the two Spacers on any phone, and SwiftUI's answer to that is
+        // to truncate — "Qué hay en casa,…", which is the sales pitch cut in
+        // half on the first screen anyone sees. Scrolling costs nothing at the
+        // default size, where it never scrolls.
+        ScrollView {
+            content.frame(minHeight: typeSize.isAccessibilitySize ? 0 : nil)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+    }
+
+    private var content: some View {
         VStack(alignment: .leading, spacing: 22) {
             Spacer()
             AppMark(size: 56)
@@ -50,6 +65,7 @@ struct LoginView: View {
                 .font(.stock(12))
                 .foregroundStyle(Theme.ink3)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(24)
     }
 }

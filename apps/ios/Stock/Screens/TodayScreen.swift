@@ -169,7 +169,7 @@ struct IngredientRow: View {
         VStack(spacing: 0) {
             HStack(spacing: 10) {
                 Image(systemName: icon)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.stockSymbol(15, .semibold))
                     .foregroundStyle(colour)
                 Text(ingredient.label).font(.stock(15, .semibold))
                 Spacer()

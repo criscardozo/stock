@@ -39,6 +39,48 @@ final class TypeScaleTests: XCTestCase {
         XCTAssertEqual(AppFont.style(for: 30), .title)
     }
 
+    func testHalfPointNeighboursShareAnAnchor() {
+        // The rule stated as a property instead of a list, which is Gastos
+        // Diarios' formulation: a size and its floor always land on the same
+        // style. That is what makes 11/11.5 and 14/14.5 grow together, and it
+        // keeps holding for a size nobody has drawn yet.
+        for tenths in stride(from: 90, through: 400, by: 1) {
+            let size = CGFloat(tenths) / 10
+            XCTAssertEqual(
+                AppFont.style(for: size),
+                AppFont.style(for: size.rounded(.down)),
+                "\(size) does not share an anchor with \(size.rounded(.down))"
+            )
+        }
+    }
+
+    func testSymbolsAreUntouchedAtTheDefaultSize() {
+        // The content size is passed in rather than read off the device. The
+        // first version of this test did read it, and failed reporting 29.7 for
+        // an 11pt icon — which was true, because the simulator had been left at
+        // accessibility-extra-large by the previous experiment. The test was
+        // measuring the machine, not the code.
+        let normal = UITraitCollection(preferredContentSizeCategory: .large)
+        for size in [11, 13, 15, 17, 34] as [CGFloat] {
+            XCTAssertEqual(AppFont.scaledSymbol(size, traits: normal), size, accuracy: 0.5)
+        }
+    }
+
+    func testSymbolsGrowWhenSomebodyAsksForLargerText() {
+        // The half that matters. An icon drawn with `.system(size:)` never
+        // grows, so at larger text it drifts from its label and — when it is the
+        // whole content of a button — becomes a smaller target for the person
+        // who most needs a bigger one.
+        let big = UITraitCollection(preferredContentSizeCategory: .accessibilityExtraLarge)
+        for size in [11, 13, 15, 17, 34] as [CGFloat] {
+            XCTAssertGreaterThan(
+                AppFont.scaledSymbol(size, traits: big),
+                size,
+                "\(size)pt did not grow at an accessibility size"
+            )
+        }
+    }
+
     func testTheScaleIsMonotonic() {
         // The property behind the table: a bigger size never anchors to a
         // smaller style. A boundary typed backwards would make one size in the

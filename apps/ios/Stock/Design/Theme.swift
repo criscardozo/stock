@@ -243,6 +243,18 @@ enum AppFont {
         }
     }
 
+    /// A symbol's point size, scaled the same way the text beside it is.
+    ///
+    /// `traits` exists for tests. `scaledValue(for:)` reads the DEVICE's current
+    /// content size, so a test asserting "at the default this is the number the
+    /// design drew" passes or fails on whatever the simulator was last left at
+    /// — the same shape of hidden dependency as reading the device timezone.
+    /// Passing the category in makes both halves checkable anywhere.
+    static func scaledSymbol(_ size: CGFloat, traits: UITraitCollection? = nil) -> CGFloat {
+        UIFontMetrics(forTextStyle: metrics(for: style(for: size)))
+            .scaledValue(for: size, compatibleWith: traits)
+    }
+
     static func font(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
         let style = style(for: size)
         guard available else {
@@ -267,5 +279,24 @@ enum AppFont {
 extension Font {
     static func stock(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
         AppFont.font(size, weight)
+    }
+
+    /// An SF Symbol that grows with the text beside it.
+    ///
+    /// `.system(size:)` does not scale, so every icon in the app stayed the
+    /// size it was drawn at while the words around it grew — which is worst for
+    /// exactly the person who turned the text up: an icon that is the whole
+    /// content of a button becomes a SMALLER target the larger the text gets,
+    /// and one sitting beside a label drifts away from it.
+    ///
+    /// Symbols are system faces, not Outfit, so this scales the point size with
+    /// `UIFontMetrics` rather than going through `.custom(relativeTo:)`. Same
+    /// anchoring as the text: `AppFont.style(for:)` decides which style it
+    /// tracks, so a 13pt icon next to 13pt text grows at the same rate.
+    ///
+    /// Not for a glyph inside a hard-coded shape — `HueBadge` draws into a
+    /// fixed circle, and growing the glyph alone would overflow it.
+    static func stockSymbol(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
+        .system(size: AppFont.scaledSymbol(size), weight: weight)
     }
 }

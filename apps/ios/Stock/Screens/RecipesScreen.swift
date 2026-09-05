@@ -94,7 +94,7 @@ struct RecipesScreen: View {
     private var recipeSearchField: some View {
         HStack(spacing: 9) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.stockSymbol(15, .semibold))
                 .foregroundStyle(Theme.ink3)
             TextField("Buscar", text: $search)
                 .font(.stock(15))
@@ -103,7 +103,7 @@ struct RecipesScreen: View {
             if !search.isEmpty {
                 Button { search = "" } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 15))
+                        .font(.stockSymbol(15))
                         .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)

@@ -265,6 +265,10 @@ struct ShoppingRow: View {
     var onToggle: () -> Void
     var onRemove: () -> Void
 
+    /// Same reasoning as the stepper's: the tick is the most-used control in
+    /// the app and its whole content is a glyph.
+    @ScaledMetric(relativeTo: .footnote) private var tickSide: CGFloat = 26
+
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
@@ -277,11 +281,11 @@ struct ShoppingRow: View {
                         )
                         .overlay(
                             Image(systemName: "checkmark")
-                                .font(.system(size: 13, weight: .bold))
+                                .font(.stockSymbol(13, .bold))
                                 .foregroundStyle(Theme.onPrimary)
                                 .opacity(entry.checked ? 1 : 0)
                         )
-                        .frame(width: 26, height: 26)
+                        .frame(width: tickSide, height: tickSide)
                 }
                 .buttonStyle(.plain)
                 // The same words the web uses, so the two apps read the same to
@@ -309,7 +313,7 @@ struct ShoppingRow: View {
 
                 if entry.pending {
                     Image(systemName: "icloud.slash")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.stockSymbol(13, .semibold))
                         .foregroundStyle(Theme.ink3)
                         .accessibilityLabel("Todavía no subió")
                 }

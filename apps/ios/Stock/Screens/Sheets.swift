@@ -561,7 +561,7 @@ struct MoveHistorySection: View {
     private func row(_ move: Move) -> some View {
         HStack(spacing: 12) {
             Image(systemName: Self.icon(move.type))
-                .font(.system(size: 13))
+                .font(.stockSymbol(13))
                 .foregroundStyle(Theme.ink2)
                 .frame(width: 26, height: 26)
                 .background(Theme.ground, in: Circle())

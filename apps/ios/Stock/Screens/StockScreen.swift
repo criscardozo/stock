@@ -90,7 +90,7 @@ struct StockScreen: View {
     private var searchField: some View {
         HStack(spacing: 9) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.stockSymbol(15, .semibold))
                 .foregroundStyle(Theme.ink3)
             TextField("Buscar en la casa", text: $search)
                 .font(.stock(15))
@@ -101,7 +101,7 @@ struct StockScreen: View {
                     search = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 15))
+                        .font(.stockSymbol(15))
                         .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)
@@ -333,7 +333,7 @@ struct ItemRow: View {
 
     private func label(_ icon: String, _ text: String, _ colour: Color) -> some View {
         HStack(spacing: 4) {
-            Image(systemName: icon).font(.system(size: 11, weight: .semibold))
+            Image(systemName: icon).font(.stockSymbol(11, .semibold))
             Text(text).font(.stock(12, .semibold))
         }
         .foregroundStyle(colour)

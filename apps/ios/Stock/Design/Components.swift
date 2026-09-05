@@ -60,7 +60,7 @@ struct Chip: View {
     var body: some View {
         HStack(spacing: 5) {
             if let icon {
-                Image(systemName: icon).font(.system(size: 11, weight: .bold))
+                Image(systemName: icon).font(.stockSymbol(11, .bold))
             }
             Text(text).font(.stock(12, .bold))
         }
@@ -84,15 +84,21 @@ struct Stepper: View {
     var name: String
     var onChange: (Int) -> Void
 
+    /// The target grows with the glyph. Scaling the symbol and leaving the frame
+    /// at 34x30 makes the button LOOK bigger and stay the same size to hit —
+    /// which is backwards for the person who turned the text up.
+    @ScaledMetric(relativeTo: .subheadline) private var tapWidth: CGFloat = 34
+    @ScaledMetric(relativeTo: .subheadline) private var tapHeight: CGFloat = 30
+
     var body: some View {
         HStack(spacing: 0) {
             Button {
                 onChange(max(0, value - step))
             } label: {
                 Image(systemName: "minus")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.stockSymbol(15, .semibold))
                     .foregroundStyle(value == 0 ? Theme.ink4 : Theme.ink2)
-                    .frame(width: 34, height: 30)
+                    .frame(width: tapWidth, height: tapHeight)
             }
             .buttonStyle(.plain)
             .disabled(value == 0)
@@ -118,9 +124,9 @@ struct Stepper: View {
                 onChange(value + step)
             } label: {
                 Image(systemName: "plus")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.stockSymbol(15, .semibold))
                     .foregroundStyle(Theme.ink2)
-                    .frame(width: 34, height: 30)
+                    .frame(width: tapWidth, height: tapHeight)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Sumar \(name)")
@@ -213,7 +219,7 @@ struct PrimaryButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                if let icon { Image(systemName: icon).font(.system(size: 17, weight: .bold)) }
+                if let icon { Image(systemName: icon).font(.stockSymbol(17, .bold)) }
                 Text(title).font(.stock(16, .bold))
             }
             .foregroundStyle(Theme.onPrimary)
