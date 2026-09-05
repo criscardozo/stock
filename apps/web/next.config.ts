@@ -65,6 +65,38 @@ const nextConfig: NextConfig = {
    * Every domain that serves the app must have `https://<domain>/__/auth/handler`
    * whitelisted as an OAuth redirect URI — see docs/setup.md.
    */
+  /**
+   * The three headers that cost nothing and need no per-page thought.
+   *
+   * Deliberately NOT a Content-Security-Policy. Firebase Auth and Google
+   * Identity Services need `unsafe-inline` and a handful of origins, and a CSP
+   * written half-way is worse than none: it does not fail at build time, it
+   * fails at sign-in, on someone else's Safari, weeks later. If one is ever
+   * added it has to be developed against a real sign-in on a real iPhone, in
+   * report-only first.
+   */
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          // No MIME sniffing. The app serves user-supplied nothing, but the
+          // service worker and the precache do serve a lot of files.
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Send the origin off-site, never the path. The paths here are not
+          // secret, but "which household screen was open" is nobody's business.
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // The app asks for none of these. The camera is used by the iOS app,
+          // not the web one — the barcode scanner never shipped here.
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+          },
+        ],
+      },
+    ]
+  },
+
   async rewrites() {
     return [
       {
