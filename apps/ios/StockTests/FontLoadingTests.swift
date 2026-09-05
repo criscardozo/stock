@@ -12,23 +12,20 @@ import XCTest
 /// For months. Nothing failed, because nothing looked.
 ///
 /// A test bundle has no `UIAppFonts`, so the file is a resource here and gets
-/// registered by hand. Borrowed from Gastos Diarios, who hit the mirror of this:
-/// their scaling tests were measuring the fallback without saying so, because
-/// the font was not in their test bundle either.
+/// registered by hand — through `TestFonts`, and not from a `setUp` on this
+/// class. See the note there: registration is process-wide, so a class that
+/// forgets still finds a font, measures the system face, and passes.
 final class FontLoadingTests: XCTestCase {
     override class func setUp() {
         super.setUp()
-        guard let url = Bundle(for: FontLoadingTests.self)
-            .url(forResource: "Outfit-Variable", withExtension: "ttf")
-        else { return }
-        CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+        TestFonts.register()
     }
 
     func testTheFontFileIsInThisBundleAtAll() {
         // Checked separately, so "the font does not resolve" and "the resource
         // was not copied" cannot be read as the same failure.
-        XCTAssertNotNil(
-            Bundle(for: FontLoadingTests.self).url(forResource: "Outfit-Variable", withExtension: "ttf"),
+        XCTAssertTrue(
+            TestFonts.register(),
             "Outfit-Variable.ttf is not in the test bundle — check project.yml"
         )
     }
