@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "firebase emulators:exec --only firestore --project demo-stock --config ../firebase.json \"vitest run\"",
+    "test": "node run.mjs",
     "test:watch": "vitest"
   },
   "devDependencies": {

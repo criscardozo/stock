@@ -36,6 +36,24 @@ describe('households: creation', () => {
     )
   })
 
+  it('the name is capped, and cannot be empty', async () => {
+    // Untested until now, which is how a cap in the rules quietly stops being
+    // one: nothing in the app can type 61 characters, so nothing would have
+    // noticed it going away. The rules are the only boundary — an unbounded
+    // string on the ONE document every listener on both clients holds open is
+    // the whole reason the cap is there.
+    const named = (name: string) => ({
+      ...householdDoc([ALICE]),
+      name,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
+
+    await assertSucceeds(setDoc(doc(db(ALICE), 'households', HID), named('x'.repeat(60))))
+    await assertFails(setDoc(doc(db(ALICE), 'households', 'h2'), named('x'.repeat(61))))
+    await assertFails(setDoc(doc(db(ALICE), 'households', 'h3'), named('')))
+  })
+
   it('cannot create a household you are not in', async () => {
     await assertFails(
       setDoc(doc(db(ALICE), 'households', HID), {
