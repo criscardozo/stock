@@ -43,17 +43,17 @@ sigue con la evidencia y la verificación tal como se escribieron.
 | 1.3 E2E de `/plan`, `/recetas`, `/ajustes` | hecho |
 | 1.4 tests de módulos que cargan peso | hecho |
 | 1.5 topes de tamaño en reglas | hecho, con una salvedad medida — ver la tarea |
-| 2.1 Dynamic Type y etiquetas (iOS) | pendiente |
-| 2.2 movimiento y foco (web) | pendiente; la parte de nombres accesibles salió sola al escribir 1.3 |
+| 2.1 Dynamic Type y etiquetas (iOS) | hecho — y destapó que la app **nunca usó Outfit** |
+| 2.2 movimiento y foco (web) | hecho — Lighthouse a11y **100** en las cinco pantallas (partida: 93) |
 | 3.1 widget «qué se cocina hoy» | hecho |
 | 3.2 historial de movimientos | hecho, web e iOS |
 | 3.3 gestión de categorías y ubicaciones | hecho — eran **sólo lectura**, no había mutación en todo el repo |
 | 4.1 audit | hecho |
 | 4.2 CI | hecho |
-| 4.3 `error.tsx` | pendiente |
-| 4.4 cabeceras de seguridad | pendiente |
-| 4.5 código muerto en iOS | pendiente |
-| 4.6 tamaño del bundle | pendiente |
+| 4.3 `error.tsx` | hecho |
+| 4.4 cabeceras de seguridad | hecho, sin CSP — ver la tarea |
+| 4.5 código muerto en iOS | hecho |
+| 4.6 tamaño del bundle | medido, sin acción — ver abajo |
 
 Escribir los e2e de 1.3 destapó tres bugs que ninguna lectura había
 encontrado, porque los tres se ven como una pantalla normal:
@@ -90,6 +90,29 @@ Dos cosas que salieron de ejecutarlo y valen más que las tareas mismas:
   5/9/2026:** los puertos de Stock se movieron a Auth 9098 / UI 4001, así que
   los dos emuladores conviven sin overrides.
 
+## Números de partida (05/09/2026)
+
+Medidos con Lighthouse contra un build de producción servido en 3113.
+
+| | |
+| --- | --- |
+| Accesibilidad, las cinco pantallas | **100** (era 93 en `/stock`) |
+| Performance en `/stock` (4G simulado) | **78** |
+| FCP / LCP / TBT / TTI | 2,1 s · 5,4 s · 60 ms · 3,6 s |
+| JS estático | 1,8 MB en 21 archivos |
+| Chunk más grande | 652 KB (Firebase: firestore + auth) |
+| Segundo | 420 KB (`pdfjs-dist`, dinámico — sólo baja quien importa un ticket) |
+| Peso total de la página | 3.063 KB |
+| JS sin usar | 220 KB |
+
+**4.6 queda sin acción, y ahora con el número que lo justifica.** El LCP de 5,4 s
+es feo, pero el 652 KB es Firestore con listeners y no se puede recortar sin
+cambiar la arquitectura; los 220 KB sin usar son en su mayoría ese mismo SDK.
+Lo único barato que quedaría —diferir `firebase/auth` hasta después del primer
+pintado— cambia el arranque a costa de un parpadeo de "deslogueado" en cada
+carga, que es exactamente lo que `AppShell` evita a propósito. Si algún día
+importa, el número a mover es el LCP y el experimento a hacer es ése.
+
 ## Lo que P3 destapó
 
 - **`moves` se escribía en 7 lugares y no lo leía nadie**, ni siquiera el índice
@@ -105,6 +128,15 @@ Dos cosas que salieron de ejecutarlo y valen más que las tareas mismas:
   Donde carga peso es en el teléfono, porque iOS lo decodifica a un `Dictionary`
   de Swift, que no tiene orden. Por eso está fijado en un test unitario y no en
   el e2e — está medido, no supuesto.
+- **La app iOS nunca renderizó en Outfit.** `Outfit-Variable.ttf` registra la
+  familia `Outfit` y la instancia `Outfit-Thin`; el código pedía
+  `Outfit-Regular`/`-SemiBold`/`-Bold`, las tres devolvían `nil`, y todo caía al
+  system rounded — mientras `CLAUDE.md` decía que las dos apps "se ven como un
+  solo producto". Y esa rama de fallback tampoco tenía `relativeTo:`, que es por
+  qué Dynamic Type no hacía nada: los dos defectos se tapaban entre sí.
+- **`maximum-scale=1` costaba el zoom con dos dedos.** Era el único fallo de
+  accesibilidad de Lighthouse. `touch-action: manipulation` hace lo que el
+  comentario original quería (matar el doble toque) sin quitar el pinch.
 - **La zona horaria vuelve a esconderse.** El chequeo de caducidad del widget
   leyendo la zona del *dispositivo* en vez de la del hogar no rompía nada,
   porque esta máquina **es** `Australia/Sydney`. Igual que `format.test.ts` esta
