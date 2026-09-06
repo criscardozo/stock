@@ -251,10 +251,40 @@ reproducirlo: con el tope subido a 500, un hogar con **120 categorías se escrib
 sin problema**. Y con el tope real de 30, 31 y 60 fallan — por el tope. El test
 afirma las dos direcciones y cae si se saca el tope.
 
-No sé qué produjo aquel `PERMISSION_DENIED`; lo que sé es que no era el tamaño
-del mapa. La lección no es sobre Firestore: **una medición que explica por qué
-algo no se puede probar merece más escrutinio que una que prueba algo**, porque
-su conclusión es que dejes de mirar.
+### Qué se pudo determinar (06/09/2026)
+
+Reproducida la condición exacta del commit original —tope en **31**, mapa de
+**31**, no un tope alto— y **los tres casos pasan** (29, 30 y 31 entradas). Con
+el tope en 500, 120 entradas también. No hay límite del motor, en ninguna
+combinación.
+
+Lo que sí se pudo leer, del log que quedó guardado: el mensaje completo era
+
+    evaluation error at L138:24 for 'create' @ L138,
+    evaluation error at L144:24 for 'update' @ L144,
+    false for 'create' @ L138
+
+La última cláusula, **`false for 'create'`, es la regla devolviendo falso** — o
+sea el tope haciendo exactamente su trabajo. El mensaje traía la respuesta y yo
+leí la primera cláusula. Y «L138» tampoco señalaba el mapa: en aquel commit
+L138 era `allow create: if isSignedIn()`, o sea el arranque de **toda** la
+condición de create, no una línea del tope.
+
+Qué produce el prefijo `evaluation error` sigue sin determinarse: no se reproduce
+aislado ni con documento nuevo, ni sobre uno existente, ni con mapas de 21 o 40
+entradas. Se descartó que dependa del tamaño del mapa, que es lo único que la
+conclusión original afirmaba. Se deja acá y no se sigue cavando: lo accionable
+—que el tope es testeable y ahora está testeado por los dos lados— ya está.
+
+Dos lecciones, y la segunda es más específica que la primera:
+
+1. **Una medición que explica por qué algo no se puede probar merece más
+   escrutinio que una que prueba algo**, porque su conclusión es que dejes de
+   mirar.
+2. **Leer el mensaje entero, no su primera cláusula.** Un `PERMISSION_DENIED` de
+   Firestore lista *todos* los caminos que evaluó. Que uno diga «evaluation
+   error» no significa que el motor no pudo: puede haber otro, en la misma
+   línea, diciendo `false`.
 
 **Cerrados el 06/09/2026.** Los siete que quedaban tienen test:
 `displayName` 100, `name` 80 del ítem, `title` 120 e `ingredients` 60 de
