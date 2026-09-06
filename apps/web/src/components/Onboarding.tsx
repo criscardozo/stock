@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { FIELD_LIMITS } from '@/lib/domain/limits'
+import { FIELD_LIMITS, overBy } from '@/lib/domain/limits'
 import { useAuth } from '@/lib/firebase/auth'
 import { createHousehold, joinHousehold } from '@/lib/firebase/mutations'
 import { AppMark } from './AppMark'
-import { Card, FieldInput, Icon, PrimaryAction, SheetField } from './ui/primitives'
+import { Card, FieldInput, Icon, LimitNote, PrimaryAction, SheetField } from './ui/primitives'
 
 const TIMEZONES = ['Australia/Sydney', 'Australia/Melbourne', 'Australia/Brisbane', 'America/Argentina/Buenos_Aires']
 
@@ -50,14 +50,8 @@ export function Onboarding() {
         </div>
         <div className="flex gap-2.5">
           <SheetField label="Nombre">
-            <FieldInput
-              value={name}
-              // The same cap Ajustes has applied all along, on the same
-              // field. One form stopped you at 60 and the other let you
-              // past it into a write the rules refuse.
-              maxLength={FIELD_LIMITS.householdName}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <FieldInput value={name} onChange={(e) => setName(e.target.value)} />
+            <LimitNote value={name} limit={FIELD_LIMITS.householdName} />
           </SheetField>
           <SheetField label="Zona horaria">
             <select
@@ -75,7 +69,7 @@ export function Onboarding() {
           Las fechas del plan se calculan en esta zona, no en la del dispositivo.
         </p>
         <PrimaryAction
-          disabled={busy || !name.trim()}
+          disabled={busy || !name.trim() || overBy(name, FIELD_LIMITS.householdName) > 0}
           onClick={() =>
             run(() => createHousehold(user.uid, displayName, user.photoURL, name.trim(), timezone))
           }

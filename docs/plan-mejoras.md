@@ -171,7 +171,7 @@ y `firestore.rules` en vez de repetir el número. El idioma ya existía en
 `tokens.test.ts` para la paleta; faltaba aplicarlo acá. Verificado moviendo cada
 número de un solo lado: los tres caen, cada uno en su test.
 
-## El cliente permite lo que las reglas rechazan (06/09/2026) — DECISIÓN PENDIENTE
+## El cliente permite lo que las reglas rechazan (06/09/2026) — HECHO
 
 De Gastos Diarios, que lo encontró como clase después de preguntarse «dónde más
 aplica» en vez de «¿lo apliqué?». Acá hay ocho campos de texto con tope en las
@@ -203,12 +203,20 @@ en Ajustes y NO en el onboarding — el mismo campo, dos formularios, una sola
 regla aplicada. Unificado en `lib/domain/limits.ts` y acoplado a las reglas en
 `parity.test.ts`.
 
-**Lo que falta decidir, y es de Cristian:** qué tiene que pasar cuando alguien
-pega 6.000 caracteres en Preparación. `maxLength` trunca en silencio, que es lo
-que ya hacen los dos campos capados hoy; la alternativa es dejar escribir y
-avisar. Es comportamiento de producto, no una constante faltante — por eso no lo
-cerré. Y en iOS no hay ningún tope en ningún campo, así que ahí es además trabajo
-nuevo, no un atributo.
+**Decidido por Cristian: dejar escribir y avisar.** Nada trunca. Se puede tipear
+o pegar de más, el formulario dice por cuánto te pasaste, y la acción primaria no
+deja guardar. Aplicado a los **siete** campos alcanzables y no a los cinco que
+faltaban: los dos que ya tenían `maxLength` truncaban en silencio, y dejarlos así
+habría creado justo la inconsistencia que este archivo viene documentando.
+
+`overBy()` cuenta sobre el string **trimmeado**, que es lo que ven las reglas —
+avisar por espacios al final sería avisar por algo que nunca llega al servidor.
+Los siete topes están acoplados a `firestore.rules` en `parity.test.ts`,
+verificados moviendo cada número de un solo lado.
+
+`items.notes` (500) queda sin aviso porque **ningún formulario web lo escribe**.
+Y en iOS no hay tope en ningún campo: ahí no es un atributo sino trabajo nuevo, y
+sigue pendiente.
 
 ## Topes de reglas sin cobertura (05/09/2026)
 

@@ -6,6 +6,8 @@
  * Measurements come from docs/design/reference/, via docs/design-system.md.
  */
 import type { ReactNode } from 'react'
+import { overBy } from '@/lib/domain/limits'
+import { plural } from '@/lib/domain/format'
 import { hueClasses, initialOf } from '@/lib/design/palette'
 import type { Level } from '@/lib/domain/types'
 import { LEVEL_NAMES } from '@/lib/domain/quantities'
@@ -301,6 +303,23 @@ export function Sheet({
         {footer}
       </div>
     </div>
+  )
+}
+
+/**
+ * "You are N characters over", under the field that is over.
+ *
+ * Renders nothing until it has something to say, so a form is quiet while it is
+ * fine. `role="alert"` because it appears in response to typing and a screen
+ * reader would otherwise never learn the field had gone invalid.
+ */
+export function LimitNote({ value, limit }: { value: string; limit: number }) {
+  const over = overBy(value, limit)
+  if (over === 0) return null
+  return (
+    <span role="alert" className="text-[11.5px] font-semibold text-danger-deep">
+      {`Te pasaste por ${plural(over, 'carácter', 'caracteres')}. El máximo es ${limit}.`}
+    </span>
   )
 }
 

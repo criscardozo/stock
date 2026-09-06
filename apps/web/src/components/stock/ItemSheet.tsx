@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { FIELD_LIMITS, overBy } from '@/lib/domain/limits'
 import type { Category, Item, Level, Location, Tracking, Unit } from '@/lib/domain/types'
 import { UNIT_NAMES } from '@/lib/domain/quantities'
-import { FieldInput, Icon, LevelDial, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
+import { FieldInput, Icon, LevelDial, LimitNote, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
 import { MoveHistory } from './MoveHistory'
 import { useHousehold } from '@/lib/firebase/household'
 
@@ -55,6 +56,11 @@ export function ItemSheet({
   const [autoSuggest, setAutoSuggest] = useState(item?.autoSuggest !== false)
   const { householdId, household } = useHousehold()
 
+  // Typing past a limit is allowed and said out loud; SAVING past it is not,
+  // because the write would be refused after the row had already appeared.
+  const tooLong =
+    overBy(name, FIELD_LIMITS.itemName) > 0 || overBy(nameEs, FIELD_LIMITS.itemNameEs) > 0
+
   const save = () => {
     if (!name.trim()) return
     onSave({
@@ -97,7 +103,7 @@ export function ItemSheet({
       onClose={onClose}
       footer={
         <div className="flex flex-col gap-3">
-          <PrimaryAction onClick={save} disabled={!name.trim()}>
+          <PrimaryAction onClick={save} disabled={!name.trim() || tooLong}>
             {item ? 'Guardar' : 'Crear ítem'}
           </PrimaryAction>
           {onDelete && (
@@ -114,6 +120,7 @@ export function ItemSheet({
       <div className="grid grid-cols-[1fr_130px] gap-2.5">
         <SheetField label="Nombre">
           <FieldInput value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+          <LimitNote value={name} limit={FIELD_LIMITS.itemName} />
         </SheetField>
         <SheetField label="Marca">
           <FieldInput
@@ -130,6 +137,7 @@ export function ItemSheet({
           onChange={(e) => setNameEs(e.target.value)}
           placeholder="opcional — «Leche de soja»"
         />
+        <LimitNote value={nameEs} limit={FIELD_LIMITS.itemNameEs} />
       </SheetField>
 
       <div className="grid grid-cols-2 gap-2.5">

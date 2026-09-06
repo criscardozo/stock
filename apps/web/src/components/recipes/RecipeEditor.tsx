@@ -1,10 +1,10 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { FIELD_LIMITS } from '@/lib/domain/limits'
+import { FIELD_LIMITS, overBy } from '@/lib/domain/limits'
 import type { Ingredient, Item, Recipe } from '@/lib/domain/types'
 import { formatQuantity } from '@/lib/domain/quantities'
-import { FieldInput, Icon, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
+import { FieldInput, Icon, LimitNote, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
 import { fold } from '@/lib/calendar/match'
 
 type RecipeDraft = Omit<Recipe, 'id' | 'timesCooked'> & {
@@ -74,6 +74,15 @@ export function RecipeEditor({
    * word — a feature quietly doing nothing, which is the failure this project
    * keeps running into.
    */
+  // Typing past a limit is allowed and said out loud; SAVING past it is not,
+  // because the write would be refused after the recipe had already appeared
+  // in the list. Steps is the one that matters — a pasted recipe is how
+  // somebody reaches 5000 characters without meaning to.
+  const tooLong =
+    overBy(title, FIELD_LIMITS.recipeTitle) > 0 ||
+    overBy(shortName, FIELD_LIMITS.recipeShortName) > 0 ||
+    overBy(steps, FIELD_LIMITS.recipeSteps) > 0
+
   const shortNameTaken = useMemo(() => {
     const wanted = fold(shortName)
     if (wanted === '') return null
@@ -111,7 +120,7 @@ export function RecipeEditor({
             </p>
           )}
           <PrimaryAction
-            disabled={!title.trim() || shortNameTaken !== null}
+            disabled={!title.trim() || shortNameTaken !== null || tooLong}
             onClick={() =>
               onSave({
                 title: title.trim(),
@@ -144,14 +153,15 @@ export function RecipeEditor({
       <div className="grid grid-cols-[1fr_1fr_100px] gap-2.5">
         <SheetField label="Título">
           <FieldInput value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
+          <LimitNote value={title} limit={FIELD_LIMITS.recipeTitle} />
         </SheetField>
         <SheetField label="Nombre corto (opcional)">
           <FieldInput
             value={shortName}
             onChange={(e) => setShortName(e.target.value)}
-            maxLength={FIELD_LIMITS.recipeShortName}
             placeholder="milanesas"
           />
+          <LimitNote value={shortName} limit={FIELD_LIMITS.recipeShortName} />
         </SheetField>
         <SheetField label="Porciones">
           <FieldInput
@@ -338,6 +348,7 @@ export function RecipeEditor({
           placeholder="Un paso por línea."
           className="rounded-field bg-ground px-3.5 py-3 text-sm leading-relaxed outline-none"
         />
+          <LimitNote value={steps} limit={FIELD_LIMITS.recipeSteps} />
       </SheetField>
     </Sheet>
   )

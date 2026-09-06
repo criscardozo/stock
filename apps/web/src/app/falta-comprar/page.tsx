@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { FIELD_LIMITS, overBy } from '@/lib/domain/limits'
 import { useAuth } from '@/lib/firebase/auth'
 import { useHousehold } from '@/lib/firebase/household'
 import {
@@ -24,6 +25,7 @@ import {
   Chip,
   HueBadge,
   Icon,
+  LimitNote,
   PillButton,
   SectionLabel,
 } from '@/components/ui/primitives'
@@ -198,10 +200,20 @@ export default function ShoppingPage() {
             placeholder="Agregar algo que no está en el catálogo…"
             className="flex-1 bg-transparent text-sm outline-none"
           />
-          {manual.trim() && (
-            <button className="text-[13px] font-bold text-primary-deep">Agregar</button>
+          {manual.trim() && overBy(manual, FIELD_LIMITS.shoppingLabel) === 0 && (
+            <button
+              aria-label="Agregar a la lista"
+              className="text-[13px] font-bold text-primary-deep"
+            >
+              Agregar
+            </button>
           )}
         </form>
+
+        {/* Outside the form, so it does not sit between the field and its
+            button. The button disappears rather than going grey: there is
+            nothing else in that row to explain a disabled control. */}
+        <LimitNote value={manual} limit={FIELD_LIMITS.shoppingLabel} />
 
         {suggestions.length > 0 && (
           <section className="mt-2 flex flex-col gap-2">
@@ -256,14 +268,18 @@ export default function ShoppingPage() {
                       </span>
                     )}
                     <button
+                      // Named by what it adds. Twelve suggestions give twelve controls
+                      // called "Agregar", and the row text that tells them apart on
+                      // screen is nothing at all to somebody not looking at it.
+                      aria-label={`Agregar ${item.name}`}
                       onClick={() => entry && addToList(householdId, user.uid, entry)}
                       className="rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary-deep"
                     >
                       Agregar
                     </button>
                     <button
-                      title="Esta vuelta no"
-                      aria-label="Esta vuelta no"
+                      title={`Esta vuelta no: ${item.name}`}
+                      aria-label={`Esta vuelta no: ${item.name}`}
                       onClick={() =>
                         reportWrite(snoozeItem(householdId, user.uid, item.id, addDays(today, SNOOZE_DAYS)))
                       }

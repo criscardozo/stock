@@ -64,18 +64,35 @@ describe('the taxonomy caps are the rules, not a guess about them', () => {
 
 describe('the form caps are the rules, not a second opinion', () => {
   // A rejected write does not look rejected: Firestore applies it to the local
-  // cache first, so the person sees it saved and then gets an error dialog about
-  // it. These caps stop that at the input — which only works while they are the
-  // SAME numbers.
-  it('caps the household name where the rules do', () => {
-    expect(FIELD_LIMITS.householdName).toBe(
-      numberFrom('firebase/firestore.rules', /d\.name is string && d\.name\.size\(\) > 0 && d\.name\.size\(\) <= (\d+)/),
-    )
-  })
+  // cache first, so the person watches it save and then gets an error dialog
+  // about it. These caps say so at the field instead — which only works while
+  // they are the SAME numbers.
+  const fromRules: Record<keyof typeof FIELD_LIMITS, RegExp> = {
+    householdName: /d\.name is string && d\.name\.size\(\) > 0 && d\.name\.size\(\) <= (\d+)/,
+    itemName: /d\.name is string && d\.name\.size\(\) > 0 && d\.name\.size\(\) <= (\d+)/,
+    itemNameEs: /d\.nameEs is string && d\.nameEs\.size\(\) <= (\d+)/,
+    recipeTitle: /d\.title is string && d\.title\.size\(\) > 0 && d\.title\.size\(\) <= (\d+)/,
+    recipeShortName: /d\.shortName\.size\(\) > 0 && d\.shortName\.size\(\) <= (\d+)/,
+    recipeSteps: /d\.steps is string && d\.steps\.size\(\) <= (\d+)/,
+    shoppingLabel: /d\.label is string && d\.label\.size\(\) > 0 && d\.label\.size\(\) <= (\d+)/,
+  }
 
-  it("caps a recipe's short name where the rules do", () => {
-    expect(FIELD_LIMITS.recipeShortName).toBe(
-      numberFrom('firebase/firestore.rules', /d\.shortName\.size\(\) > 0 && d\.shortName\.size\(\) <= (\d+)/),
-    )
-  })
+  // `name` appears capped twice in the rules, at 60 for a household and 80 for
+  // an item, so those two are read from their own blocks rather than by the
+  // first match — which would have made both agree on 60 and looked fine.
+  const blocks: Partial<Record<keyof typeof FIELD_LIMITS, string>> = {
+    householdName: 'match /households/{hid}',
+    itemName: 'match /items/{itemId}',
+  }
+
+  for (const key of Object.keys(FIELD_LIMITS) as (keyof typeof FIELD_LIMITS)[]) {
+    it(`caps ${key} where the rules do`, () => {
+      const text = readFileSync(join(root, 'firebase/firestore.rules'), 'utf8')
+      const from = blocks[key] ? text.indexOf(blocks[key]!) : 0
+      if (from < 0) throw new Error(`no encontré ${blocks[key]} en firestore.rules`)
+      const match = text.slice(from).match(fromRules[key])
+      if (!match) throw new Error(`no encontré el tope de ${key} en firestore.rules`)
+      expect(FIELD_LIMITS[key]).toBe(Number(match[1]))
+    })
+  }
 })
