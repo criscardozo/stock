@@ -146,6 +146,31 @@ De paso: el lado Swift asertaba el conteo de casos del vector para que un archiv
 que dejara de cargarse no pasara en silencio, y su comentario decía «mantenelo
 igual al lado TypeScript» — que no lo tenía. Ahora sí.
 
+## Constantes escritas dos veces, sostenidas por un comentario (06/09/2026)
+
+De Gastos Diarios: ir a leer **todos los comentarios que invocan a la otra
+plataforma** y comprobar si detrás hay un mecanismo o sólo una oración. Ellos
+encontraron una ventana de 48 horas fijada dos veces por separado; acá aparecieron
+tres números en la misma situación.
+
+- **`EXPIRING_WITHIN_DAYS = 3` (web) y `expiringWithinDays = 3` (iOS).** Dos
+  literales sueltos, cada uno con su propio test afirmando el 3. Movés uno,
+  actualizás su test, y el otro cliente queda en desacuerdo sobre cuándo un ítem
+  «vence pronto» con las dos suites en verde. Y no había vector que lo atara: los
+  vectores de sugerencias **nunca miran el vencimiento**, que es lo mismo que
+  descubrí ayer al cubrir `ItemState`. La ausencia de vectores y la ausencia de
+  acoplamiento eran la misma ausencia.
+- **`LIMITS = { categories: 30, locations: 20 }`** en el editor de taxonomía,
+  espejando los topes de `firestore.rules`. La dirección que duele es subir el
+  del cliente sin subir el de las reglas: la pantalla deja llenar un formulario
+  que el servidor después rechaza, o sea el diálogo de error de escritura
+  disparándose por algo que la pantalla podía saber.
+
+Cerrado en `apps/web/src/lib/domain/parity.test.ts`, que **lee** `ItemState.swift`
+y `firestore.rules` en vez de repetir el número. El idioma ya existía en
+`tokens.test.ts` para la paleta; faltaba aplicarlo acá. Verificado moviendo cada
+número de un solo lado: los tres caen, cada uno en su test.
+
 ## Topes de reglas sin cobertura (05/09/2026)
 
 Método de Gastos Diarios, que es más barato que mutar de a uno: aflojar **todos**
