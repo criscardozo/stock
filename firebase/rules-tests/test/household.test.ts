@@ -370,6 +370,20 @@ describe('users', () => {
     await assertSucceeds(getDoc(doc(db(ALICE), 'users', ALICE)))
   })
 
+  it('the display name is capped, and cannot be empty', async () => {
+    // It comes from Google rather than a form, which is why nothing here
+    // reached it — and also why the cap matters: this app never chose the
+    // string, so its length is somebody else's decision.
+    const named = (displayName: string) => ({
+      displayName,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
+    await assertSucceeds(setDoc(doc(db(ALICE), 'users', ALICE), named('x'.repeat(100))))
+    await assertFails(setDoc(doc(db(BOB), 'users', BOB), named('x'.repeat(101))))
+    await assertFails(setDoc(doc(db(CAROL), 'users', CAROL), named('')))
+  })
+
   it('nobody reads or writes somebody else’s profile', async () => {
     await seedDoc(env, `users/${ALICE}`, { displayName: 'Alice', createdAt: new Date(), updatedAt: new Date() })
     await assertFails(getDoc(doc(db(BOB), 'users', ALICE)))

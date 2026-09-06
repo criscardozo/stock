@@ -256,9 +256,12 @@ del mapa. La lección no es sobre Firestore: **una medición que explica por qu�
 algo no se puede probar merece más escrutinio que una que prueba algo**, porque
 su conclusión es que dejes de mirar.
 
-Siguen sin red, todos del mismo tipo (largo de string o de lista, sin
-consecuencia más allá del tamaño): `displayName` 100, `name` 80 e `ingredients`
-60 de ítems y recetas, `title` 120, `days` 14 del plan, `label` 80 de la lista.
+**Cerrados el 06/09/2026.** Los siete que quedaban tienen test:
+`displayName` 100, `name` 80 del ítem, `title` 120 e `ingredients` 60 de
+recetas, `days` 14 del plan y `label` 80 de la lista. Confirmado con el barrido:
+aflojando los 17 a la vez caen 11 tests, y aflojando **sólo** `memberIds` no cae
+ninguno — o sea que ése es el único sin red, y a propósito, porque el tope que
+trabaja está en el camino de *join* y el test de invitación ya lo cubre.
 
 ## Lo que P3 destapó
 

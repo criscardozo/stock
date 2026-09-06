@@ -170,6 +170,15 @@ describe('items: field validation', () => {
     await assertFails(setDoc(item(ALICE, 'x'), levelItem(ALICE, { minSpare: -1 })))
   })
 
+  it("an item's name is capped, and cannot be empty", async () => {
+    // The name is on every row of the stock screen and in the shopping
+    // suggestions, so this is the string most often rendered in the app — and
+    // the only one of the item's caps that had no test.
+    await assertSucceeds(setDoc(item(ALICE, 'ok'), countedItem(ALICE, { name: 'x'.repeat(80) })))
+    await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { name: 'x'.repeat(81) })))
+    await assertFails(setDoc(item(ALICE, 'y'), countedItem(ALICE, { name: '' })))
+  })
+
   it('the Spanish subtitle is an optional short string', async () => {
     await assertSucceeds(setDoc(item(ALICE, 'ok'), countedItem(ALICE, { nameEs: 'Leche de soja' })))
     await assertFails(setDoc(item(ALICE, 'x'), countedItem(ALICE, { nameEs: 'x'.repeat(81) })))

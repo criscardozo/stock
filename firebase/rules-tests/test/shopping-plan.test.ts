@@ -117,10 +117,34 @@ describe('shopping list: shared state, either member', () => {
   })
 })
 
+describe('shopping list: the label is capped', () => {
+  it('stops at 80 characters', async () => {
+    // The one free-text field on the list, and the row it produces is read by
+    // both clients on every render of the screen.
+    await assertSucceeds(setDoc(entry(ALICE, 'ok'), row(ALICE, { label: 'x'.repeat(80) })))
+    await assertFails(setDoc(entry(ALICE, 'x'), row(ALICE, { label: 'x'.repeat(81) })))
+  })
+})
+
 describe('meal plans', () => {
   it('a member materialises the period, and the id must be its start date', async () => {
     await assertSucceeds(setDoc(plan(ALICE, '2026-08-15'), planDoc('2026-08-15')))
     await assertFails(setDoc(plan(ALICE, '2026-08-15'), planDoc('2026-08-16')))
+  })
+
+  it('a period cannot hold more days than a fortnight has', async () => {
+    // 14 is the longest period the app offers. The cap is on the MAP, not on
+    // the date range, so it is what stops a document growing without bound if
+    // a client ever wrote days outside its own period.
+    const days = (count: number) => {
+      const out: Record<string, unknown> = {}
+      for (let i = 0; i < count; i += 1) {
+        out[`2026-08-${String(i + 1).padStart(2, '0')}`] = { label: 'Afuera', status: 'planned' }
+      }
+      return out
+    }
+    await assertSucceeds(setDoc(plan(ALICE, '2026-08-15'), planDoc('2026-08-15', { days: days(14) })))
+    await assertFails(setDoc(plan(ALICE, '2026-08-15'), planDoc('2026-08-15', { days: days(15) })))
   })
 
   it('rejects a plan whose range runs backwards or whose length is invented', async () => {
@@ -159,6 +183,25 @@ describe('meal plans', () => {
 })
 
 describe('recipes', () => {
+  it('the title and the ingredient list are capped', async () => {
+    // Untested until now, like every string cap that no form could reach.
+    // A recipe's title is rendered in a row on both clients and its ingredient
+    // list is walked on every suggestion pass, so an unbounded one is not just
+    // storage — it is work done on every screen that reads the plan.
+    await assertSucceeds(
+      setDoc(recipe(ALICE, 'ok'), recipeDoc({ title: 'x'.repeat(120) })),
+    )
+    await assertFails(setDoc(recipe(ALICE, 'x'), recipeDoc({ title: 'x'.repeat(121) })))
+
+    const ingredient = { label: 'x', itemId: 'i', quantity: 1, unit: 'unit', optional: false }
+    await assertSucceeds(
+      setDoc(recipe(ALICE, 'ok2'), recipeDoc({ ingredients: Array(60).fill(ingredient) })),
+    )
+    await assertFails(
+      setDoc(recipe(ALICE, 'x2'), recipeDoc({ ingredients: Array(61).fill(ingredient) })),
+    )
+  })
+
   it('tags and steps are capped', async () => {
     await assertSucceeds(
       setDoc(recipe(ALICE, 'ok'), recipeDoc({ tags: Array(20).fill('t'), steps: 'x'.repeat(5000) })),
