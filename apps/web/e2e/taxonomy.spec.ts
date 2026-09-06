@@ -36,12 +36,10 @@ async function openEditor(page: Page, which: 'Categorías' | 'Ubicaciones') {
   await page.goto('/ajustes')
   await page.getByRole('button', { name: 'Entrar como cristian' }).click()
   await expect(page.getByRole('button', { name: 'Entrar como cristian' })).toBeHidden()
-  await page
-    .locator('section')
-    .filter({ hasText: which })
-    .getByRole('button', { name: 'Editar' })
-    .first()
-    .click()
+  // Named directly. This used to filter sections by their heading text and take
+  // the first match, because both buttons were called "Editar" — the shape that
+  // says a control has no name of its own.
+  await page.getByRole('button', { name: `Editar ${which.toLowerCase()}` }).click()
   return page.getByRole('dialog')
 }
 

@@ -160,6 +160,35 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
 
+### Un selector que necesita desambiguar es un síntoma — a veces (06/09/2026)
+
+Tres veces esta semana, escribir un test destapó un control sin nombre: los seis
+«Cocinada» del plan, los doce «Poner en poco» del dial, los doce «Agregar» de las
+sugerencias. La intuición era que **no poder apuntarle a algo desde un test es el
+mismo síntoma que no poder nombrarlo desde un lector de pantalla**, y que el test
+es el detector más barato de los dos.
+
+Gastos Diarios la afinó, y la refinación es lo que la hace usable. Cuando un test
+necesita `.first()` o `.nth()` sobre un **control**, la pregunta siguiente es:
+
+> ¿la app declaró un alcance que el lector de pantalla sí respeta?
+
+- **Si lo declaró** (`role="dialog"` + `aria-modal="true"`, o un `<dialog>`), el
+  defecto es del test. Playwright consulta el DOM y no respeta `aria-modal`, así
+  que ve dos botones donde un lector de pantalla ve uno: el de atrás no existe
+  mientras el modal está abierto. El arreglo es que el test exprese el alcance
+  que la app ya declara —`getByRole('dialog').getByRole('button', …)`— y no
+  renombrar nada.
+- **Si no lo declaró**, el control no tiene nombre y están rotos los dos.
+
+Acá el `Sheet` de `primitives.tsx` sí declara `role="dialog"` + `aria-modal`, así
+que las ambigüedades dentro de un sheet caen en el primer caso. Aplicando la
+pregunta a las cuatro desambiguaciones que quedaban en los e2e: tres eran sobre
+**contenido** (`getByText` de un chip, de un nombre repetido) —ruido esperable— y
+una era sobre un control: los dos botones «Editar» de Ajustes, en la misma
+página, sin diálogo que los separe. Positivo real, y el test tenía que filtrar
+secciones por su título para llegarles.
+
 ### Y ahora en la otra dirección (05/09/2026)
 
 El primer lote que va de Stock a Gastos Diarios, avisado a esa sesión el

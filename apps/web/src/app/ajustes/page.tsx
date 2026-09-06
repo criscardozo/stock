@@ -177,6 +177,10 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <SectionLabel>Ubicaciones</SectionLabel>
             <button
+              // Two buttons on this page said only "Editar". On screen the section
+              // heading above each one tells them apart; read aloud, or from a test,
+              // they are the same control twice.
+              aria-label="Editar ubicaciones"
               onClick={() => setEditingTaxonomy('locations')}
               className="text-[13px] font-bold text-primary-deep"
             >
@@ -205,6 +209,7 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <SectionLabel>Categorías</SectionLabel>
             <button
+              aria-label="Editar categorías"
               onClick={() => setEditingTaxonomy('categories')}
               className="text-[13px] font-bold text-primary-deep"
             >
