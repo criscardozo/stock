@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { FIELD_LIMITS } from '@/lib/domain/limits'
 import { useStoredValue, writeStoredValue } from '@/lib/useStoredValue'
 import { applyTheme, asThemePref, THEME_STORAGE_KEY, type ThemePref } from '@/lib/theme'
 import { useAuth } from '@/lib/firebase/auth'
@@ -256,7 +257,7 @@ export default function SettingsPage() {
               <span className="flex-1 text-sm font-semibold">Nombre</span>
               <input
                 defaultValue={household.name}
-                maxLength={60}
+                maxLength={FIELD_LIMITS.householdName}
                 onBlur={(e) => renameHousehold(e.target.value, e.target)}
                 onKeyDown={(event) => {
                   const input = event.currentTarget

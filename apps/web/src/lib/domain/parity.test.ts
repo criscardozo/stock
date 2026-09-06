@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { EXPIRING_WITHIN_DAYS } from './items'
 import { LIMITS } from '@/components/settings/TaxonomySheet'
+import { FIELD_LIMITS } from './limits'
 
 /**
  * Numbers this project writes down more than once.
@@ -57,6 +58,24 @@ describe('the taxonomy caps are the rules, not a guess about them', () => {
   it('matches the locations cap', () => {
     expect(LIMITS.locations).toBe(
       numberFrom('firebase/firestore.rules', /d\.locations is map && d\.locations\.size\(\) <= (\d+)/),
+    )
+  })
+})
+
+describe('the form caps are the rules, not a second opinion', () => {
+  // A rejected write does not look rejected: Firestore applies it to the local
+  // cache first, so the person sees it saved and then gets an error dialog about
+  // it. These caps stop that at the input — which only works while they are the
+  // SAME numbers.
+  it('caps the household name where the rules do', () => {
+    expect(FIELD_LIMITS.householdName).toBe(
+      numberFrom('firebase/firestore.rules', /d\.name is string && d\.name\.size\(\) > 0 && d\.name\.size\(\) <= (\d+)/),
+    )
+  })
+
+  it("caps a recipe's short name where the rules do", () => {
+    expect(FIELD_LIMITS.recipeShortName).toBe(
+      numberFrom('firebase/firestore.rules', /d\.shortName\.size\(\) > 0 && d\.shortName\.size\(\) <= (\d+)/),
     )
   })
 })

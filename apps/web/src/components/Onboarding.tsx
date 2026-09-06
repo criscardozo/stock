@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { FIELD_LIMITS } from '@/lib/domain/limits'
 import { useAuth } from '@/lib/firebase/auth'
 import { createHousehold, joinHousehold } from '@/lib/firebase/mutations'
 import { AppMark } from './AppMark'
@@ -49,7 +50,14 @@ export function Onboarding() {
         </div>
         <div className="flex gap-2.5">
           <SheetField label="Nombre">
-            <FieldInput value={name} onChange={(e) => setName(e.target.value)} />
+            <FieldInput
+              value={name}
+              // The same cap Ajustes has applied all along, on the same
+              // field. One form stopped you at 60 and the other let you
+              // past it into a write the rules refuse.
+              maxLength={FIELD_LIMITS.householdName}
+              onChange={(e) => setName(e.target.value)}
+            />
           </SheetField>
           <SheetField label="Zona horaria">
             <select

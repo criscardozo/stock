@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { FIELD_LIMITS } from '@/lib/domain/limits'
 import type { Ingredient, Item, Recipe } from '@/lib/domain/types'
 import { formatQuantity } from '@/lib/domain/quantities'
 import { FieldInput, Icon, PrimaryAction, Sheet, SheetField } from '../ui/primitives'
@@ -148,7 +149,7 @@ export function RecipeEditor({
           <FieldInput
             value={shortName}
             onChange={(e) => setShortName(e.target.value)}
-            maxLength={40}
+            maxLength={FIELD_LIMITS.recipeShortName}
             placeholder="milanesas"
           />
         </SheetField>

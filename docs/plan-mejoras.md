@@ -171,6 +171,45 @@ y `firestore.rules` en vez de repetir el número. El idioma ya existía en
 `tokens.test.ts` para la paleta; faltaba aplicarlo acá. Verificado moviendo cada
 número de un solo lado: los tres caen, cada uno en su test.
 
+## El cliente permite lo que las reglas rechazan (06/09/2026) — DECISIÓN PENDIENTE
+
+De Gastos Diarios, que lo encontró como clase después de preguntarse «dónde más
+aplica» en vez de «¿lo apliqué?». Acá hay ocho campos de texto con tope en las
+reglas y esto los respeta:
+
+| campo | tope | web | iOS |
+| --- | --- | --- | --- |
+| Nombre del hogar | 60 | sí | — |
+| Nombre corto de receta | 40 | sí | — |
+| Nombre del ítem | 80 | — | — |
+| Cómo le decimos en casa | 80 | — | — |
+| Notas del ítem | 500 | — | — |
+| Título de receta | 120 | — | — |
+| **Preparación** | **5000** | — | — |
+| Fila suelta de la lista | 80 | — | — |
+
+**Por qué duele más que un rechazo cualquiera.** Firestore aplica la escritura a
+la caché local antes de que el servidor la vea, así que la persona ve la receta
+guardada y **después** aparece el diálogo de error — el que se construyó en 0.1
+justamente para que un rechazo no sea invisible. Por un carácter de más. La
+dirección importa: un cliente más estricto que las reglas es una molestia; uno
+más laxo es un error que la pantalla podía evitar sola.
+
+El más alcanzable de verdad es **Preparación (5000)**: pegar una receta larga es
+algo que pasa.
+
+**Lo hecho, porque no era decisión de nadie:** el nombre del hogar estaba capado
+en Ajustes y NO en el onboarding — el mismo campo, dos formularios, una sola
+regla aplicada. Unificado en `lib/domain/limits.ts` y acoplado a las reglas en
+`parity.test.ts`.
+
+**Lo que falta decidir, y es de Cristian:** qué tiene que pasar cuando alguien
+pega 6.000 caracteres en Preparación. `maxLength` trunca en silencio, que es lo
+que ya hacen los dos campos capados hoy; la alternativa es dejar escribir y
+avisar. Es comportamiento de producto, no una constante faltante — por eso no lo
+cerré. Y en iOS no hay ningún tope en ningún campo, así que ahí es además trabajo
+nuevo, no un atributo.
+
 ## Topes de reglas sin cobertura (05/09/2026)
 
 Método de Gastos Diarios, que es más barato que mutar de a uno: aflojar **todos**
