@@ -278,9 +278,11 @@ struct ItemSheet: View {
             Form {
                 Section {
                     TextField("Nombre", text: $name)
+                    LimitNote(value: name, limit: FieldLimits.itemName)
                     // Anything imported from a receipt is titled in the shop's
                     // English; this is what makes the row readable and findable.
                     TextField("Cómo le decimos en casa (opcional)", text: $nameEs)
+                    LimitNote(value: nameEs, limit: FieldLimits.itemNameEs)
                     TextField("Marca (opcional)", text: $brand)
                 }
 
@@ -362,7 +364,14 @@ struct ItemSheet: View {
                 ToolbarItem(placement: .topBarLeading) { Button("Cancelar") { dismiss() } }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Guardar", action: save)
-                        .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                        // Typing past a limit is allowed and said out loud; SAVING past it
+                        // is not, because the write would be refused after the row had
+                        // already appeared.
+                        .disabled(
+                            name.trimmingCharacters(in: .whitespaces).isEmpty
+                                || FieldLimits.overBy(name, FieldLimits.itemName) > 0
+                                || FieldLimits.overBy(nameEs, FieldLimits.itemNameEs) > 0
+                        )
                 }
             }
         }

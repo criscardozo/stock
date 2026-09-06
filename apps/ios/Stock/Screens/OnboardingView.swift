@@ -42,6 +42,7 @@ struct OnboardingView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionLabel(text: "Empezar de cero")
                     TextField("Nombre", text: $name)
+                    LimitNote(value: name, limit: FieldLimits.householdName)
                         .font(.stock(16, .semibold))
                         .padding(14)
                         .background(RoundedRectangle(cornerRadius: 10).fill(Theme.ground))
@@ -54,7 +55,8 @@ struct OnboardingView: View {
                         .font(.stock(12))
                         .foregroundStyle(Theme.ink3)
                     PrimaryButton(title: "Crear hogar") { create() }
-                        .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || busy)
+                        .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || busy
+                            || FieldLimits.overBy(name, FieldLimits.householdName) > 0)
                 }
                 .padding(16)
                 .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))

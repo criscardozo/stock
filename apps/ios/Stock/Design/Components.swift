@@ -325,3 +325,22 @@ struct AppMark: View {
         }
     }
 }
+
+/// "You are N characters over", under the field that is over.
+///
+/// Renders nothing while there is nothing to say, so a form is quiet when it is
+/// fine. The web twin is `LimitNote` in `primitives.tsx`; same words, because
+/// somebody moving between the two apps should read the same sentence.
+struct LimitNote: View {
+    var value: String
+    var limit: Int
+
+    var body: some View {
+        if let note = FieldLimits.note(value, limit) {
+            Text(note)
+                .font(.stock(11.5, .semibold))
+                .foregroundStyle(Theme.dangerDeep)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}

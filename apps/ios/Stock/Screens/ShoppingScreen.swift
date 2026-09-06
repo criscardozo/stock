@@ -93,23 +93,32 @@ struct ShoppingScreen: View {
     }
 
     private var addRow: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "plus.circle").foregroundStyle(Theme.ink3)
-            TextField("Agregar algo suelto…", text: $manual)
-                .font(.stock(15))
-                .onSubmit(addManual)
-            if !manual.trimmingCharacters(in: .whitespaces).isEmpty {
-                Button("Agregar", action: addManual)
-                    .accessibilityLabel("Agregar a la lista")
-                    .font(.stock(13, .bold))
-                    .foregroundStyle(Theme.primaryDeep)
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 12) {
+                Image(systemName: "plus.circle").foregroundStyle(Theme.ink3)
+                TextField("Agregar algo suelto…", text: $manual)
+                    .font(.stock(15))
+                    .onSubmit(addManual)
+                // The button leaves rather than going grey: there is nothing
+                // else in this row to explain a disabled control, and the note
+                // below takes its place.
+                if !manual.trimmingCharacters(in: .whitespaces).isEmpty,
+                   FieldLimits.overBy(manual, FieldLimits.shoppingLabel) == 0 {
+                    Button("Agregar", action: addManual)
+                        .accessibilityLabel("Agregar a la lista")
+                        .font(.stock(13, .bold))
+                        .foregroundStyle(Theme.primaryDeep)
+                }
             }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(Theme.lineStrong, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+            )
+
+            LimitNote(value: manual, limit: FieldLimits.shoppingLabel)
+                .padding(.horizontal, 4)
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 18)
-                .stroke(Theme.lineStrong, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
-        )
         .padding(.horizontal, 16)
     }
 
