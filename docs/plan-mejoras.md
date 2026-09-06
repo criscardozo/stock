@@ -105,13 +105,23 @@ Medidos con Lighthouse contra un build de producción servido en 3113.
 | Peso total de la página | 3.063 KB |
 | JS sin usar | 220 KB |
 
-**4.6 queda sin acción, y ahora con el número que lo justifica.** El LCP de 5,4 s
-es feo, pero el 652 KB es Firestore con listeners y no se puede recortar sin
-cambiar la arquitectura; los 220 KB sin usar son en su mayoría ese mismo SDK.
-Lo único barato que quedaría —diferir `firebase/auth` hasta después del primer
-pintado— cambia el arranque a costa de un parpadeo de "deslogueado" en cada
-carga, que es exactamente lo que `AppShell` evita a propósito. Si algún día
-importa, el número a mover es el LCP y el experimento a hacer es ése.
+**4.6 queda sin acción, y el experimento está hecho (06/09/2026).** El LCP de
+5,4 s es feo, pero el chunk grande es Firestore con listeners y no se recorta sin
+cambiar la arquitectura.
+
+Lo único barato que quedaba era diferir `firebase/auth`, y ahora está **medido**
+en vez de estimado: build con `firebase/auth` aliaseado a un stub vacío
+(`turbopack.resolveAlias` — Next 16 rechaza una config de webpack).
+
+| | con auth | sin auth |
+| --- | --- | --- |
+| JS estático total | 1.828 KB | **1.744 KB** |
+| Chunk mayor | 652 KB | 568 KB |
+
+**84 KB**, o sea 4,6 % del total. Ése es el techo del ahorro, y el precio sería
+el parpadeo de «deslogueado» en cada carga que `AppShell` evita a propósito. No
+vale la pena: 84 KB no mueven un LCP de 5,4 s a nada que se note, y el costo es
+visible en cada arranque.
 
 ## Un caso de vector puede pasar por el guard equivocado (06/09/2026)
 
