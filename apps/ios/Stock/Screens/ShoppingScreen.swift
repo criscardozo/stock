@@ -100,6 +100,7 @@ struct ShoppingScreen: View {
                 .onSubmit(addManual)
             if !manual.trimmingCharacters(in: .whitespaces).isEmpty {
                 Button("Agregar", action: addManual)
+                    .accessibilityLabel("Agregar a la lista")
                     .font(.stock(13, .bold))
                     .foregroundStyle(Theme.primaryDeep)
             }
@@ -151,6 +152,10 @@ struct ShoppingScreen: View {
                                         .background(Capsule().fill(Theme.primarySoft))
                                 }
                                 .buttonStyle(.plain)
+                                // Named by what it adds. The web twin of this row had twelve buttons
+                                // called "Agregar", told apart on screen by the row they sit in and by
+                                // nothing at all otherwise. Fixed there first; this is the same list.
+                                .accessibilityLabel("Agregar \(item.name)")
                             }
                             .padding(.vertical, 10)
                             if index != store.orderedSuggestions.count - 1 {
