@@ -50,6 +50,17 @@ function asRecipe(raw: Record<string, unknown>): Recipe {
 }
 
 describe('shopping suggestions (shared vectors)', () => {
+  // The vector file is data, so adding cases to it does not change the number
+  // of `it()` blocks — this suite would report the same green whether it ran 29
+  // cases or 37, and a JSON that stopped decoding would be indistinguishable
+  // from a passing one. The Swift side has asserted this count for a while and
+  // its comment says to keep the two equal; this side never had it.
+  //
+  // Bump both when cases are added.
+  it('runs every vector in the file', () => {
+    expect((vectors.cases as VectorCase[]).length).toBe(37)
+  })
+
   for (const c of vectors.cases as VectorCase[]) {
     it(c.name, () => {
       const got = suggestions({

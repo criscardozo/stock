@@ -148,7 +148,7 @@ final class SuggestionsTests: XCTestCase {
     ///
     /// Bump it when cases are added, and keep it equal to the TypeScript side.
     func testEveryVectorIsActuallyRun() throws {
-        XCTAssertEqual(try Self.load().cases.count, 36)
+        XCTAssertEqual(try Self.load().cases.count, 37)
     }
 
     func testSharedVectors() throws {

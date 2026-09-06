@@ -113,6 +113,39 @@ pintado— cambia el arranque a costa de un parpadeo de "deslogueado" en cada
 carga, que es exactamente lo que `AppShell` evita a propósito. Si algún día
 importa, el número a mover es el LCP y el experimento a hacer es ése.
 
+## Un caso de vector puede pasar por el guard equivocado (06/09/2026)
+
+Método de Gastos Diarios otra vez: apagar cada condición de a una y clasificar
+qué la atrapa. Sobre los 8 guards de exclusión de `suggestions.ts`, siete tienen
+red. El octavo —`ingredient.optional || !ingredient.itemId`— no la tenía, **y
+había dos casos que decían cubrirlo**:
+
+- `optional ingredients never create a shortfall`
+- `free-text ingredients (no itemId) are invisible to the engine`
+
+Los dos pasan con el guard apagado. Nombre correcto, resultado correcto, y
+probando otra cosa: el del queso trae `quantity: 100` contra una receta que pide
+exactamente 100, así que lo excluye el chequeo de stock más abajo.
+
+Es el peligro propio de un caso **negativo**: un caso que espera "no sugerido"
+puede recibir ese "no" de cualquiera de los guards del camino, y el orden decide
+cuál. Los positivos no lo tienen, porque hay una sola forma de dar el resultado
+correcto.
+
+Cerrado como **vector** y no como test por plataforma —un hueco en el contrato es
+un hueco en los dos clientes— con el caso construido para que el flag sea lo
+único que decide: corto por la mitad de un ingrediente opcional. Verificado
+cayendo en las dos.
+
+Y la otra mitad del guard **no** era un hueco: `demand` sólo se lee por
+`demand.get(item.id)`, así que una entrada con clave `undefined` nunca se
+recupera. Mutante equivalente, anotado como tal en el código para que el próximo
+que mute esa línea no lo reporte como falta de test.
+
+De paso: el lado Swift asertaba el conteo de casos del vector para que un archivo
+que dejara de cargarse no pasara en silencio, y su comentario decía «mantenelo
+igual al lado TypeScript» — que no lo tenía. Ahora sí.
+
 ## Topes de reglas sin cobertura (05/09/2026)
 
 Método de Gastos Diarios, que es más barato que mutar de a uno: aflojar **todos**

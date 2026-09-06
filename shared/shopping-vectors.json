@@ -1,6 +1,5 @@
 {
   "$comment": "Shopping SUGGESTIONS, implemented twice (TS + Swift). The list itself is stored data — this is only what the app offers to add to it. Both implementations MUST pass every case; a change starts here.",
-
   "$rules": [
     "An item is skipped entirely when: its id already has a row in the list (listItemIds), or snoozedUntil >= today.",
     "autoSuggest false means CATALOGUE ONLY: the item keeps every detail it has and stays visible in stock, but running out of it never puts it on the list. It silences the MINIMUM, not the plan — a planned meal is something the user asked for, so an item a recipe needs is still suggested, and its shortfall is what the plan needs minus what is there (the minimum contributes nothing, being the thing that was silenced). No minimum-derived number survives the silence, so a silenced reserve gets no amount either. Absent or true ⇒ the item behaves exactly as it did before this field existed.",
@@ -12,46 +11,97 @@
     "planRefs lists {recipeId, date} for every planned day that uses the item, in date order. The UI turns that into the frozen `reason` text when the row is added.",
     "Results are returned sorted by itemId, so the vectors are deterministic. Presentation order (by category, then name) is a UI concern."
   ],
-
   "cases": [
     {
       "name": "below minimum, nothing planned",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "huevos", "tracking": "quantity", "unit": "unit", "quantity": 2, "minQuantity": 6 }],
+        "items": [
+          {
+            "id": "huevos",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 2,
+            "minQuantity": 6
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "huevos", "source": "min", "quantity": 4, "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "huevos",
+          "source": "min",
+          "quantity": 4,
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "out of stock",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "leche", "tracking": "quantity", "unit": "unit", "quantity": 0, "minQuantity": 2 }],
+        "items": [
+          {
+            "id": "leche",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 0,
+            "minQuantity": 2
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "leche", "source": "min", "quantity": 2, "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "leche",
+          "source": "min",
+          "quantity": 2,
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "exactly at the minimum: suggested, but the amount is the user's call",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "arroz", "tracking": "quantity", "unit": "g", "quantity": 1000, "minQuantity": 1000 }],
+        "items": [
+          {
+            "id": "arroz",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 1000,
+            "minQuantity": 1000
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "arroz", "source": "min", "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "arroz",
+          "source": "min",
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "comfortably above the minimum: not suggested",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "arroz", "tracking": "quantity", "unit": "g", "quantity": 2000, "minQuantity": 1000 }],
+        "items": [
+          {
+            "id": "arroz",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 2000,
+            "minQuantity": 1000
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
@@ -62,60 +112,199 @@
       "name": "out of stock with no minimum at all is still out of stock",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "queso", "tracking": "quantity", "unit": "g", "quantity": 0, "minQuantity": 0 }],
+        "items": [
+          {
+            "id": "queso",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 0,
+            "minQuantity": 0
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "queso", "source": "min", "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "queso",
+          "source": "min",
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "level item at or below its minimum, never a number",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "detergente", "tracking": "level", "level": 1, "minLevel": 1 }],
+        "items": [
+          {
+            "id": "detergente",
+            "tracking": "level",
+            "level": 1,
+            "minLevel": 1
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "detergente", "source": "min", "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "detergente",
+          "source": "min",
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "the plan needs more than there is: the shortfall keeps the minimum intact afterwards",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "carne", "tracking": "quantity", "unit": "g", "quantity": 200, "minQuantity": 0 }],
-        "plan": { "days": { "2026-08-19": { "recipeId": "bolo", "status": "planned" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "carne", "quantity": 500, "unit": "g", "optional": false }] }],
+        "items": [
+          {
+            "id": "carne",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 200,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "carne",
+                "quantity": 500,
+                "unit": "g",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "carne", "source": "plan", "quantity": 300, "planRefs": [{ "recipeId": "bolo", "date": "2026-08-19" }] }]
+      "expected": [
+        {
+          "itemId": "carne",
+          "source": "plan",
+          "quantity": 300,
+          "planRefs": [
+            {
+              "recipeId": "bolo",
+              "date": "2026-08-19"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "stock covers the meal but cooking it would eat into the minimum",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "fideos", "tracking": "quantity", "unit": "unit", "quantity": 3, "minQuantity": 2 }],
-        "plan": { "days": { "2026-08-19": { "recipeId": "bolo", "status": "planned" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "fideos", "quantity": 2, "unit": "unit", "optional": false }] }],
+        "items": [
+          {
+            "id": "fideos",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 3,
+            "minQuantity": 2
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "fideos",
+                "quantity": 2,
+                "unit": "unit",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "fideos", "source": "plan", "quantity": 1, "planRefs": [{ "recipeId": "bolo", "date": "2026-08-19" }] }]
+      "expected": [
+        {
+          "itemId": "fideos",
+          "source": "plan",
+          "quantity": 1,
+          "planRefs": [
+            {
+              "recipeId": "bolo",
+              "date": "2026-08-19"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "two planned meals needing the same item add up, and both are cited",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "cebolla", "tracking": "quantity", "unit": "unit", "quantity": 1, "minQuantity": 0 }],
+        "items": [
+          {
+            "id": "cebolla",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 1,
+            "minQuantity": 0
+          }
+        ],
         "plan": {
           "days": {
-            "2026-08-18": { "recipeId": "tarta", "status": "planned" },
-            "2026-08-19": { "recipeId": "bolo", "status": "planned" }
+            "2026-08-18": {
+              "recipeId": "tarta",
+              "status": "planned"
+            },
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
           }
         },
         "recipes": [
-          { "id": "tarta", "ingredients": [{ "itemId": "cebolla", "quantity": 2, "unit": "unit", "optional": false }] },
-          { "id": "bolo", "ingredients": [{ "itemId": "cebolla", "quantity": 1, "unit": "unit", "optional": false }] }
+          {
+            "id": "tarta",
+            "ingredients": [
+              {
+                "itemId": "cebolla",
+                "quantity": 2,
+                "unit": "unit",
+                "optional": false
+              }
+            ]
+          },
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "cebolla",
+                "quantity": 1,
+                "unit": "unit",
+                "optional": false
+              }
+            ]
+          }
         ],
         "listItemIds": []
       },
@@ -125,8 +314,14 @@
           "source": "plan",
           "quantity": 2,
           "planRefs": [
-            { "recipeId": "tarta", "date": "2026-08-18" },
-            { "recipeId": "bolo", "date": "2026-08-19" }
+            {
+              "recipeId": "tarta",
+              "date": "2026-08-18"
+            },
+            {
+              "recipeId": "bolo",
+              "date": "2026-08-19"
+            }
           ]
         }
       ]
@@ -135,9 +330,35 @@
       "name": "a level item the plan uses is NOT suggested while it is above its minimum",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "aceite", "tracking": "level", "level": 2, "minLevel": 1 }],
-        "plan": { "days": { "2026-08-19": { "recipeId": "bolo", "status": "planned" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "aceite", "quantity": 50, "unit": "ml", "optional": false }] }],
+        "items": [
+          {
+            "id": "aceite",
+            "tracking": "level",
+            "level": 2,
+            "minLevel": 1
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "aceite",
+                "quantity": 50,
+                "unit": "ml",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
       "expected": []
@@ -146,20 +367,123 @@
       "name": "the same level item at 'poco' is suggested, with the meal attached and no number",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "aceite", "tracking": "level", "level": 1, "minLevel": 1 }],
-        "plan": { "days": { "2026-08-19": { "recipeId": "bolo", "status": "planned" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "aceite", "quantity": 50, "unit": "ml", "optional": false }] }],
+        "items": [
+          {
+            "id": "aceite",
+            "tracking": "level",
+            "level": 1,
+            "minLevel": 1
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "aceite",
+                "quantity": 50,
+                "unit": "ml",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "aceite", "source": "min", "planRefs": [{ "recipeId": "bolo", "date": "2026-08-19" }] }]
+      "expected": [
+        {
+          "itemId": "aceite",
+          "source": "min",
+          "planRefs": [
+            {
+              "recipeId": "bolo",
+              "date": "2026-08-19"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "optional ingredients never create a shortfall",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "queso", "tracking": "quantity", "unit": "g", "quantity": 100, "minQuantity": 0 }],
-        "plan": { "days": { "2026-08-19": { "recipeId": "bolo", "status": "planned" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "queso", "quantity": 100, "unit": "g", "optional": true }] }],
+        "items": [
+          {
+            "id": "queso",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 100,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "queso",
+                "quantity": 100,
+                "unit": "g",
+                "optional": true
+              }
+            ]
+          }
+        ],
+        "listItemIds": []
+      },
+      "expected": []
+    },
+    {
+      "name": "an optional ingredient the house is SHORT of is still not suggested",
+      "why": "The case above cannot fail: its cheese covers the recipe exactly, so removing the optional guard changes nothing — the stock check catches it downstream. This one is short by half, so the optional flag is the only thing deciding.",
+      "input": {
+        "today": "2026-08-17",
+        "items": [
+          {
+            "id": "queso",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 50,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "queso",
+                "quantity": 100,
+                "unit": "g",
+                "optional": true
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
       "expected": []
@@ -168,9 +492,33 @@
       "name": "free-text ingredients (no itemId) are invisible to the engine",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "sal", "tracking": "level", "level": 3, "minLevel": 1 }],
-        "plan": { "days": { "2026-08-19": { "recipeId": "bolo", "status": "planned" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "label": "una pizca de sal", "optional": false }] }],
+        "items": [
+          {
+            "id": "sal",
+            "tracking": "level",
+            "level": 3,
+            "minLevel": 1
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "label": "una pizca de sal",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
       "expected": []
@@ -179,9 +527,36 @@
       "name": "already cooked days are already eaten",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "carne", "tracking": "quantity", "unit": "g", "quantity": 200, "minQuantity": 0 }],
-        "plan": { "days": { "2026-08-17": { "recipeId": "bolo", "status": "cooked" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "carne", "quantity": 500, "unit": "g", "optional": false }] }],
+        "items": [
+          {
+            "id": "carne",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 200,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-17": {
+              "recipeId": "bolo",
+              "status": "cooked"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "carne",
+                "quantity": 500,
+                "unit": "g",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
       "expected": []
@@ -190,9 +565,36 @@
       "name": "skipped days contribute nothing",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "carne", "tracking": "quantity", "unit": "g", "quantity": 200, "minQuantity": 0 }],
-        "plan": { "days": { "2026-08-19": { "recipeId": "bolo", "status": "skipped" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "carne", "quantity": 500, "unit": "g", "optional": false }] }],
+        "items": [
+          {
+            "id": "carne",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 200,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "bolo",
+              "status": "skipped"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "carne",
+                "quantity": 500,
+                "unit": "g",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
       "expected": []
@@ -201,9 +603,36 @@
       "name": "a planned day already in the past is not worth shopping for",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "carne", "tracking": "quantity", "unit": "g", "quantity": 200, "minQuantity": 0 }],
-        "plan": { "days": { "2026-08-16": { "recipeId": "bolo", "status": "planned" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "carne", "quantity": 500, "unit": "g", "optional": false }] }],
+        "items": [
+          {
+            "id": "carne",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 200,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-16": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "carne",
+                "quantity": 500,
+                "unit": "g",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
       "expected": []
@@ -212,21 +641,70 @@
       "name": "today still counts — you can shop for tonight",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "carne", "tracking": "quantity", "unit": "g", "quantity": 200, "minQuantity": 0 }],
-        "plan": { "days": { "2026-08-17": { "recipeId": "bolo", "status": "planned" } } },
-        "recipes": [{ "id": "bolo", "ingredients": [{ "itemId": "carne", "quantity": 500, "unit": "g", "optional": false }] }],
+        "items": [
+          {
+            "id": "carne",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 200,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-17": {
+              "recipeId": "bolo",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "bolo",
+            "ingredients": [
+              {
+                "itemId": "carne",
+                "quantity": 500,
+                "unit": "g",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "carne", "source": "plan", "quantity": 300, "planRefs": [{ "recipeId": "bolo", "date": "2026-08-17" }] }]
+      "expected": [
+        {
+          "itemId": "carne",
+          "source": "plan",
+          "quantity": 300,
+          "planRefs": [
+            {
+              "recipeId": "bolo",
+              "date": "2026-08-17"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "an item already on the list is not suggested again",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "huevos", "tracking": "quantity", "unit": "unit", "quantity": 2, "minQuantity": 6 }],
+        "items": [
+          {
+            "id": "huevos",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 2,
+            "minQuantity": 6
+          }
+        ],
         "plan": null,
         "recipes": [],
-        "listItemIds": ["huevos"]
+        "listItemIds": [
+          "huevos"
+        ]
       },
       "expected": []
     },
@@ -234,7 +712,16 @@
       "name": "snoozed until a future date stays quiet",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "huevos", "tracking": "quantity", "unit": "unit", "quantity": 2, "minQuantity": 6, "snoozedUntil": "2026-08-24" }],
+        "items": [
+          {
+            "id": "huevos",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 2,
+            "minQuantity": 6,
+            "snoozedUntil": "2026-08-24"
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
@@ -245,7 +732,16 @@
       "name": "snoozed until today is still quiet today",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "huevos", "tracking": "quantity", "unit": "unit", "quantity": 2, "minQuantity": 6, "snoozedUntil": "2026-08-17" }],
+        "items": [
+          {
+            "id": "huevos",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 2,
+            "minQuantity": 6,
+            "snoozedUntil": "2026-08-17"
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
@@ -256,19 +752,50 @@
       "name": "an expired snooze speaks up again",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "huevos", "tracking": "quantity", "unit": "unit", "quantity": 2, "minQuantity": 6, "snoozedUntil": "2026-08-16" }],
+        "items": [
+          {
+            "id": "huevos",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 2,
+            "minQuantity": 6,
+            "snoozedUntil": "2026-08-16"
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "huevos", "source": "min", "quantity": 4, "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "huevos",
+          "source": "min",
+          "quantity": 4,
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "a planned day whose recipe no longer exists is ignored, not a crash",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "carne", "tracking": "quantity", "unit": "g", "quantity": 200, "minQuantity": 0 }],
-        "plan": { "days": { "2026-08-19": { "recipeId": "deleted", "status": "planned" } } },
+        "items": [
+          {
+            "id": "carne",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 200,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "deleted",
+              "status": "planned"
+            }
+          }
+        },
         "recipes": [],
         "listItemIds": []
       },
@@ -278,8 +805,23 @@
       "name": "a label-only day (Afuera) has no ingredients",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "carne", "tracking": "quantity", "unit": "g", "quantity": 200, "minQuantity": 0 }],
-        "plan": { "days": { "2026-08-19": { "label": "Afuera", "status": "planned" } } },
+        "items": [
+          {
+            "id": "carne",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 200,
+            "minQuantity": 0
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "label": "Afuera",
+              "status": "planned"
+            }
+          }
+        },
         "recipes": [],
         "listItemIds": []
       },
@@ -290,42 +832,129 @@
       "input": {
         "today": "2026-08-17",
         "items": [
-          { "id": "aceite", "tracking": "level", "level": 3, "minLevel": 1 },
-          { "id": "carne", "tracking": "quantity", "unit": "g", "quantity": 0, "minQuantity": 0 },
-          { "id": "detergente", "tracking": "level", "level": 0, "minLevel": 1 },
-          { "id": "huevos", "tracking": "quantity", "unit": "unit", "quantity": 2, "minQuantity": 6 },
-          { "id": "yerba", "tracking": "quantity", "unit": "g", "quantity": 500, "minQuantity": 250, "snoozedUntil": "2026-09-01" }
+          {
+            "id": "aceite",
+            "tracking": "level",
+            "level": 3,
+            "minLevel": 1
+          },
+          {
+            "id": "carne",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 0,
+            "minQuantity": 0
+          },
+          {
+            "id": "detergente",
+            "tracking": "level",
+            "level": 0,
+            "minLevel": 1
+          },
+          {
+            "id": "huevos",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 2,
+            "minQuantity": 6
+          },
+          {
+            "id": "yerba",
+            "tracking": "quantity",
+            "unit": "g",
+            "quantity": 500,
+            "minQuantity": 250,
+            "snoozedUntil": "2026-09-01"
+          }
         ],
         "plan": {
           "days": {
-            "2026-08-17": { "recipeId": "bolo", "status": "planned" },
-            "2026-08-18": { "label": "Sobras", "status": "planned" },
-            "2026-08-19": { "recipeId": "tarta", "status": "cooked" }
+            "2026-08-17": {
+              "recipeId": "bolo",
+              "status": "planned"
+            },
+            "2026-08-18": {
+              "label": "Sobras",
+              "status": "planned"
+            },
+            "2026-08-19": {
+              "recipeId": "tarta",
+              "status": "cooked"
+            }
           }
         },
         "recipes": [
           {
             "id": "bolo",
             "ingredients": [
-              { "itemId": "carne", "quantity": 500, "unit": "g", "optional": false },
-              { "itemId": "aceite", "quantity": 30, "unit": "ml", "optional": false },
-              { "label": "sal", "optional": false }
+              {
+                "itemId": "carne",
+                "quantity": 500,
+                "unit": "g",
+                "optional": false
+              },
+              {
+                "itemId": "aceite",
+                "quantity": 30,
+                "unit": "ml",
+                "optional": false
+              },
+              {
+                "label": "sal",
+                "optional": false
+              }
             ]
           },
-          { "id": "tarta", "ingredients": [{ "itemId": "huevos", "quantity": 3, "unit": "unit", "optional": false }] }
+          {
+            "id": "tarta",
+            "ingredients": [
+              {
+                "itemId": "huevos",
+                "quantity": 3,
+                "unit": "unit",
+                "optional": false
+              }
+            ]
+          }
         ],
-        "listItemIds": ["detergente"]
+        "listItemIds": [
+          "detergente"
+        ]
       },
       "expected": [
-        { "itemId": "carne", "source": "min", "quantity": 500, "planRefs": [{ "recipeId": "bolo", "date": "2026-08-17" }] },
-        { "itemId": "huevos", "source": "min", "quantity": 4, "planRefs": [] }
+        {
+          "itemId": "carne",
+          "source": "min",
+          "quantity": 500,
+          "planRefs": [
+            {
+              "recipeId": "bolo",
+              "date": "2026-08-17"
+            }
+          ]
+        },
+        {
+          "itemId": "huevos",
+          "source": "min",
+          "quantity": 4,
+          "planRefs": []
+        }
       ]
     },
     {
       "name": "level item with a full reserve is not suggested",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "detergente", "tracking": "level", "level": 2, "minLevel": 1, "spare": 2, "minSpare": 2 }],
+        "items": [
+          {
+            "id": "detergente",
+            "tracking": "level",
+            "level": 2,
+            "minLevel": 1,
+            "spare": 2,
+            "minSpare": 2
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
@@ -336,18 +965,43 @@
       "name": "a reserve below its minimum suggests the difference, as a number",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "detergente", "tracking": "level", "level": 3, "minLevel": 1, "spare": 1, "minSpare": 2 }],
+        "items": [
+          {
+            "id": "detergente",
+            "tracking": "level",
+            "level": 3,
+            "minLevel": 1,
+            "spare": 1,
+            "minSpare": 2
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "detergente", "source": "min", "quantity": 1, "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "detergente",
+          "source": "min",
+          "quantity": 1,
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "an empty open container is not urgent while spares remain",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "detergente", "tracking": "level", "level": 0, "minLevel": 1, "spare": 2, "minSpare": 2 }],
+        "items": [
+          {
+            "id": "detergente",
+            "tracking": "level",
+            "level": 0,
+            "minLevel": 1,
+            "spare": 2,
+            "minSpare": 2
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
@@ -358,29 +1012,67 @@
       "name": "empty and no reserve left is the strongest signal there is",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "detergente", "tracking": "level", "level": 0, "minLevel": 1, "spare": 0, "minSpare": 2 }],
+        "items": [
+          {
+            "id": "detergente",
+            "tracking": "level",
+            "level": 0,
+            "minLevel": 1,
+            "spare": 0,
+            "minSpare": 2
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "detergente", "source": "min", "quantity": 2, "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "detergente",
+          "source": "min",
+          "quantity": 2,
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "a level item with no reserve configured keeps the old, numberless behaviour",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "aceite", "tracking": "level", "level": 1, "minLevel": 1 }],
+        "items": [
+          {
+            "id": "aceite",
+            "tracking": "level",
+            "level": 1,
+            "minLevel": 1
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "aceite", "source": "min", "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "aceite",
+          "source": "min",
+          "planRefs": []
+        }
+      ]
     },
     {
       "name": "catalogue only: out of stock never reaches the list on its own",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "curry", "tracking": "quantity", "unit": "unit", "quantity": 0, "minQuantity": 0, "autoSuggest": false }],
+        "items": [
+          {
+            "id": "curry",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 0,
+            "minQuantity": 0,
+            "autoSuggest": false
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
@@ -391,7 +1083,16 @@
       "name": "catalogue only is not silenced by its minimum either — a real minimum is ignored too",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "curry", "tracking": "quantity", "unit": "unit", "quantity": 1, "minQuantity": 6, "autoSuggest": false }],
+        "items": [
+          {
+            "id": "curry",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 1,
+            "minQuantity": 6,
+            "autoSuggest": false
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
@@ -402,20 +1103,88 @@
       "name": "the plan breaks the silence, and asks for what IT needs",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "curry", "tracking": "quantity", "unit": "unit", "quantity": 0, "minQuantity": 6, "autoSuggest": false }],
-        "plan": {"days": {"2026-08-19": {"recipeId": "milas", "status": "planned"}}},
-        "recipes": [{ "id": "milas", "ingredients": [{"itemId": "curry", "quantity": 2, "unit": "unit", "optional": false}] }],
+        "items": [
+          {
+            "id": "curry",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 0,
+            "minQuantity": 6,
+            "autoSuggest": false
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "milas",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "milas",
+            "ingredients": [
+              {
+                "itemId": "curry",
+                "quantity": 2,
+                "unit": "unit",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "curry", "source": "plan", "quantity": 2, "planRefs": [{"recipeId": "milas", "date": "2026-08-19"}] }]
+      "expected": [
+        {
+          "itemId": "curry",
+          "source": "plan",
+          "quantity": 2,
+          "planRefs": [
+            {
+              "recipeId": "milas",
+              "date": "2026-08-19"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "a silenced item the plan is already covered for stays off the list",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "curry", "tracking": "quantity", "unit": "unit", "quantity": 3, "minQuantity": 6, "autoSuggest": false }],
-        "plan": {"days": {"2026-08-19": {"recipeId": "milas", "status": "planned"}}},
-        "recipes": [{ "id": "milas", "ingredients": [{"itemId": "curry", "quantity": 2, "unit": "unit", "optional": false}] }],
+        "items": [
+          {
+            "id": "curry",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 3,
+            "minQuantity": 6,
+            "autoSuggest": false
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "milas",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "milas",
+            "ingredients": [
+              {
+                "itemId": "curry",
+                "quantity": 2,
+                "unit": "unit",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
       "expected": []
@@ -424,7 +1193,15 @@
       "name": "a silenced level item is not suggested for being empty",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "aceite-trufa", "tracking": "level", "level": 0, "minLevel": 1, "autoSuggest": false }],
+        "items": [
+          {
+            "id": "aceite-trufa",
+            "tracking": "level",
+            "level": 0,
+            "minLevel": 1,
+            "autoSuggest": false
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
@@ -435,23 +1212,76 @@
       "name": "a silenced level item the plan needs IS suggested, still without a number",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "aceite-trufa", "tracking": "level", "level": 0, "minLevel": 1, "autoSuggest": false }],
-        "plan": {"days": {"2026-08-19": {"recipeId": "milas", "status": "planned"}}},
-        "recipes": [{ "id": "milas", "ingredients": [{"itemId": "aceite-trufa", "quantity": 1, "unit": "unit", "optional": false}] }],
+        "items": [
+          {
+            "id": "aceite-trufa",
+            "tracking": "level",
+            "level": 0,
+            "minLevel": 1,
+            "autoSuggest": false
+          }
+        ],
+        "plan": {
+          "days": {
+            "2026-08-19": {
+              "recipeId": "milas",
+              "status": "planned"
+            }
+          }
+        },
+        "recipes": [
+          {
+            "id": "milas",
+            "ingredients": [
+              {
+                "itemId": "aceite-trufa",
+                "quantity": 1,
+                "unit": "unit",
+                "optional": false
+              }
+            ]
+          }
+        ],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "aceite-trufa", "source": "plan", "planRefs": [{"recipeId": "milas", "date": "2026-08-19"}] }]
+      "expected": [
+        {
+          "itemId": "aceite-trufa",
+          "source": "plan",
+          "planRefs": [
+            {
+              "recipeId": "milas",
+              "date": "2026-08-19"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "autoSuggest true is the same as absent — the flag is not read inverted",
       "input": {
         "today": "2026-08-17",
-        "items": [{ "id": "curry", "tracking": "quantity", "unit": "unit", "quantity": 0, "minQuantity": 0, "autoSuggest": true }],
+        "items": [
+          {
+            "id": "curry",
+            "tracking": "quantity",
+            "unit": "unit",
+            "quantity": 0,
+            "minQuantity": 0,
+            "autoSuggest": true
+          }
+        ],
         "plan": null,
         "recipes": [],
         "listItemIds": []
       },
-      "expected": [{ "itemId": "curry", "source": "min", "planRefs": [] }]
+      "expected": [
+        {
+          "itemId": "curry",
+          "source": "min",
+          "planRefs": []
+        }
+      ]
     }
   ]
 }

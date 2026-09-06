@@ -63,7 +63,17 @@ function demandFromPlan(input: SuggestionInput): Map<string, PlanDemand> {
     if (!recipe) continue // a deleted recipe is ignored, not a crash
 
     for (const ingredient of recipe.ingredients) {
-      // Optional and free-text ingredients are invisible to the engine, on purpose.
+      // Optional and free-text ingredients are invisible to the engine, on
+      // purpose — but only one of the two halves does any work.
+      //
+      // `optional` is load-bearing: without it an optional ingredient the
+      // house is short of gets suggested with a shortfall, which is what the
+      // vector added for it asserts. `!itemId` is defensive only — `demand` is
+      // read solely through `demand.get(item.id)`, so an entry keyed
+      // `undefined` can never be retrieved and dropping it changes nothing
+      // observable. Kept for the reader, and recorded here as an equivalent
+      // mutant so the next person to mutate this line does not file it as an
+      // untested gap.
       if (ingredient.optional || !ingredient.itemId) continue
       const current = demand.get(ingredient.itemId) ?? { need: 0, refs: [] }
       current.need += ingredient.quantity ?? 0
