@@ -371,10 +371,17 @@ son la frontera**. Inicializar Firebase solo en componentes cliente y esperar la
 > `qcris-stock` (una lectura anónima da 403), dominio sirviendo el handler de
 > auth same-origin, y la app iOS registrada.
 >
-> De la Fase 4 quedaba el widget, el historial de movimientos y la gestión de
-> categorías y ubicaciones — las tres hechas el 5/9/2026, con el detalle de qué
-> las destapó en `docs/plan-mejoras.md`. Lo que sigue abierto de esa fase es el
-> layout adaptativo para iPad. La 5 sigue sin decidirse.
+> La Fase 4 está completa. El widget, el historial de movimientos y la gestión de
+> categorías y ubicaciones se hicieron el 5/9/2026; el layout adaptativo se
+> verificó el 6/9. La 5 sigue sin decidirse.
+>
+> Sobre iPad: la base **es la PWA**, y ya estaba. A 1024 px la web pone barra
+> lateral en vez de barra inferior y el plan muestra las dos semanas lado a
+> lado; `apps/web/e2e/tablet.spec.ts` lo fija por geometría, no por captura. La
+> app iOS es `TARGETED_DEVICE_FAMILY: '1'` a propósito: la razón de que la web
+> sea instalable es ser la superficie que la firma de Apple no condiciona, y en
+> un iPad ese razonamiento es el mismo. Una app iOS de iPad sería una cuarta
+> superficie que mantener, no una base.
 
 ### Fase 0 — Fundaciones (quemar el riesgo primero) ✅
 
