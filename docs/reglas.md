@@ -160,6 +160,35 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
 
+### Si el archivo tiene gemelo, mirá el gemelo antes de commitear (06/09/2026)
+
+De Gastos Diarios, y es el momento fijo más barato de todos los métodos que
+salieron de esa semana: **cuando un arreglo toca un archivo que tiene gemelo en
+la otra plataforma, ir a mirar el gemelo en el mismo cambio** — no al revisar,
+no después, sino mientras todavía tenés en la cabeza por qué lo estabas
+arreglando.
+
+El motivo es que estos dos proyectos fallan así por defecto. Tres veces en una
+semana apareció «decisión tomada en las dos plataformas, aplicada en una»: el
+`--warn-text` de Gastos correcto de un lado y por debajo de AA del otro durante
+meses; su fila de historial combinada en iOS y nunca en la web; y acá los
+controles nombrados en la web mientras iOS quedaba igual. En las tres, el que lo
+encontró fue alguien ajeno haciendo otra cosa, con días o meses de distancia.
+
+Corrido sobre los arreglos de accesibilidad de esta semana, el resultado fue
+mixto y por eso vale:
+
+- **Controles segmentados**: la web necesitaba `aria-pressed` porque son botones
+  hechos a mano; iOS usa `Picker`, que anuncia la selección solo. No aplica.
+- **Filas del plan**: la web repite seis «Cocinada»; `TodayScreen` muestra un
+  solo día, así que no hay dos controles iguales que confundir. No aplica.
+- **Botones «Agregar» de sugerencias**: iOS tiene uno por fila, sin etiqueta.
+  **El gemelo exacto, sin aplicar.**
+
+Dos de tres no aplicaban, que es lo que hace que la práctica sea barata: mirar
+cuesta un grep, y la respuesta suele ser «no aplica» por una razón que también
+conviene saber.
+
 ### Un selector que necesita desambiguar es un síntoma — a veces (06/09/2026)
 
 Tres veces esta semana, escribir un test destapó un control sin nombre: los seis
