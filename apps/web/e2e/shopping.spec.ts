@@ -112,10 +112,15 @@ test('closing the shop consumes the ticked rows and keeps the rest', async ({ pa
   //  - No dependence on the navigation being slow enough for the rollback to
   //    land first. The screen check passes because of a race it happens to
   //    win.
-  //  - The regression they would actually catch: if `inBatches` ever went back
-  //    to committing in chunks, a partial failure would leave a screen that
-  //    looks entirely consistent. That is the bug fixed in 9730adf, and this
-  //    is what would notice it coming back.
+  //  - The regression they actually catch, and this one is measured rather than
+  //    argued. `inBatches` was split in two on purpose — deletes moved to a
+  //    second commit, the way it worked before 9730adf — with the rules
+  //    refusing deletes. EVERY screen assertion above passed: the quantity
+  //    said 12, the history said +9, the rows were hidden. The failure landed
+  //    on the `shoppingList` poll, at 3 rows instead of 1. That is the shape
+  //    that would ship green while the other phone still had all three rows on
+  //    its list. Gastos Diarios ran the same experiment on their own batch and
+  //    suggested it here.
   //
   // Gastos Diarios' sharper question is what sent me here: not only "where else
   // does this apply" but "did I already solve this in this same file".
