@@ -24,6 +24,20 @@ async function signIn(page: Page, path = '/ajustes') {
   await expect(page.getByRole('button', { name: 'Entrar como cristian' })).toBeHidden()
 }
 
+const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8280'
+const HOUSEHOLD_URL =
+  `http://127.0.0.1:${FIRESTORE_PORT}/v1/projects/demo-stock/databases/` +
+  '(default)/documents/households/casa-cardozo'
+
+/** The length the SERVER holds, which is what the next spec's context will read. */
+async function lengthOnServer(): Promise<string | undefined> {
+  const response = await fetch(HOUSEHOLD_URL, { headers: { Authorization: 'Bearer owner' } })
+  const body = (await response.json()) as {
+    fields?: { planConfig?: { mapValue?: { fields?: { length?: { stringValue?: string } } } } }
+  }
+  return body.fields?.planConfig?.mapValue?.fields?.length?.stringValue
+}
+
 async function setLength(page: Page, length: 'Semanal' | 'Quincenal') {
   await page.goto('/ajustes')
   const option = page.getByRole('button', { name: length, exact: true })
@@ -64,4 +78,13 @@ test('the period length reshapes the next period and leaves the current one alon
 
   await setLength(page, 'Quincenal')
   await expect(await nextPeriod(page)).toContainText(rangeLabel(14, 14))
+
+  // Restored on the SERVER, not just on this screen. The screen reads the local
+  // cache, which echoes the write the instant it is queued — so asserting the
+  // range here says nothing about what the next spec's fresh context will read.
+  // It read `weekly`, and tablet.spec spent ninety seconds waiting for a
+  // "Semana 1" label that only exists when a period has two weeks. Same shape
+  // as the recipe that appeared saved and was not; found in CI, which is slower
+  // than this machine and therefore loses the race more often.
+  await expect.poll(lengthOnServer, { timeout: 15_000 }).toBe('fortnightly')
 })

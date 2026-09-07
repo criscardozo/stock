@@ -44,6 +44,12 @@ test('a fortnight shows its two weeks side by side', async ({ page }) => {
   await page.getByRole('button', { name: 'Entrar como cristian' }).click()
   await expect(page.getByRole('button', { name: 'Entrar como cristian' })).toBeHidden()
 
+  // The precondition, stated. A fortnight is what produces two "Semana" labels
+  // at all — a weekly period renders none — so if a previous spec leaves the
+  // household on weekly this fails saying so, instead of timing out on a
+  // missing label and looking like a layout regression.
+  await expect(page.getByText('Semana 1')).toBeVisible()
+
   // Stacked on a phone, two columns here. Asserted by geometry rather than by
   // class name: what matters is that week 2 sits BESIDE week 1, not that some
   // particular utility is present.

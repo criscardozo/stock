@@ -109,10 +109,18 @@ const nextConfig: NextConfig = {
    *
    * Which is to say the obstacle is not "Firebase needs unsafe-inline, how
    * annoying". It is that a strict policy and a proxied third-party page with
-   * its own nonce cannot both be true. Whoever picks this up should decide that
-   * first: stop proxying the handler, or accept `'unsafe-inline'` forever.
-   * Gastos Diarios reached the same wall from the other side and chose to have
-   * no policy at all rather than guess at one.
+   * its own nonce cannot both be true.
+   *
+   * And the obvious way out is not one. `firebase-auth-helper` is a constant,
+   * so `'nonce-firebase-auth-helper'` in the policy would work — and would be
+   * `'unsafe-inline'` with extra steps, because anyone who can inject HTML
+   * reads the header and writes that same attribute. A public nonce is not a
+   * nonce. (Gastos Diarios' corollary, and worth writing down precisely because
+   * it looks like a door.)
+   *
+   * So there are two options, not three: stop proxying the handler, or accept
+   * `'unsafe-inline'` permanently. Gastos reached the same wall from the other
+   * side and chose to have no policy at all rather than guess at one.
    */
   async headers() {
     // The emulators, and only when pointed at them. Measured: with a real
