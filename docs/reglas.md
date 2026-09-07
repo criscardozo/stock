@@ -160,6 +160,35 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
 
+### Una medición que no puede dar el resultado contrario no es una medición (07/09/2026)
+
+La versión útil de «verificar la sonda», porque se aplica **antes** de correr y
+no después. La pregunta al diseñar una verificación es: *¿qué tendría que pasar
+para que esto falle?* Si no hay respuesta, no hay experimento.
+
+Esta semana la misma cosa apareció de tres formas que parecían distintas:
+
+- **El baseline vacío.** Un detector corrido contra el árbol limpio que no
+  imprime nada no distingue «todo bien» de «no corrió». Tiene que afirmar algo
+  positivo — «11 passed», no silencio. (Gastos Diarios: corrió vitest desde la
+  raíz en vez de `apps/web` y leyó el vacío como «ninguna falla».)
+- **La sonda inerte.** Un `expect.poll` verde que consulta el endpoint
+  equivocado pasa siempre. Acá pasó tres veces, y las tres se descartaron
+  apuntando la sonda al valor equivocado y exigiendo que falle.
+- **El control que no discrimina.** Si las dos ramas del experimento dan lo
+  mismo, se midió el reloj y no el efecto.
+
+Las tres se resolvían igual y ninguna de las dos sesiones lo había visto hasta
+nombrarlo. Reemplaza tres entradas separadas de este archivo.
+
+**Corolario, y es el que más caro sale:** un experimento **tirable** se saltea
+justo las protecciones que importan, porque parece que no valen para algo que se
+va a borrar. Las dos que costaron una tarde entre los dos proyectos: dejar
+instaladas unas reglas hostiles, y confiar en un `.find()` que siempre devuelve
+*algo*. Mejor que arreglar el lookup es diseñar el experimento **sin** lookup —
+apuntar al id fijo que siembra el seed, y así no hay nada que pueda devolver otra
+cosa.
+
 ### Hay fallos que ninguna sonda puede ver (07/09/2026)
 
 Los emuladores de este proyecto se movieron a un bloque propio porque un forward
