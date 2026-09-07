@@ -174,10 +174,25 @@ escrito el código.** Va en las dos direcciones y no necesita que el otro conozc
 el proyecto — sólo que traiga la pregunta.
 
 Y lo que ninguno esperaba: el valor no estuvo en encontrar bugs sino en que
-alguien midiera las frases escritas con seguridad. Dos afirmaciones mías iban
-camino a quedar como hechos en un comentario —«el motor de reglas se planta en 31
-entradas» y «contestó `Ok`, entonces es el emulador»— y las dos eran falsas. Un
-comentario equivocado sobrevive más que un bug, porque nada lo ejecuta.
+alguien midiera las frases escritas con seguridad. **Un comentario equivocado
+sobrevive más que un bug, porque nada lo ejecuta**: un bug falla, alguien lo
+reporta y alguien lo arregla; una frase falsa la lee el próximo y la usa, y si
+está escrita con seguridad la usa sin verificarla.
+
+Contadas, las de esta sesión fueron cinco, todas corregidas midiendo y no
+releyendo:
+
+| afirmación | corregida en |
+| --- | --- |
+| «el motor de reglas se planta en ~31 entradas» | `cf2c80f` |
+| «contestó `Ok`, entonces es el emulador» | `7753fdd` |
+| «`relativeTo:` rinde exactamente el mismo número» | `9bdc176` |
+| «un batch rechazado se ve idéntico en pantalla» | `81968d2` |
+| el comentario de `formatDayLong`, sin la coma que es-AR emite | `f185f22` |
+
+Ninguna habría fallado nunca. Las tres primeras además cerraban una puerta —
+decían que algo no se podía probar o que ya estaba probado— que es la clase que
+más caro sale, porque su conclusión es que dejes de mirar.
 
 **Corolario que va contra la intuición**, también suyo: sacar una dependencia
 suele ser más corto **y** más seguro que blindarla, y uno igual la blinda porque
