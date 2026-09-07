@@ -87,8 +87,9 @@ Dos cosas que salieron de ejecutarlo y valen más que las tareas mismas:
   `firebase emulators:start --only auth,firestore --config <alt>.json` y después
   `AUTH_EMULATOR_PORT=… FIRESTORE_EMULATOR_PORT=… pnpm seed` y
   `NEXT_PUBLIC_AUTH_EMULATOR_PORT=… pnpm test:e2e`. **Resuelto de raíz el
-  5/9/2026:** los puertos de Stock se movieron a Auth 9098 / UI 4001, así que
-  los dos emuladores conviven sin overrides.
+  5/9/2026:** los puertos de Stock se movieron a un bloque propio (el que esté
+  en `firebase/firebase.json`, hoy 9280/8280/4280), así que los dos emuladores
+  conviven sin overrides.
 
 ## Números de partida (05/09/2026)
 

@@ -194,6 +194,26 @@ Ninguna habría fallado nunca. Las tres primeras además cerraban una puerta —
 decían que algo no se podía probar o que ya estaba probado— que es la clase que
 más caro sale, porque su conclusión es que dejes de mirar.
 
+Gastos Diarios corrigió las dos mitades de eso, y las dos correcciones valen:
+
+**Una frase falsa tiene tres destinos, no dos.** Puede convocar trabajo que no
+hace falta, puede hacer que dejes de mirar, o puede mandarte al lugar
+equivocado. La diferencia no es de tono: «necesitaría esfuerzo» convoca al que
+tiene tiempo, «es contradictorio» no convoca a nadie. Las mías cerraban puertas;
+las suyas desviaban. El tercer destino es el más caro de los tres porque además
+te da una respuesta: vas al puerto muerto, algo contesta, y no somos nosotros.
+
+**Y no todas nacen falsas.** Mi generalización —«eran todas sobre herramientas
+que no medí»— no aplica a las suyas: la mitad eran sobre sus propios artefactos,
+**eran ciertas, y dejaron de serlo**. Esa clase no la agarra ninguna medición
+inicial, porque en el momento de escribirla la medición da bien. Lo único que la
+agarra es un guard que las relea cada vez. Buscadas acá aparecieron dos en el
+día: `docs/reglas.md` y `docs/plan-mejoras.md` repetían los puertos viejos de
+Auth y de la UI, cierto el 5/9 y falso el 7/9, cuando el bloque se movió. `ports.test.ts`
+acoplaba diez copias en código y ninguna en prosa; ahora también lee los docs, y
+mover el puerto de la UI —que vivía **sólo** en prosa— pasaba de romper 0 tests
+a romper 4. Medido con la mutación, no supuesto.
+
 **Corolario que va contra la intuición**, también suyo: sacar una dependencia
 suele ser más corto **y** más seguro que blindarla, y uno igual la blinda porque
 blindar se siente como trabajo y sacar se siente como esquivar. El caso concreto
@@ -335,8 +355,14 @@ nuestro:
   doble toque sin llevarse el pinch.
 - **Un `onTapGesture` sobre una forma no existe para VoiceOver.** No hay qué
   enfocar ni qué nombrar. Tiene que ser un `Button`.
-- **Los puertos de los emuladores chocaban.** Stock movió los suyos (Auth 9098,
-  UI 4001); Gastos se queda con 9099/4000. Ahora conviven.
+- **Los puertos de los emuladores chocaban.** Stock se corrió a un bloque
+  propio (ver §"Los puertos"); Gastos se queda con 9099/4000. Ahora conviven.
+  Esta viñeta repetía los dos números y era cierta cuando se escribió: cambiaron
+  dos días después y la frase quedó mintiendo sola. Por eso ahora apunta al
+  bloque en vez de copiarlo — y por eso ningún doc vuelve a nombrar un puerto
+  muerto, ni para contar que estaba muerto: `ports.test.ts` los rechaza a todos
+  y una excepción por línea es como un guard se vuelve decorativo. La historia
+  con dígitos vive en ese test, que es código.
 
 ### El sistema es compartido, y eso tiene reglas propias
 

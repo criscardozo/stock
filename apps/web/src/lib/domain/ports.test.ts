@@ -49,6 +49,19 @@ const firebaseJson = JSON.parse(read('firebase/firebase.json')) as {
 }
 const AUTH = firebaseJson.emulators.auth.port
 const FIRESTORE = firebaseJson.emulators.firestore.port
+/** Every number under `emulators`, whatever the key — `singleProjectMode` is a
+ *  boolean and drops out on its own. */
+const OURS = Object.values(firebaseJson.emulators as Record<string, unknown>)
+  .filter((entry): entry is Record<string, unknown> => typeof entry === 'object' && entry !== null)
+  .flatMap((entry) => Object.values(entry))
+  .filter((value): value is number => typeof value === 'number')
+
+/**
+ * Ports the prose is allowed to name because they are NOT ours: Firebase's
+ * stock set, Gastos Diarios', the SSH forwards that were measured, and the two
+ * dev servers. Historical constants — they do not move when our block moves.
+ */
+const FOREIGN = [4000, 4400, 4500, 8080, 8085, 9000, 9099, 9150, 9199]
 
 /** The number after `?? ` or `default: ` on the line naming `marker`. */
 function fallbackIn(path: string, marker: string): number {
@@ -101,4 +114,45 @@ describe('every default follows firebase.json', () => {
       expect(stock).not.toContain(port)
     }
   })
+})
+
+/**
+ * The same coupling, for the sentences.
+ *
+ * The block above holds ten copies of the number in code. The docs hold more,
+ * and they are the ones that rot silently: `docs/reglas.md` and
+ * `docs/plan-mejoras.md` both said "Auth 9098, UI 4001" for two days after the
+ * ports moved to 9280/4280. Those sentences were TRUE when written. No initial
+ * measurement catches that — the only thing that does is a guard that re-reads
+ * them every run.
+ *
+ * Gastos Diarios named this failure mode: half of their false comments were
+ * about their own artefacts and had simply expired. A false sentence has three
+ * destinations — it can invite wasted work, stop someone looking, or send them
+ * to the wrong place. A stale port does the third, which is the expensive one:
+ * you go to 9098, something answers, and it is not us.
+ *
+ * So: any 4xxx/8xxx/9xxx a doc names must be a port we bind now or one of the
+ * FOREIGN ones we mention on purpose. When this fails the doc is out of date,
+ * not the test.
+ */
+describe('no doc names a port we no longer bind', () => {
+  const docs = [
+    'README.md',
+    'CLAUDE.md',
+    'docs/reglas.md',
+    'docs/setup.md',
+    'docs/plan-mejoras.md',
+    'docs/PLAN.md',
+  ]
+
+  for (const path of docs) {
+    it(path, () => {
+      const found = [...read(path).matchAll(/\b([489]\d{3})\b/g)].map((m) => Number(m[1]))
+      const stale = [...new Set(found)].filter(
+        (port) => !OURS.includes(port) && !FOREIGN.includes(port),
+      )
+      expect(stale).toEqual([])
+    })
+  }
 })
