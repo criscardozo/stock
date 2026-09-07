@@ -5,14 +5,21 @@
   },
   "emulators": {
     "auth": {
-      "port": 9098
+      "port": 9280
     },
     "firestore": {
-      "port": 8085
+      "port": 8280,
+      "websocketPort": 9380
     },
     "ui": {
       "enabled": true,
-      "port": 4001
+      "port": 4280
+    },
+    "hub": {
+      "port": 4680
+    },
+    "logging": {
+      "port": 4780
     },
     "singleProjectMode": true
   }

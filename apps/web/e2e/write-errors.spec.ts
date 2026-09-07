@@ -16,7 +16,7 @@ import { expect, test, type Page } from '@playwright/test'
 // Same override the app and the seeder honour. It was hardcoded until the day
 // Stock's emulators had to run beside Gastos Diarios' — this was the one place
 // in the repo that could not follow the ports.
-const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8085'
+const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8280'
 const RULES_URL = `http://127.0.0.1:${FIRESTORE_PORT}/emulator/v1/projects/demo-stock:securityRules`
 
 const DENY_WRITES = `rules_version = '2';

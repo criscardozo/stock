@@ -136,7 +136,7 @@ Las dos leen los mismos datos, así que se usan indistintamente.
 
 ```sh
 pnpm install
-pnpm emulators          # Auth 9098, Firestore 8085, UI 4001
+pnpm emulators          # Auth 9280, Firestore 8280, UI 4280
 pnpm seed               # un hogar de mentira pero realista, en el emulador
 pnpm dev                # Next.js en :3000 — NEXT_PUBLIC_USE_EMULATORS=1 para apuntar al emulador
 pnpm test:rules         # tests de security rules (levanta su propio emulador, necesita Java)
@@ -144,7 +144,7 @@ pnpm test:web           # unit tests, incluidos los vectores compartidos
 pnpm test               # todo
 ```
 
-El emulador de Firestore escucha en **8085**, no en el 8080 habitual, justamente
+El emulador de Firestore escucha en **8280**, no en el 8080 habitual, justamente
 para no competir nunca con el stack de Docker propio (`ecko`/`holocron`).
 
 Con `NEXT_PUBLIC_USE_EMULATORS=1`, la pantalla de login muestra además dos
@@ -242,7 +242,7 @@ en vez de correr y no guardar nada.
 
 De a ratos, a mano: `GOOGLE_APPLICATION_CREDENTIALS=/ruta/key.json pnpm backup`.
 Contra el emulador, para ensayar sin tocar producción:
-`FIRESTORE_EMULATOR_HOST=127.0.0.1:8085 BACKUP_PROJECT_ID=demo-stock pnpm backup`.
+`FIRESTORE_EMULATOR_HOST=127.0.0.1:8280 BACKUP_PROJECT_ID=demo-stock pnpm backup`.
 
 `.github/workflows/backup.yml` lo corre los jueves a la mañana de Sídney (el
 cron está en UTC y tiene el offset explicado al lado) y guarda el dump como

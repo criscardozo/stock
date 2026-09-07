@@ -27,8 +27,8 @@ struct StockApp: App {
             // firebase/firebase.json. When two projects share a port the app
             // silently talks to the wrong emulator and reports "no user
             // record" as if the seed had failed.
-            let authPort = Self.port(for: "-authPort", default: 9098)
-            let firestorePort = Self.port(for: "-firestorePort", default: 8085)
+            let authPort = Self.port(for: "-authPort", default: 9280)
+            let firestorePort = Self.port(for: "-firestorePort", default: 8280)
             Auth.auth().useEmulator(withHost: "127.0.0.1", port: authPort)
             let settings = Firestore.firestore().settings
             settings.host = "127.0.0.1:\(firestorePort)"

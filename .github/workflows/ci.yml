@@ -100,7 +100,7 @@ jobs:
         run: |
           ./node_modules/.bin/firebase emulators:start --only auth,firestore \
             --config firebase/firebase.json --project demo-stock &
-          npx wait-on tcp:9098 tcp:8085 --timeout 120000
+          npx wait-on tcp:9280 tcp:8280 --timeout 120000
       - run: pnpm seed
       - run: pnpm --filter web test:e2e
 

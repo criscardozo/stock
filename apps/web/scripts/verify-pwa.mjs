@@ -17,7 +17,7 @@ import { chromium } from '@playwright/test'
 
 // 3113 and not 3112: Gastos Diarios runs the same check on 3112, and the two
 // repos get worked on from the same machine. Same reasoning as Firestore on
-// 8085 here instead of the usual 8080.
+// 8280 here instead of the usual 8080 — see firebase/firebase.json.
 const BASE = process.env.PWA_BASE_URL ?? 'http://localhost:3113'
 
 let failures = 0

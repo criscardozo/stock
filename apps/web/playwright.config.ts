@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test'
 //
 // Started externally before `pnpm test:e2e`, because the suite needs the seed
 // too and starting both here would hide which one failed:
-//   pnpm emulators              # Auth 9098, Firestore 8085, project demo-stock
+//   pnpm emulators              # Auth 9280, Firestore 8280, project demo-stock
 //   pnpm seed                   # a household that looks real
 //   pnpm test:e2e
 //

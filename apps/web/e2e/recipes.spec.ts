@@ -21,7 +21,7 @@ import { expect, test, type Page } from '@playwright/test'
  * gone in the next test's context, because Playwright gives each test a fresh
  * IndexedDB and the pending write died with the old one.
  */
-const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8085'
+const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8280'
 const RECIPES_URL =
   `http://127.0.0.1:${FIRESTORE_PORT}/v1/projects/demo-stock/databases/` +
   '(default)/documents/households/casa-cardozo/recipes'

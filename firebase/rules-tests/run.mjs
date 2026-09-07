@@ -14,6 +14,13 @@
  * honoured.
  *
  * Ported from Gastos Diarios, which hit the same thing with Docker on 8080.
+ *
+ * The temporary config deliberately fixes ONLY firestore. `firebase.json` pins
+ * the hub and the logging emulator so a development suite lands in its own
+ * block, but a FIXED port is one firebase-tools will not shift — so fixing them
+ * here too would collide with a development emulator running beside the tests,
+ * which is the normal case while working. Left unfixed, they are auto-shifted.
+ * Verified by running this while `pnpm emulators` was up.
  */
 import { createServer } from 'node:net'
 import { spawn } from 'node:child_process'

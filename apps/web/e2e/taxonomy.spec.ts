@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 
-const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8085'
+const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8280'
 const HOUSEHOLD_URL =
   `http://127.0.0.1:${FIRESTORE_PORT}/v1/projects/demo-stock/databases/` +
   '(default)/documents/households/casa-cardozo'

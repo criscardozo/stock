@@ -20,8 +20,8 @@ import { doc, setDoc } from 'firebase/firestore'
 const PROJECT = 'demo-stock'
 // Ports are overridable, and the defaults are not the stock ones — see
 // firebase/firebase.json for why.
-const AUTH_PORT = process.env.AUTH_EMULATOR_PORT ?? '9098'
-const FIRESTORE_PORT = Number(process.env.FIRESTORE_EMULATOR_PORT ?? 8085)
+const AUTH_PORT = process.env.AUTH_EMULATOR_PORT ?? '9280'
+const FIRESTORE_PORT = Number(process.env.FIRESTORE_EMULATOR_PORT ?? 8280)
 const AUTH = `http://127.0.0.1:${AUTH_PORT}/identitytoolkit.googleapis.com/v1`
 const PASSWORD = 'emulator-only'
 

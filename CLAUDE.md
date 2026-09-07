@@ -144,12 +144,16 @@ before inventing a pattern this project has already met.**
 - CI runs the web checks, the rules tests, the E2E suite and the PWA check on every push
   (`.github/workflows/ci.yml`). Ubuntu only: a macOS runner bills at 10x, so **the iOS tests
   are not in CI** and have to be run locally before a change lands.
-- `pnpm emulators` — local emulator suite (Auth **9098**, Firestore **8085**, UI **4001**). None of
-  the three is the stock port, and both reasons are other things already on this machine:
-  Firestore is off 8080 because Cristian's own Docker stack (`ecko`/`holocron`) lives there, and
-  Auth and the UI are off 9099/4000 because Gastos Diarios' emulators claim them. Sharing a port
-  does not fail loudly — the suite comes up half-started and the tests fail as if the code were
-  broken.
+- `pnpm emulators` — local emulator suite in its own block: Auth **9280**, Firestore **8280**
+  (websocket **9380**), UI **4280**, hub **4680**, logging **4780**. Not one of them is a Firebase
+  default, on purpose. Measured on 2026-09-07: an SSH forward on this machine holds 4000, 8080,
+  8085, 9099, 9150 AND 9199 — the whole default set plus the 8085 this project used to use — and
+  it answers HTTP 200 with the body `Not Found`. So `wait-on tcp:8085` passes, a REST probe gets a
+  200, and the JSON has no `documents`: the failure arrives as
+  `Cannot read properties of undefined`, which says nothing about a port. Check with
+  `lsof -nP -iTCP:<port> -sTCP:LISTEN` before suspecting the rules.
+  The number is decided in `firebase/firebase.json` and repeated as a default in nine files that
+  cannot read it; `apps/web/src/lib/domain/ports.test.ts` holds all ten together.
 - iOS: `cd apps/ios && xcodegen && open Stock.xcodeproj`. CLI tests:
   `xcodebuild test -project Stock.xcodeproj -scheme Stock -destination 'platform=iOS Simulator,name=<iPhone>' -only-testing:StockTests`.
   `StockTests` compiles `Stock/Domain` directly rather than depending on the app

@@ -99,7 +99,7 @@ const nextConfig: NextConfig = {
     // app rather than about the setup — and the twelve were also the proof that
     // the header is being evaluated at all rather than sitting inert.
     const emulators = process.env.NEXT_PUBLIC_USE_EMULATORS
-      ? ' http://127.0.0.1:8085 http://127.0.0.1:9098 ws://127.0.0.1:8085'
+      ? ' http://127.0.0.1:8280 http://127.0.0.1:9280 ws://127.0.0.1:8280 ws://127.0.0.1:9380'
       : ''
 
     const csp = [

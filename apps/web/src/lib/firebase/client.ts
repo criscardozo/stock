@@ -11,13 +11,13 @@ import {
 } from 'firebase/firestore'
 import { firebaseConfig, useEmulators } from './config'
 
-// The emulator ports come from firebase/firebase.json. Firestore is on 8085,
+// The emulator ports come from firebase/firebase.json. Firestore is on 8280,
 // not the usual 8080, so it never competes with the local Docker stack.
 const EMULATOR_HOST = '127.0.0.1'
 // Overridable because Cristian's own Docker stack has been known to claim
 // these ports; the defaults are what firebase/firebase.json uses.
-const FIRESTORE_PORT = Number(process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? 8085)
-const AUTH_PORT = Number(process.env.NEXT_PUBLIC_AUTH_EMULATOR_PORT ?? 9098)
+const FIRESTORE_PORT = Number(process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? 8280)
+const AUTH_PORT = Number(process.env.NEXT_PUBLIC_AUTH_EMULATOR_PORT ?? 9280)
 
 function createApp() {
   if (getApps().length) return getApp()
