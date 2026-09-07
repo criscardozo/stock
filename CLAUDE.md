@@ -147,11 +147,12 @@ before inventing a pattern this project has already met.**
 - `pnpm emulators` — local emulator suite in its own block: Auth **9280**, Firestore **8280**
   (websocket **9380**), UI **4280**, hub **4680**, logging **4780**. Not one of them is a Firebase
   default, on purpose. Measured on 2026-09-07: an SSH forward on this machine holds 4000, 8080,
-  8085, 9099, 9150 AND 9199 — the whole default set plus the 8085 this project used to use — and
-  it answers HTTP 200 with the body `Not Found`. So `wait-on tcp:8085` passes, a REST probe gets a
-  200, and the JSON has no `documents`: the failure arrives as
-  `Cannot read properties of undefined`, which says nothing about a port. Check with
-  `lsof -nP -iTCP:<port> -sTCP:LISTEN` before suspecting the rules.
+  8085, 9099, 9150 AND 9199 — the whole default set plus the 8085 this project used to use. And
+  **no probe can tell the difference**: all three of 8280, 8085 and 8080 answer `Ok` at the root,
+  and 8080 forwards to a real Firestore emulator that is merely EMPTY — same 404 JSON as ours,
+  character for character. `wait-on` passes, a REST call gets a 200, and the failure arrives as
+  `Cannot read properties of undefined`, which says nothing about a port. Only data you seeded
+  distinguishes them. Check with `lsof -nP -iTCP:<port> -sTCP:LISTEN` before suspecting the rules.
   The number is decided in `firebase/firebase.json` and repeated as a default in nine files that
   cannot read it; `apps/web/src/lib/domain/ports.test.ts` holds all ten together.
 - iOS: `cd apps/ios && xcodegen && open Stock.xcodeproj`. CLI tests:

@@ -13,12 +13,27 @@ import { describe, expect, it } from 'vitest'
  *
  * The failure that makes this worth a test is not "the emulator does not start"
  * — that one is loud. It is the other one. On this machine an SSH forward holds
- * 4000, 8080, 8085, 9099, 9150 and 9199 — the whole Firebase default set — and
- * it answers HTTP 200 with the body "Not Found". So `wait-on tcp:8085` passes,
- * a REST probe gets a 200, and the JSON has no `documents` in it. Gastos
- * Diarios hit exactly that and read
- * `TypeError: Cannot read properties of undefined (reading 'find')`, which says
- * nothing whatsoever about a port.
+ * 4000, 8080, 8085, 9099, 9150 and 9199: the whole Firebase default set, plus
+ * the 8085 this project used to use.
+ *
+ * And there is no probe that can tell the difference. Measured on 2026-09-07,
+ * all three answering at once:
+ *
+ *              GET /    a document that does not exist        households
+ *   8280 ours   Ok      Firestore's own 404 JSON              1
+ *   8085 fwd    Ok      "Not Found", plain text               not JSON
+ *   8080 fwd    Ok      Firestore's own 404 JSON, identical   0
+ *
+ * `Ok` from all three, so "it answered Ok, it is the emulator" is worth
+ * nothing — an earlier version of this comment claimed otherwise. Worse, 8080
+ * forwards to a REAL Firestore emulator that is simply empty: same 404 body
+ * character for character, and no shape probe can separate it from ours. Gastos
+ * Diarios found that one and it is what makes the conclusion general — the only
+ * thing that distinguishes them is data WE seeded.
+ *
+ * So this file is the protection, and a probe is not. A port block nobody else
+ * uses, plus a guard that forces every copy of the number to agree. There is
+ * nothing to detect at runtime; there is only not being in the neighbourhood.
  *
  * If one of these fails, make the numbers equal. Do not update the expectation.
  */

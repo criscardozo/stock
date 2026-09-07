@@ -160,6 +160,33 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
 
+### Hay fallos que ninguna sonda puede ver (07/09/2026)
+
+Los emuladores de este proyecto se movieron a un bloque propio porque un forward
+de SSH en esta máquina tiene **los seis puertos default de Firebase**. Al hacerlo
+escribí que verificar «Firestore contesta `Ok` y Auth `ready=true`» distinguía el
+emulador de otra cosa. **Es falso**, y lo corrigió Gastos Diarios midiendo lo
+mismo de su lado. Medido acá, los tres a la vez:
+
+|  | `GET /` | un documento que no existe | `households` |
+| --- | --- | --- | --- |
+| 8280 nuestro | `Ok` | el 404 JSON de Firestore | 1 |
+| 8085 forward | `Ok` | `Not Found`, texto plano | no es JSON |
+| 8080 forward | `Ok` | el 404 JSON de Firestore, **idéntico** | 0 |
+
+`Ok` en los tres. Y el 8080 forwardea a un emulador de Firestore **real y
+vacío**: mismo cuerpo de error carácter por carácter. Ninguna sonda de forma los
+separa, porque uno de ellos **es** lo que la sonda busca.
+
+Lo único que los distingue es data que sembramos nosotros. Y de ahí sale la
+conclusión, que va contra el reflejo de las dos sesiones: **no hay sonda que
+resuelva esto**. La protección es un bloque de puertos que nadie más use más una
+guarda que fuerce a todas las copias del número a coincidir — `ports.test.ts`,
+diez copias, verificado moviendo el puerto en una sola.
+
+Ambos estuvimos a punto de construir la sonda que no puede funcionar. Lo que la
+evitó las dos veces fue medir antes de escribirla.
+
 ### Si el archivo tiene gemelo, mirá el gemelo antes de commitear (06/09/2026)
 
 De Gastos Diarios, y es el momento fijo más barato de todos los métodos que
