@@ -160,6 +160,33 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
 
+### Por qué funcionó preguntar (07/09/2026)
+
+Cierre del intercambio largo con Gastos Diarios. Entre los dos proyectos
+salieron ocho bugs reales en dos días, y **ninguno se encontró leyendo código
+nuevo**. Cinco acá vinieron de aplicar a este repo algo que ellos habían
+encontrado en el suyo; tres allá, de aplicar a su código de esa misma semana algo
+que habíamos encontrado acá.
+
+La observación es de ellos y explica la mecánica mejor que cualquiera de las
+prácticas sueltas: **funcionó porque el que preguntaba no era el que había
+escrito el código.** Va en las dos direcciones y no necesita que el otro conozca
+el proyecto — sólo que traiga la pregunta.
+
+Y lo que ninguno esperaba: el valor no estuvo en encontrar bugs sino en que
+alguien midiera las frases escritas con seguridad. Dos afirmaciones mías iban
+camino a quedar como hechos en un comentario —«el motor de reglas se planta en 31
+entradas» y «contestó `Ok`, entonces es el emulador»— y las dos eran falsas. Un
+comentario equivocado sobrevive más que un bug, porque nada lo ejecuta.
+
+**Corolario que va contra la intuición**, también suyo: sacar una dependencia
+suele ser más corto **y** más seguro que blindarla, y uno igual la blinda porque
+blindar se siente como trabajo y sacar se siente como esquivar. El caso concreto
+fue un experimento que necesitaba encontrar un hogar: ellos le pusieron un wipe
+adelante para que el `.find()` tuviera un solo candidato; acá se apuntó al id
+fijo que siembra el seed y dejó de haber lookup. Lo segundo se escribió por
+pereza y era la solución.
+
 ### Una medición que no puede dar el resultado contrario no es una medición (07/09/2026)
 
 La versión útil de «verificar la sonda», porque se aplica **antes** de correr y
