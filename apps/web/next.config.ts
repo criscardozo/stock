@@ -90,6 +90,29 @@ const nextConfig: NextConfig = {
    * No `report-uri`. There is nowhere to send reports on a $0 budget, and a
    * directive pointing at nothing is worse than none — see the write-error
    * dialog for what an unreported failure costs.
+   *
+   * ── The thing that will bite whoever enforces this ──
+   *
+   * `source: '/:path*'` means the policy also covers `/__/auth/handler`, which
+   * is Firebase's own page proxied through the rewrite below. Measured on
+   * 2026-09-07 against production: the header does reach it, and loading it
+   * standalone reports ZERO violations. Its scripts are relative — they resolve
+   * same-origin through the rewrite, so `'self'` covers them.
+   *
+   * But that page carries an inline script tagged
+   * `nonce="firebase-auth-helper"`, and we do not control it. That matters for
+   * a specific reason: per the CSP spec, a policy containing ANY nonce source
+   * makes `'unsafe-inline'` be ignored. So the moment someone writes the
+   * nonce-based policy that would make this worth enforcing, that inline script
+   * needs a nonce Firebase chose and we cannot emit — and the flow it breaks is
+   * sign-in, on a redirect back from Google, which no local test reaches.
+   *
+   * Which is to say the obstacle is not "Firebase needs unsafe-inline, how
+   * annoying". It is that a strict policy and a proxied third-party page with
+   * its own nonce cannot both be true. Whoever picks this up should decide that
+   * first: stop proxying the handler, or accept `'unsafe-inline'` forever.
+   * Gastos Diarios reached the same wall from the other side and chose to have
+   * no policy at all rather than guess at one.
    */
   async headers() {
     // The emulators, and only when pointed at them. Measured: with a real
