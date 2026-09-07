@@ -18,6 +18,30 @@ import { expect, test, type Page } from '@playwright/test'
  * the row is actually operated. The tick is a `role="checkbox"`, not a button.
  */
 
+const FIRESTORE_PORT = process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT ?? '8280'
+const DOCS =
+  `http://127.0.0.1:${FIRESTORE_PORT}/v1/projects/demo-stock/databases/` +
+  '(default)/documents/households/casa-cardozo'
+
+/** A collection as the SERVER holds it. Reads go through rules, hence the token. */
+async function onServer(path: string): Promise<Record<string, unknown>[]> {
+  const response = await fetch(`${DOCS}/${path}`, { headers: { Authorization: 'Bearer owner' } })
+  const body = (await response.json()) as { documents?: { fields?: Record<string, unknown> }[] }
+  return (body.documents ?? []).map((d) => d.fields ?? {})
+}
+
+/** A counted item's quantity, on the server. */
+async function quantityOnServer(itemId: string): Promise<number | undefined> {
+  const response = await fetch(`${DOCS}/items/${itemId}`, {
+    headers: { Authorization: 'Bearer owner' },
+  })
+  const body = (await response.json()) as {
+    fields?: { quantity?: { integerValue?: string } }
+  }
+  const raw = body.fields?.quantity?.integerValue
+  return raw === undefined ? undefined : Number(raw)
+}
+
 async function signIn(page: Page) {
   await page.goto('/falta-comprar')
   // Emulator-only buttons; the real flow is signInWithPopup, which cannot be
@@ -58,22 +82,60 @@ test('closing the shop consumes the ticked rows and keeps the rest', async ({ pa
   // list survive instead of being rebuilt from scratch every time.
   await expect(page.getByRole('checkbox', { name: 'Tildar Servilletas' })).toBeVisible()
 
-  // And the batch really committed. This assertion reads the NUMBER, not the
-  // absence of a row: the seed has 3 eggs and the list asked for 9, so the
-  // stock has to say 12. An earlier version of this test checked that a
-  // "quedan 3, mínimo 6" string was gone — but that string is the shopping
-  // row's reason, which the stock screen never renders, so it passed happily
-  // with the stock write removed. Verified by mutation this time.
+  // This assertion reads the NUMBER, not the absence of a row: the seed has 3
+  // eggs and the list asked for 9, so the stock has to say 12. An earlier
+  // version checked that a "quedan 3, mínimo 6" string was gone — but that
+  // string is the shopping row's reason, which the stock screen never renders,
+  // so it passed happily with the stock write removed.
   await page.goto('/stock')
   await expect(page.getByLabel('Huevos: 12 u')).toBeVisible()
 
-  // And the move it wrote is now readable, which until this release nothing
-  // did: `moves` was written on every purchase, cook and adjustment by both
-  // clients and read by no screen at all. Same batch, same nine eggs, so the
-  // sign matters — "+9" and "9" are opposite events for a purchase.
   await page.getByRole('button', { name: /^Huevos/ }).click()
   const history = page.getByRole('listitem').filter({ hasText: 'Compra' }).first()
   await expect(history).toContainText('+9 u')
+
+  // ── And now against the server.
+  //
+  // Written first with the claim that the screen could not catch a refusal at
+  // all, which measurement disproved twice. Refusing the `moves` write in the
+  // rules, and then refusing ONLY the row deletions, both fail the `12 u`
+  // assertion above — because `closeShopping` is genuinely one batch, so any
+  // refusal rolls back all of it, and the `page.goto` forces a re-read that
+  // sees the rollback. The atomicity this project went to some trouble to
+  // guarantee is what makes the cheap check sufficient.
+  //
+  // What these polls add, then, is narrower than "the screen is blind" and
+  // still worth having:
+  //
+  //  - Two of the three halves are things no screen renders. A `moves`
+  //    document and a deleted row are invisible; only the quantity shows.
+  //  - No dependence on the navigation being slow enough for the rollback to
+  //    land first. The screen check passes because of a race it happens to
+  //    win.
+  //  - The regression they would actually catch: if `inBatches` ever went back
+  //    to committing in chunks, a partial failure would leave a screen that
+  //    looks entirely consistent. That is the bug fixed in 9730adf, and this
+  //    is what would notice it coming back.
+  //
+  // Gastos Diarios' sharper question is what sent me here: not only "where else
+  // does this apply" but "did I already solve this in this same file".
+  await expect.poll(() => quantityOnServer('huevos'), { timeout: 15_000 }).toBe(12)
+
+  // All three halves of the batch, not just the one the screen happened to
+  // show. A refused `moves` write or a refused delete leaves no trace here.
+  await expect
+    .poll(async () => (await onServer('shoppingList')).length, { timeout: 15_000 })
+    .toBe(1)
+  await expect
+    .poll(async () => {
+      const moves = await onServer('moves')
+      return moves.filter((m) => {
+        const item = (m.itemId as { stringValue?: string } | undefined)?.stringValue
+        const delta = (m.delta as { integerValue?: string } | undefined)?.integerValue
+        return item === 'huevos' && delta === '9'
+      }).length
+    }, { timeout: 15_000 })
+    .toBe(1)
 })
 
 test('a reserve item shows what is sealed, not just what is open', async ({ page }) => {
