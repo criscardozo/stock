@@ -129,6 +129,22 @@ describe('every default follows firebase.json', () => {
     })
   }
 
+  it('every copy agrees, whether or not the loop above generates anything', () => {
+    // The loop is for readable output — one named test per file. It is not the
+    // guarantee: replace `cases` with an empty array in the `for` and the
+    // suite still went green on 16 tests, because the list was intact and only
+    // the it() calls stopped happening. Gastos Diarios lost half a guard to
+    // exactly that and their tripwire, like mine, watched the list.
+    //
+    // So the guarantee lives here, in one test that iterates internally. The
+    // loop can be deleted; this cannot be deleted without deleting a test.
+    const wrong = cases
+      .filter(([path, marker, expected]) => fallbackIn(path, marker) !== expected)
+      .map(([path, marker]) => `${path} · ${marker}`)
+    expect({ checked: cases.length, wrong }).toEqual({ checked: cases.length, wrong: [] })
+    expect(cases.length).toBeGreaterThan(9)
+  })
+
   it('CI waits on the ports the emulator binds', () => {
     const ci = read('.github/workflows/ci.yml')
     expect(ci).toContain(`tcp:${AUTH} tcp:${FIRESTORE}`)
@@ -218,6 +234,16 @@ describe('no doc names a port we no longer bind', () => {
     // Without this, a walk that returns nothing generates no tests and the
     // suite goes green on zero coverage. That is the shape that ate half of
     // Gastos Diarios' guard: the tests did not fail, they stopped existing.
+    expect(docs.length).toBeGreaterThan(6)
+  })
+
+  it('no doc names a dead port, whether or not the loop below runs', () => {
+    const stale = docs.flatMap((path) => {
+      const found = [...new Set([...read(path).matchAll(/\b([489]\d{3})\b/g)].map((m) => Number(m[1])))]
+      const bad = found.filter((port) => !OURS.includes(port) && !FOREIGN.includes(port))
+      return bad.length > 0 ? [`${path}: ${bad.join(', ')}`] : []
+    })
+    expect({ swept: docs.length, stale }).toEqual({ swept: docs.length, stale: [] })
     expect(docs.length).toBeGreaterThan(6)
   })
 
