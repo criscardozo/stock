@@ -288,6 +288,29 @@ de «una medición que no puede dar el resultado contrario»: si el comparador
 falló una vez por su propia culpa y lo arreglaste, ya sabés que puede reportar
 diferencias. Si dio OK de entrada, no sabés si compara o si mira para otro lado.
 
+**No la escribas, corrila — y antes de mirar, decí qué significaría cada color.**
+La formulación abstracta («una medición que no puede dar el resultado contrario»)
+se aplica pensando, y pensando fallamos los dos varias veces en dos días: cada
+uno estaba seguro de que su chequeo discriminaba. La mitad ejecutable es de
+Gastos Diarios. La otra mitad salió de un error mío: puse la garantía adentro de
+un test que itera solo, volví a mutar, siguió verde, y estuve a punto de
+«reforzar» algo que ya estaba bien — porque tenía en la cabeza que la mutación
+**tenía** que fallar. Verde era la respuesta correcta: el bucle vacío ya no
+borraba ninguna garantía. Sin la predicción escrita antes, uno lee el color según
+lo que esperaba.
+
+**Y por qué nada de esto se arregla con más atención.** Las sondas inertes de la
+semana —seis entre los dos proyectos— no se rompieron solas: se escribieron
+rotas, en el minuto exacto en que estábamos pensando en sondas rotas. El caso
+límite es de ellos: un chequeo que buscaba una cadena literal en el archivo, y la
+línea que la buscaba ponía la cadena en el archivo, así que se encontraba a sí
+mismo y no podía fallar nunca. No es que se les haya pasado: **el acto de
+escribir la aguja la creó**. Hay una clase de error que sólo se comete estando
+concentrado en no cometerlo, y por eso ninguna regla que se aplique pensando la
+cubre. Ésa es la razón de que todas las de arriba terminen en un paso ejecutable.
+Para el round trip la versión corta es de ellos: **rompé algo a propósito
+primero y confirmá que la comparación lo ve.** Es más rápido que desconfiar.
+
 Corolario para los números: un comentario que dice **cuántos** archivos repiten
 algo caduca el día que se agrega el siguiente. Las dos cabeceras decían «nueve» y
 «seis» y estaban mal hacía días. No se corrigen a once — se sacan. La lista es la
