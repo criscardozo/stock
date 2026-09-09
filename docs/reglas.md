@@ -251,6 +251,48 @@ instaladas unas reglas hostiles, y confiar en un `.find()` que siempre devuelve
 apuntar al id fijo que siembra el seed, y así no hay nada que pueda devolver otra
 cosa.
 
+### Una guarda también es código, y falla igual (10/09/2026)
+
+Cuatro maneras de tener una guarda verde que no sostiene nada. Las cuatro salieron
+en dos días, midiendo, entre este proyecto y Gastos Diarios.
+
+**El que la escribe es el primero que quiere la excepción.** Escribir la
+advertencia obliga a nombrar lo prohibido, y ahí uno se cree el caso especial —
+en el minuto exacto en que acaba de convencerse de que las excepciones son
+malas. Pasó tres veces esta semana con tres guardas distintas: un comentario que
+deletreaba el project id malo para advertir sobre él, otro que citaba un puerto
+muerto para contar que estaba muerto, y acá una exclusión `!path.endsWith(...)`
+escrita **veinte minutos después** de negarme a poner una excepción por línea en
+los docs. Escondía dos puertos vigentes, uno de ellos en el comentario que
+explica que las frases sobre puertos caducan. La regla, entonces: **la guarda se
+somete a su propia regla**, sin lista de exclusiones. Si necesita nombrar lo que
+prohíbe, se reescribe la prosa, no la guarda.
+
+**Fallar no alcanza: tiene que fallar en el lugar correcto.** Mover el
+`websocketPort` rompía exactamente un test, el de prosa, así que el arreglo que
+sugería era editar una oración — la suite quedaba verde y la CSP seguía
+apuntando al puerto viejo. Una guarda que se pone verde con un arreglo parcial
+es peor que ninguna, porque tiene forma de haber funcionado. Al mutar, no
+preguntarse *¿falló?* sino ***¿falló el que corresponde?***, y contestarlo
+buscando si existe una copia a la que debería haber apuntado.
+
+**Comparar todo lo que hay no es comparar que esté todo.** Una lista escrita a
+mano sólo prueba que lo que nombra coincide. Gastos Diarios lo encontró en un
+comparador de restore que recorría un conjunto fijo de colecciones raíz; acá,
+en esta misma lista de puertos, a la que le faltaban dos archivos que yo mismo
+había agregado. El arreglo es que la lista se contraste contra el árbol y
+**nombre el archivo** que falta.
+
+**La primera corrida fallida es la que valida las siguientes.** Versión práctica
+de «una medición que no puede dar el resultado contrario»: si el comparador
+falló una vez por su propia culpa y lo arreglaste, ya sabés que puede reportar
+diferencias. Si dio OK de entrada, no sabés si compara o si mira para otro lado.
+
+Corolario para los números: un comentario que dice **cuántos** archivos repiten
+algo caduca el día que se agrega el siguiente. Las dos cabeceras decían «nueve» y
+«seis» y estaban mal hacía días. No se corrigen a once — se sacan. La lista es la
+cuenta.
+
 ### Hay fallos que ninguna sonda puede ver (07/09/2026)
 
 Los emuladores de este proyecto se movieron a un bloque propio porque un forward
