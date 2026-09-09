@@ -244,6 +244,20 @@ De a ratos, a mano: `GOOGLE_APPLICATION_CREDENTIALS=/ruta/key.json pnpm backup`.
 Contra el emulador, para ensayar sin tocar producción:
 `FIRESTORE_EMULATOR_HOST=127.0.0.1:8280 BACKUP_PROJECT_ID=demo-stock pnpm backup`.
 
+**El otro extremo.** `pnpm restore <archivo>` lo vuelve a escribir, y
+`pnpm round-trip` es el ensayo completo contra el emulador: siembra, hace
+backup, borra, **verifica que el borrado dejó cero**, restaura y compara. El
+control negativo corre **primero** y no es opcional — rompe los datos a
+propósito y exige que la comparación vea exactamente ese daño, porque una
+comparación que nunca reportó una diferencia no es una comparación.
+
+El dump lleva el origen en el nombre y en un campo `source`, los dos derivados
+de la conexión que se abrió de verdad y nunca de un argumento. `restore` con
+`--production` rechaza cualquier dump que no venga de producción y pide que
+tipees el project id; un dump sin `source` (los anteriores a este campo) se
+rechaza con instrucciones en vez de asumir, porque asumir «producción» dejaría
+pasar justo los ensayos y asumir «emulador» bloquearía los backups reales.
+
 `.github/workflows/backup.yml` lo corre los jueves a la mañana de Sídney (el
 cron está en UTC y tiene el offset explicado al lado) y guarda el dump como
 artifact por 90 días, que es el techo del tier gratuito. Cuesta un par de los

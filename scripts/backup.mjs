@@ -11,7 +11,10 @@
 //   2. GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json pnpm backup
 //      (or drop it at firebase/service-account.json and just `pnpm backup`)
 //
-// Output: backups/stock-<YYYY-MM-DDTHH-MM-SSZ>.json (gitignored).
+// Output: backups/stock-<source>-<project>-<stamp>.json (gitignored). The name
+// carries where the data came from because a rehearsal against the emulator and
+// a real backup are otherwise the same object, and the day you need one is the
+// day you cannot check.
 
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -61,11 +64,27 @@ async function dumpCollection(collRef) {
   return docs;
 }
 
-// Firestore types -> JSON-safe values (Timestamps become ISO strings).
+// Firestore types -> JSON-safe values.
+//
+// Timestamps are TAGGED rather than flattened to an ISO string, and the reason
+// is that the obvious version cannot be checked. Flatten them and a restore
+// writes plain strings back; the next dump serialises those strings to the same
+// characters, so comparing dump against dump agrees perfectly while every audit
+// field has quietly changed type. The round trip would prove nothing, and it is
+// the one thing it exists to prove.
+//
+// Anything else Firestore can hold and this schema does not use — GeoPoint,
+// DocumentReference, Bytes — throws instead of being mangled into a shape that
+// looks fine in JSON. If one ever appears, the backup stops rather than lying.
 function serialize(value) {
-  if (value instanceof Timestamp) return value.toDate().toISOString();
+  if (value instanceof Timestamp) return { $timestamp: value.toDate().toISOString() };
   if (Array.isArray(value)) return value.map(serialize);
+  if (value instanceof Buffer) throw new Error("Bytes are not serialisable here");
   if (value !== null && typeof value === "object") {
+    const name = value.constructor?.name;
+    if (name !== undefined && name !== "Object") {
+      throw new Error(`Cannot serialise a ${name} — teach serialize() about it first`);
+    }
     return Object.fromEntries(
       Object.entries(value).map(([k, v]) => [k, serialize(v)]),
     );
@@ -74,13 +93,22 @@ function serialize(value) {
 }
 
 async function main() {
-  // Pointed at the emulator when FIRESTORE_EMULATOR_HOST is set, which is how
-  // the restore is proven: seed, back up, wipe, restore, compare. A backup
-  // nobody has ever read back is a hope, and the round trip cannot be
-  // rehearsed against production.
+  // A backup nobody has ever read back is a hope. `pnpm round-trip` is what
+  // makes this one more than that: it seeds the emulator, backs up, wipes,
+  // checks the wipe left nothing, restores and compares — and it proves the
+  // comparison can fail before it trusts one that passes.
+  //
+  // `source` and `project` are derived from the connection that was actually
+  // opened, never from an argument. Reading production while an env var said
+  // otherwise used to stamp the dump with the env var: a real backup wearing a
+  // rehearsal's name, which `restore.mjs` would then refuse. The label has to
+  // describe what happened, not what was asked for.
   const emulator = process.env.FIRESTORE_EMULATOR_HOST;
-  const project = process.env.BACKUP_PROJECT_ID ?? PROJECT_ID;
+  let source;
+  let project;
   if (emulator !== undefined && emulator !== "") {
+    source = "emulator";
+    project = process.env.BACKUP_PROJECT_ID ?? PROJECT_ID;
     console.log(`reading the EMULATOR at ${emulator} (project "${project}")`);
     initializeApp({ projectId: project });
   } else {
@@ -88,12 +116,25 @@ async function main() {
     const serviceAccount = JSON.parse(
       await import("node:fs").then((fs) => fs.readFileSync(keyPath, "utf8")),
     );
-    initializeApp({ credential: cert(serviceAccount), projectId: PROJECT_ID });
+    // The key decides, and it has to be the key we expect. A dump labelled with
+    // one project and read from another is worse than no dump.
+    if (serviceAccount.project_id !== PROJECT_ID) {
+      console.error(
+        `That key belongs to "${serviceAccount.project_id}", not "${PROJECT_ID}".\n` +
+          "  Refusing rather than writing a dump labelled with the wrong project.",
+      );
+      process.exit(1);
+    }
+    source = "production";
+    project = serviceAccount.project_id;
+    console.log(`reading PRODUCTION (project "${project}")`);
+    initializeApp({ credential: cert(serviceAccount), projectId: project });
   }
   const db = getFirestore();
 
   const rootCollections = await db.listCollections();
   const dump = {
+    source,
     project,
     exportedAt: new Date().toISOString(),
     collections: {},
@@ -107,7 +148,7 @@ async function main() {
   const dir = join(repoRoot, "backups");
   mkdirSync(dir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const file = join(dir, `stock-${stamp}.json`);
+  const file = join(dir, `stock-${source}-${project}-${stamp}.json`);
   writeFileSync(file, JSON.stringify(dump, null, 2));
   console.log(`\nBackup written to ${file}`);
 }

@@ -20,7 +20,9 @@
     "test": "pnpm test:web && pnpm test:rules",
     "emulators": "firebase emulators:start --only auth,firestore --config firebase/firebase.json --project demo-stock",
     "seed": "pnpm --filter tools seed",
-    "backup": "node scripts/backup.mjs"
+    "backup": "node scripts/backup.mjs",
+    "restore": "node scripts/restore.mjs",
+    "round-trip": "node scripts/round-trip.mjs"
   },
   "devDependencies": {
     "firebase-admin": "^14.3.0",

@@ -153,8 +153,10 @@ before inventing a pattern this project has already met.**
   character for character. `wait-on` passes, a REST call gets a 200, and the failure arrives as
   `Cannot read properties of undefined`, which says nothing about a port. Only data you seeded
   distinguishes them. Check with `lsof -nP -iTCP:<port> -sTCP:LISTEN` before suspecting the rules.
-  The number is decided in `firebase/firebase.json` and repeated as a default in nine files that
-  cannot read it; `apps/web/src/lib/domain/ports.test.ts` holds all ten together.
+  The number is decided in `firebase/firebase.json` and repeated as a default in files that
+  cannot read it; `apps/web/src/lib/domain/ports.test.ts` holds them together and fails if a new
+  one appears unregistered. No count here on purpose — this line said "nine" and "ten" and both
+  went stale the day two specs were added.
 - iOS: `cd apps/ios && xcodegen && open Stock.xcodeproj`. CLI tests:
   `xcodebuild test -project Stock.xcodeproj -scheme Stock -destination 'platform=iOS Simulator,name=<iPhone>' -only-testing:StockTests`.
   `StockTests` compiles `Stock/Domain` directly rather than depending on the app
@@ -162,6 +164,11 @@ before inventing a pattern this project has already met.**
 - Driving the iOS app without a Google account:
   `xcrun simctl launch booted dev.cardozo.stock -useEmulators -devSignIn -tab falta`
   (`-devSignIn` and `-tab` only exist when pointed at the emulators).
+- `pnpm backup` / `pnpm restore <archivo>` / `pnpm round-trip` — the $0 backup, its other
+  half, and the rehearsal that proves the two agree (seed, back up, wipe, check the wipe left
+  nothing, restore, compare). The round trip runs a negative control FIRST: it breaks the data
+  on purpose and requires the comparison to report exactly that damage. Emulator only, and not
+  in CI — it needs the emulator suite plus a seed, and adding a job was not asked for.
 - Deploy rules: `firebase deploy --only firestore:rules,firestore:indexes --config firebase/firebase.json --project qcris-stock`.
 - One-time console setup (Firebase project creation, Google provider, Vercel, domain):
   `docs/setup.md`.
