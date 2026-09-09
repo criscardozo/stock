@@ -1,15 +1,17 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 /**
  * The emulator ports, which live in ten places and are decided in one.
  *
- * `firebase/firebase.json` is what the emulator actually binds. Nine other
- * files repeat the numbers as defaults and none of them can read it: the web
- * client, the seeder, the rules-test helper, three e2e specs, the CSP, the CI
- * wait-on, and iOS. Change the first and the rest keep pointing at whatever was
- * there before.
+ * `firebase/firebase.json` is what the emulator actually binds. Other files
+ * repeat the numbers as defaults and none of them can read it: the web client,
+ * the seeder, the rules-test helper, the e2e specs, the CSP, the CI wait-on,
+ * and iOS. Change the first and the rest keep pointing at whatever was there
+ * before. This comment used to say how many, and the count went stale the day
+ * two specs were added — so the list below is the count, and the last test
+ * here is what keeps the list honest.
  *
  * The failure that makes this worth a test is not "the emulator does not start"
  * — that one is loud. It is the other one. On this machine an SSH forward holds
@@ -85,6 +87,8 @@ describe('every default follows firebase.json', () => {
     ['apps/web/e2e/recipes.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
     ['apps/web/e2e/write-errors.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
     ['apps/web/e2e/taxonomy.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
+    ['apps/web/e2e/settings.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
+    ['apps/web/e2e/shopping.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
     ['apps/ios/Stock/App/StockApp.swift', '-firestorePort', FIRESTORE],
     ['apps/ios/Stock/App/StockApp.swift', '-authPort', AUTH],
   ]
@@ -110,6 +114,34 @@ describe('every default follows firebase.json', () => {
     expect(config).toContain(`http://127.0.0.1:${FIRESTORE}`)
     expect(config).toContain(`http://127.0.0.1:${AUTH}`)
     expect(config).toContain(`ws://127.0.0.1:${WEBSOCKET}`)
+  })
+
+  it('every file with a port default is on the list above', () => {
+    // The list is hand-written, so it can only prove that what it names
+    // agrees. It cannot prove it names everything — and it did not: the server
+    // polls added to settings.spec.ts and shopping.spec.ts brought two more
+    // defaults that sat uncovered for days. Gastos Diarios hit the same shape
+    // in a restore check that walked a hardcoded set of root collections: it
+    // compared everything it had, without comparing that it had everything.
+    //
+    // So this walks the tree instead of trusting the list. A new file with a
+    // port default fails here until it is registered.
+    const found = new Set<string>()
+    const walk = (dir: string) => {
+      for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
+        const path = `${dir}/${entry.name}`
+        if (entry.isDirectory()) {
+          if (/^(node_modules|\.git|\.next|build-\w+|Pods)$/.test(entry.name)) continue
+          walk(path)
+        } else if (/\.(ts|tsx|mjs|js)$/.test(entry.name) && !path.endsWith('ports.test.ts')) {
+          if (/_EMULATOR_PORT\b[^\n]*\?\?/.test(read(path))) found.add(path)
+        }
+      }
+    }
+    for (const dir of ['apps/web', 'tools', 'firebase']) walk(dir)
+
+    const listed = new Set(cases.map(([path]) => path))
+    expect([...found].filter((path) => !listed.has(path))).toEqual([])
   })
 
   it('no default is a Firebase stock port', () => {
