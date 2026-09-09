@@ -77,6 +77,36 @@ function fallbackIn(path: string, marker: string): number {
   return Number(match[1])
 }
 
+/**
+ * The tree, minus what is not this repo's source. Both skips are trees a clone
+ * does not build and CI never sees — `.agents` is vendored third-party skills
+ * and `docs/design` is the generated Claude Design bundle, gitignored — so a
+ * test that read them would pass or fail depending on the machine. Measured
+ * before skipping: between them they name 4000, 8080 and 9099, all foreign.
+ */
+function sourceFiles(): string[] {
+  const out: string[] = []
+  const walk = (dir: string) => {
+    for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
+      const path = dir === '' ? entry.name : `${dir}/${entry.name}`
+      if (entry.isDirectory()) {
+        if (/^(node_modules|\.git|\.next|\.agents|build-\w+|Pods)$/.test(entry.name)) continue
+        if (path === 'docs/design') continue
+        walk(path)
+      } else out.push(path)
+    }
+  }
+  walk('')
+  return out
+}
+
+/** Every file that repeats a port as a `??` default. */
+function filesWithPortDefaults(): string[] {
+  return sourceFiles().filter(
+    (path) => /\.(ts|tsx|mjs|js)$/.test(path) && /_EMULATOR_PORT\b[^\n]*\?\?/.test(read(path)),
+  )
+}
+
 describe('every default follows firebase.json', () => {
   const cases: [string, string, number][] = [
     ['apps/web/src/lib/firebase/client.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
@@ -126,22 +156,8 @@ describe('every default follows firebase.json', () => {
     //
     // So this walks the tree instead of trusting the list. A new file with a
     // port default fails here until it is registered.
-    const found = new Set<string>()
-    const walk = (dir: string) => {
-      for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
-        const path = `${dir}/${entry.name}`
-        if (entry.isDirectory()) {
-          if (/^(node_modules|\.git|\.next|build-\w+|Pods)$/.test(entry.name)) continue
-          walk(path)
-        } else if (/\.(ts|tsx|mjs|js)$/.test(entry.name)) {
-          if (/_EMULATOR_PORT\b[^\n]*\?\?/.test(read(path))) found.add(path)
-        }
-      }
-    }
-    for (const dir of ['apps/web', 'tools', 'firebase']) walk(dir)
-
     const listed = new Set(cases.map(([path]) => path))
-    expect([...found].filter((path) => !listed.has(path))).toEqual([])
+    expect(filesWithPortDefaults().filter((path) => !listed.has(path))).toEqual([])
   })
 
   it('the guard hardcodes none of the ports it holds', () => {
@@ -192,14 +208,18 @@ describe('every default follows firebase.json', () => {
  * not the test.
  */
 describe('no doc names a port we no longer bind', () => {
-  const docs = [
-    'README.md',
-    'CLAUDE.md',
-    'docs/reglas.md',
-    'docs/setup.md',
-    'docs/plan-mejoras.md',
-    'docs/PLAN.md',
-  ]
+  // Not a hand-written list. Deleting one line from it dropped a doc from the
+  // sweep and left 22 green tests saying nothing was wrong — Gastos Diarios
+  // lost half a guard to exactly that, in a refactor, and reported it working.
+  // A list you can silently shorten is not coverage.
+  const docs = sourceFiles().filter((path) => path.endsWith('.md'))
+
+  it('the sweep found docs at all', () => {
+    // Without this, a walk that returns nothing generates no tests and the
+    // suite goes green on zero coverage. That is the shape that ate half of
+    // Gastos Diarios' guard: the tests did not fail, they stopped existing.
+    expect(docs.length).toBeGreaterThan(6)
+  })
 
   for (const path of docs) {
     it(path, () => {
