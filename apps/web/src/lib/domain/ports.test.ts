@@ -49,6 +49,7 @@ const firebaseJson = JSON.parse(read('firebase/firebase.json')) as {
 }
 const AUTH = firebaseJson.emulators.auth.port
 const FIRESTORE = firebaseJson.emulators.firestore.port
+const WEBSOCKET = firebaseJson.emulators.firestore.websocketPort
 /** Every number under `emulators`, whatever the key — `singleProjectMode` is a
  *  boolean and drops out on its own. */
 const OURS = Object.values(firebaseJson.emulators as Record<string, unknown>)
@@ -100,9 +101,15 @@ describe('every default follows firebase.json', () => {
   })
 
   it('the CSP allows the emulators it will actually talk to', () => {
+    // The websocket is here because leaving it out was worse than not covering
+    // it. Moving `websocketPort` used to fail exactly one test — the CLAUDE.md
+    // prose guard — so the fix it prompted was to edit the sentence, which
+    // turns the suite green and leaves this line pointing at the old port. A
+    // guard that goes green on a partial fix aims you at it.
     const config = read('apps/web/next.config.ts')
     expect(config).toContain(`http://127.0.0.1:${FIRESTORE}`)
     expect(config).toContain(`http://127.0.0.1:${AUTH}`)
+    expect(config).toContain(`ws://127.0.0.1:${WEBSOCKET}`)
   })
 
   it('no default is a Firebase stock port', () => {
