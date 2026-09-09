@@ -22,7 +22,7 @@ import { describe, expect, it } from 'vitest'
  * all three answering at once:
  *
  *              GET /    a document that does not exist        households
- *   8280 ours   Ok      Firestore's own 404 JSON              1
+ *   ours        Ok      Firestore's own 404 JSON              1
  *   8085 fwd    Ok      "Not Found", plain text               not JSON
  *   8080 fwd    Ok      Firestore's own 404 JSON, identical   0
  *
@@ -133,7 +133,7 @@ describe('every default follows firebase.json', () => {
         if (entry.isDirectory()) {
           if (/^(node_modules|\.git|\.next|build-\w+|Pods)$/.test(entry.name)) continue
           walk(path)
-        } else if (/\.(ts|tsx|mjs|js)$/.test(entry.name) && !path.endsWith('ports.test.ts')) {
+        } else if (/\.(ts|tsx|mjs|js)$/.test(entry.name)) {
           if (/_EMULATOR_PORT\b[^\n]*\?\?/.test(read(path))) found.add(path)
         }
       }
@@ -142,6 +142,22 @@ describe('every default follows firebase.json', () => {
 
     const listed = new Set(cases.map(([path]) => path))
     expect([...found].filter((path) => !listed.has(path))).toEqual([])
+  })
+
+  it('the guard hardcodes none of the ports it holds', () => {
+    // Gastos Diarios' rule, and their reasoning: a guard that keeps the ports
+    // together should not spell one, because then IT is another copy nobody
+    // couples. This file had two — the measurement table, and, exactly, the
+    // comment explaining that stale sentences about ports are a failure mode.
+    // Both were hidden behind an explicit `!path.endsWith('ports.test.ts')`
+    // I wrote myself, twenty minutes after refusing a per-line escape hatch in
+    // the docs.
+    //
+    // Foreign numbers stay allowed: they are historical constants and naming
+    // 8080 is the point of naming it.
+    const self = read('apps/web/src/lib/domain/ports.test.ts')
+    const spelled = OURS.filter((port) => new RegExp(`\\b${port}\\b`).test(self))
+    expect(spelled).toEqual([])
   })
 
   it('no default is a Firebase stock port', () => {
@@ -161,7 +177,7 @@ describe('every default follows firebase.json', () => {
  * The block above holds ten copies of the number in code. The docs hold more,
  * and they are the ones that rot silently: `docs/reglas.md` and
  * `docs/plan-mejoras.md` both said "Auth 9098, UI 4001" for two days after the
- * ports moved to 9280/4280. Those sentences were TRUE when written. No initial
+ * ports moved. Those sentences were TRUE when written. No initial
  * measurement catches that — the only thing that does is a guard that re-reads
  * them every run.
  *
