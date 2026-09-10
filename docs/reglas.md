@@ -288,6 +288,35 @@ de «una medición que no puede dar el resultado contrario»: si el comparador
 falló una vez por su propia culpa y lo arreglaste, ya sabés que puede reportar
 diferencias. Si dio OK de entrada, no sabés si compara o si mira para otro lado.
 
+**Escribí la guarda ANTES de arreglar lo que va a guardar.** En ese orden la
+primera corrida es un control positivo gratis: no hace falta preguntarse si la
+sonda puede dar el resultado contrario porque arranca dándolo. La de versiones
+se escribió sobre el estado roto y falló sola —`['0.1']` contra `['0.1.0']`—
+sin que hiciera falta inventar ninguna mutación. Gastos Diarios hizo el orden
+inverso con la misma guarda: unificó primero, escribió el control después sobre
+un estado ya sano, y tuvo que fabricar tres mutaciones para saber si servía.
+Mismo resultado, tres pasos más y una duda que el otro orden no tiene.
+
+**Un script que toca N destinos valida tarde por defecto, y hay que decidir no
+hacerlo.** No es descuido: es el orden en que uno escribe. Abrís el primer
+archivo, lo resolvés, pasás al segundo, y la validación aparece recién cuando
+llegás a la parte que puede fallar — para entonces ya escribiste. Los dos
+proyectos escribimos el mismo `set-version.mjs` con el mismo defecto: subía la
+versión de la web y **después** contaba los targets de iOS, así que un conteo
+mal dejaba las dos plataformas en desacuerdo, que es el estado exacto que el
+script existe para evitar, producido por la herramienta de evitarlo. La regla:
+leer y validar todo, escribir todo después, y decirlo en el mensaje de error
+(«nothing was written»), porque el que lo lee necesita saber si quedó a medias.
+
+**Y el orden de las líneas en un archivo no es el orden de ejecución.** Buscando
+ese defecto en el resto de los scripts escribí una sonda que comparaba el número
+de línea de la primera escritura contra el de la primera validación. Marcó tres
+archivos. Los tres eran ruido: dos `import` que mencionaban `writeFileSync` y la
+*definición* de una función que se llama mucho después. La sonda no podía
+contestar la pregunta que le hice, y su salida tenía forma de respuesta. Para
+esto no hay atajo textual: se leen los caminos de ejecución, que en este repo
+eran cuatro.
+
 **No la escribas, corrila — y antes de mirar, decí qué significaría cada color.**
 La formulación abstracta («una medición que no puede dar el resultado contrario»)
 se aplica pensando, y pensando fallamos los dos varias veces en dos días: cada
