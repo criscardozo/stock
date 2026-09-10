@@ -4,8 +4,14 @@
 // be rehearsed against production, which is exactly why it has to be rehearsed
 // somewhere.
 //
-//   pnpm emulators        # in one terminal
-//   pnpm round-trip       # in another
+//   pnpm emulators                       # in one terminal
+//   pnpm round-trip                      # in another
+//   pnpm round-trip --verify <dump.json> # read a REAL backup back
+//
+// The --verify form is the one that matters on a Thursday: it takes a dump the
+// weekly job produced and proves the file can actually be restored, in the
+// emulator, without touching production. Opening the artifact shows the data
+// looks right; this shows it can be read back, which is a different claim.
 //
 // The negative control runs FIRST and is not optional. A comparison that has
 // never reported a difference is not a comparison, and "it passed" means
@@ -14,7 +20,7 @@
 // a clean result.
 
 import { spawnSync } from "node:child_process";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -105,8 +111,26 @@ async function wipe(db) {
   }
 }
 
+/**
+ * Every dump this run leaves in backups/, deleted.
+ *
+ * They are labelled honestly — they did read the emulator — and in --verify
+ * mode they are still a trap: the emulator was holding a restored PRODUCTION
+ * database, so a file saying `emulator / demo-stock` contains the real
+ * household. The label describes the connection, which is the right rule, and
+ * it is not enough here. So the rehearsal cleans up after itself: it is
+ * reproducible, and none of what it writes is worth keeping.
+ */
+function cleanUp(before) {
+  const dir = join(repoRoot, "backups");
+  for (const file of readdirSync(dir)) {
+    if (!before.has(file)) rmSync(join(dir, file));
+  }
+}
+
 async function main() {
   console.log(`Round trip against the emulator at ${HOST}\n`);
+  const existingDumps = new Set(readdirSync(join(repoRoot, "backups")));
   initializeApp({ projectId: PROJECT });
   const db = getFirestore();
   if (db._settings?.host !== HOST.split(":")[0] && process.env.FIRESTORE_EMULATOR_HOST !== HOST) {
@@ -114,9 +138,18 @@ async function main() {
     process.exit(1);
   }
 
-  run("seeding", "pnpm", ["seed"]);
-  run("backing up", "node", ["scripts/backup.mjs"]);
-  const { path: original, dump: before } = newestDump();
+  const verify = process.argv.indexOf("--verify");
+  let original;
+  let before;
+  if (verify !== -1) {
+    original = resolve(repoRoot, process.argv[verify + 1] ?? "");
+    before = JSON.parse(readFileSync(original, "utf8"));
+    console.log(`  verifying an existing dump instead of seeding`);
+  } else {
+    run("seeding", "pnpm", ["seed"]);
+    run("backing up", "node", ["scripts/backup.mjs"]);
+    ({ path: original, dump: before } = newestDump());
+  }
   console.log(`  dump: ${original.replace(`${repoRoot}/`, "")}`);
   console.log(`  labelled source="${before.source}" project="${before.project}"\n`);
 
@@ -124,29 +157,29 @@ async function main() {
   await wipe(db);
   const damaged = JSON.parse(JSON.stringify(before));
   const items = damaged.collections.households[0].collections.items;
-  const victim = items.find((item) => item.data.quantity !== undefined);
-  victim.data.quantity += 1;
+  const victim = items.find((item) => typeof item.data.quantity === "number") ?? items[0];
+  if (typeof victim.data.quantity === "number") victim.data.quantity += 1;
+  else victim.data.name = `${victim.data.name} (damaged)`;
   const dropped = items.pop();
   // Deliberately NOT in backups/. A corrupt dump sitting next to real ones,
   // named like them, is the artefact this whole afternoon was about.
   const damagedPath = join(tmpdir(), "stock-round-trip-damaged.json");
-  const { writeFileSync } = await import("node:fs");
   writeFileSync(damagedPath, JSON.stringify(damaged));
   run("restoring the damaged copy", "node", ["scripts/restore.mjs", damagedPath]);
   run("backing up again", "node", ["scripts/backup.mjs"]);
   const seen = diff(byId(before), byId(newestDump().dump));
-  const sawQuantity = seen.some((d) => d.includes(`/${victim.id}/`) && d.includes("quantity"));
+  const sawQuantity = seen.some((d) => d.includes(`/${victim.id}/`));
   const sawMissing = seen.some((d) => d.includes(`/${dropped.id}`));
   if (!sawQuantity || !sawMissing) {
     console.error(
       `\n  The comparison did NOT see the damage. It reported ${seen.length} differences:\n` +
         seen.map((d) => `    ${d}`).join("\n") +
-        `\n  Expected a changed quantity on "${victim.id}" and a missing "${dropped.id}".\n` +
+        `\n  Expected a change on "${victim.id}" and a missing "${dropped.id}".\n` +
         "  A comparison that cannot see this cannot vouch for a clean run.",
     );
     process.exit(1);
   }
-  console.log(`  saw the changed quantity on "${victim.id}" and the missing "${dropped.id}"\n`);
+  console.log(`  saw the change on "${victim.id}" and the missing "${dropped.id}"\n`);
 
   console.log("The real thing:");
   await wipe(db);
@@ -158,7 +191,13 @@ async function main() {
     console.error(`\nThe restore did not reproduce the backup:\n${differences.map((d) => `  ${d}`).join("\n")}`);
     process.exit(1);
   }
-  const counts = Object.entries(byId(before)).map(([n, d]) => `${Object.keys(d).length} ${n}`);
+  const counts = Object.entries(byId(before)).flatMap(([name, docs]) => [
+    `${Object.keys(docs).length} ${name}`,
+    ...Object.values(docs).flatMap((doc) =>
+      Object.entries(doc.collections).map(([sub, kids]) => `${Object.keys(kids).length} ${sub}`),
+    ),
+  ]);
+  cleanUp(existingDumps);
   console.log(`\nIdentical after the round trip: ${counts.join(", ")}.`);
 }
 
