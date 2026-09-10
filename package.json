@@ -22,7 +22,8 @@
     "seed": "pnpm --filter tools seed",
     "backup": "node scripts/backup.mjs",
     "restore": "node scripts/restore.mjs",
-    "round-trip": "node scripts/round-trip.mjs"
+    "round-trip": "node scripts/round-trip.mjs",
+    "set-version": "node scripts/set-version.mjs"
   },
   "devDependencies": {
     "firebase-admin": "^14.3.0",
