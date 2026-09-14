@@ -2,43 +2,51 @@
 # What has to be true before anything leaves this machine.
 #
 # Written after measuring, not after deciding it would be nice: three commits
-# reached main red on 14/09/2026, and this would have stopped one of them. That
-# one was the `@types/node` bump, where `stack-agrees` was already failing
-# locally at the moment of the push — the check had run, I had read it, and the
-# push did not depend on it. A rule you can recite still depends on remembering
-# it at the one moment you do not.
+# reached main red on 14/09/2026, and this would have stopped one of them — the
+# `@types/node` bump, where `stack-agrees` was already failing locally at the
+# moment of the push. The check had run and I had read it; the push simply did
+# not depend on it.
 #
-# The other two it would NOT have caught, and that is worth knowing too: one
-# failed only in CI, where the web job had no submodule checkout; the other was
-# verified with a patch applied and pushed without it, so the local run was
-# green on a tree that was never published.
+# Honest about the other two, because a guard that claims more than it does is
+# worse than none: one failed only in CI, where the web job had no submodule
+# checkout; the other was verified with a patch applied and pushed without it,
+# so the green came from a tree that was never published.
 #
 # Kept fast on purpose — a hook nobody waits for is one that gets `--no-verify`.
-# Measured on this machine: typecheck 1.3s, the whole web suite 0.9s. The rules
-# tests and the e2e suite are deliberately out: they need Java, an emulator and
-# a dev server, which is how a hook stops being run.
+# Measured here: typecheck 1.3s, the whole web suite 0.9s. The rules tests and
+# the e2e suite are deliberately out: they need Java, an emulator and a dev
+# server, which is how a hook stops being run at all.
 #
 # Install once per clone:  git config core.hooksPath .githooks
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-# The list lives in .kyber/config.json, not here. Two copies of the same list is
-# the thing this repo has spent the day deleting, and the config is the file the
-# shared scripts already read.
-mapfile -t CHECKS < <(node -e '
+# The list lives in .kyber/config.json rather than here, because two copies of
+# the same two lines is what this repo spent the day deleting.
+#
+# It is a list of ARGV ARRAYS, and each one is spawned without a shell. The
+# first version read strings and ran them through `eval`, which a security
+# review flagged and was right to: `.kyber/config.json` is a tracked file, so a
+# branch that edits it would run whatever it liked on the next push of whoever
+# checked that branch out — silently, since nobody reads a hook before pushing.
+# Argv arrays remove the interpreter rather than trying to sanitise its input.
+node -e '
   const { readFileSync } = require("node:fs");
-  const config = JSON.parse(readFileSync(".kyber/config.json", "utf8"));
-  const checks = config.prePush;
+  const { spawnSync } = require("node:child_process");
+  const checks = JSON.parse(readFileSync(".kyber/config.json", "utf8")).prePush;
   if (!Array.isArray(checks) || checks.length === 0) {
-    console.error("`.kyber/config.json` has no prePush list.");
+    console.error("pre-push: .kyber/config.json has no prePush list.");
     process.exit(1);
   }
-  console.log(checks.join("\n"));
-')
-
-for check in "${CHECKS[@]}"; do
-  echo "pre-push: $check"
-  eval "$check"
-done
+  for (const argv of checks) {
+    if (!Array.isArray(argv) || argv.length === 0 || argv.some((a) => typeof a !== "string")) {
+      console.error("pre-push: every prePush entry must be an array of strings.");
+      process.exit(1);
+    }
+    console.log(`pre-push: ${argv.join(" ")}`);
+    const run = spawnSync(argv[0], argv.slice(1), { stdio: "inherit", shell: false });
+    if (run.status !== 0) process.exit(run.status ?? 1);
+  }
+'
 
 echo "pre-push: ok"

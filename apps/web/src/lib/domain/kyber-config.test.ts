@@ -32,7 +32,7 @@ const config = JSON.parse(read('.kyber/config.json')) as {
   iosTargets: string[]
   webWorkspace: string
   pwa: { port: number; entry: string; precachedRoutes: string[]; minStaticAssets: number }
-  prePush: string[]
+  prePush: string[][]
 }
 
 /** Tracked and untracked-but-not-ignored files; never descends into a submodule. */
@@ -130,11 +130,29 @@ describe('.kyber/config.json describes this repo', () => {
     })
   })
 
+  it('prePush entries are argv arrays, never shell strings', () => {
+    // The hook spawns these without a shell. They were plain strings run
+    // through `eval` until a security review pointed out what that means:
+    // `.kyber/config.json` is tracked, so a branch that edits it runs whatever
+    // it likes on the next push by whoever checked that branch out — silently,
+    // because nobody reads a hook before pushing. Argv arrays remove the
+    // interpreter instead of trying to sanitise its input, and this keeps them
+    // from quietly becoming strings again.
+    const shaped = config.prePush.map(
+      (argv) => Array.isArray(argv) && argv.length > 0 && argv.every((a) => typeof a === 'string'),
+    )
+    expect({ checks: config.prePush.length, shaped }).toEqual({
+      checks: config.prePush.length,
+      shaped: config.prePush.map(() => true),
+    })
+    expect(config.prePush.length).toBeGreaterThan(0)
+  })
+
   it('prePush names commands this repo actually has', () => {
     const scripts = Object.keys(
       (JSON.parse(read(`apps/${config.webWorkspace}/package.json`)) as { scripts: object }).scripts,
     )
-    const named = config.prePush.map((command) => command.split(' ').pop() ?? '')
+    const named = config.prePush.map((argv) => argv[argv.length - 1])
     expect(named.filter((script) => !scripts.includes(script))).toEqual([])
   })
 })
