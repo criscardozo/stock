@@ -98,7 +98,14 @@ correr `xcodegen` para que el `Info.plist` las tome.
 
 Las dos apps son del mismo autor, la misma casa y el mismo lenguaje visual, así
 que lo que se refinó en una vale en la otra. Lo que Stock tomó de Gastos
-Diarios, y por qué —para que una tercera app arranque con esto puesto:
+Diarios, y por qué —para que una tercera app arranque con esto puesto.
+
+**Verificado ítem por ítem contra los dos árboles el 14/09/2026**, porque una
+lista así es prosa pura: nada la ejecuta, así que caduca en silencio y en las dos
+direcciones a la vez. Diez de los doce resultaron ciertos de los dos lados; los
+otros dos están corregidos en su bullet. Uno de ellos estrena categoría — no
+caducó, **nació falso**: el encabezado «lo que Stock tomó de Gastos» le presta su
+procedencia a cada ítem de la lista, incluidos los que nadie tomó de ahí.
 
 - **Tokens en `:root`, Tailwind sólo los mapea** (`@theme inline`). El día que
   haya dark, es un bloque de tokens más, no un rediseño.
@@ -111,8 +118,11 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
 - **Tarjeta de versión en Ajustes** — versión, commit y fecha, resueltos en
   build. Un número que alguien tiene que acordarse de subir es un número que
   miente.
-- **Outfit bundleada también en iOS**, con fallback a la del sistema. Es lo que
-  hace que se vean como un producto y no como dos que coinciden en los colores.
+- **Outfit bundleada en iOS** (`Resources/Fonts/Outfit-Variable.ttf`, byte a byte
+  el mismo archivo en los dos repos), con fallback a la del sistema. En web no hay
+  `.woff2` versionado en ninguno de los dos: los dos usan `next/font/google`, que
+  la baja en build y la sirve desde el propio origen. Es lo que hace que se vean
+  como un producto y no como dos que coinciden en los colores.
 - **Aviso de vencimiento de la firma**, leído del `embedded.mobileprovision` y
   no de una fecha guardada: re-firmar no borra el contenedor, así que la fecha
   guardada mentiría para siempre.
@@ -120,7 +130,12 @@ Diarios, y por qué —para que una tercera app arranque con esto puesto:
   es justo donde no hay señal.
 - **Háptica en la acción que se hace sin mirar** (tildar en la góndola).
 - **Sin `setState` sincrónico dentro de un `useEffect`.** Para leer algo externo
-  —localStorage— va `useSyncExternalStore`.
+  —localStorage— va `useSyncExternalStore`. **Esto no vino de Gastos Diarios**:
+  `git log -S useSyncExternalStore --all` en su repo no devuelve nada, nunca lo
+  tuvieron, y de hecho degradaron a `warn` la regla de lint que lo empuja
+  (`201e834`, «nineteen warnings become nineteen written reasons»). Lo escribimos
+  acá y quedó archivado como tomado de ellos porque la sección entera está
+  encabezada así.
 
 - **El Watch como relé, no como cliente.** No puede loguearse (Google necesita
   un navegador y en la muñeca no hay), así que nunca toca Firebase: el teléfono
@@ -261,6 +276,17 @@ había agregado. El arreglo es que la lista se contraste contra el árbol y
 de «una medición que no puede dar el resultado contrario»: si el comparador
 falló una vez por su propia culpa y lo arreglaste, ya sabés que puede reportar
 diferencias. Si dio OK de entrada, no sabés si compara o si mira para otro lado.
+
+**Un encabezado le presta su procedencia a todo lo que cuelga de él.** §10 de
+este archivo se llama «lo que Stock tomó de Gastos Diarios», y bajo ese título
+terminó un ítem que nadie tomó de ahí: `useSyncExternalStore` para leer
+localStorage, que su repo **nunca tuvo** —`git log -S … --all` no devuelve nada—
+y cuya regla de lint ellos degradaron a `warn` a propósito. No caducó: nació
+falso, y lo hizo falso el encabezado, no el autor del bullet. Es la forma
+inversa del hallazgo del título que ya está más arriba — allá un título repetía
+una regla que había cambiado; acá le regala una atribución a una lista entera.
+Al escribir una lista bajo un encabezado que afirma algo de todos sus ítems,
+cada ítem hereda esa afirmación sin que nadie la haya verificado para él.
 
 **Una afirmación que decide algo viaja con cómo se obtuvo.** Entre sesiones, el
 mecanismo por el que circula una frase falsa no es que esté mal escrita: es que
