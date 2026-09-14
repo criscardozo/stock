@@ -134,6 +134,21 @@ Las dos leen los mismos datos, así que se usan indistintamente.
 
 ## 5. Desarrollo local
 
+Este repo tiene un submódulo, [`kyber`](https://github.com/criscardozo/kyber),
+con las herramientas que comparte con Gastos Diarios y la tercera app. Al clonar:
+
+```sh
+git clone --recurse-submodules git@github.com:criscardozo/stock.git
+# si ya lo tenías clonado:
+git submodule update --init
+# y una vez, para que `git pull` mueva también el contenido y no sólo el puntero:
+git config submodule.recurse true
+```
+
+Sin ese último paso, `git pull` deja el submódulo en el commit viejo sin decir
+nada: los scripts compartidos siguen corriendo la versión anterior y no hay
+error que lo indique. `git submodule status` lo muestra con un `+` adelante.
+
 ```sh
 pnpm install
 pnpm emulators          # Auth 9280, Firestore 8280, UI 4280
