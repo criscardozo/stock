@@ -45,7 +45,7 @@ const webPath = join(repoRoot, "apps/web/package.json");
 const web = JSON.parse(readFileSync(webPath, "utf8"));
 const yamlPath = join(repoRoot, "apps/ios/project.yml");
 const yaml = readFileSync(yamlPath, "utf8");
-const found = yaml.match(/MARKETING_VERSION: '[^']*'/g) ?? [];
+const found = yaml.match(/MARKETING_VERSION: "[^"]*"/g) ?? [];
 if (found.length !== IOS_TARGETS) {
   console.error(
     `Expected ${IOS_TARGETS} MARKETING_VERSION lines in project.yml, found ${found.length}.\n` +
@@ -58,10 +58,10 @@ if (found.length !== IOS_TARGETS) {
 }
 
 const wasWeb = web.version;
-const wasIos = found[0].split("'")[1];
+const wasIos = found[0].split('"')[1];
 web.version = version;
 writeFileSync(webPath, `${JSON.stringify(web, null, 2)}\n`);
-writeFileSync(yamlPath, yaml.replaceAll(/MARKETING_VERSION: '[^']*'/g, `MARKETING_VERSION: '${version}'`));
+writeFileSync(yamlPath, yaml.replaceAll(/MARKETING_VERSION: "[^"]*"/g, `MARKETING_VERSION: "${version}"`));
 
 console.log(`web  ${wasWeb} -> ${version}`);
 console.log(`iOS  ${wasIos} -> ${version}  (${IOS_TARGETS} targets)`);

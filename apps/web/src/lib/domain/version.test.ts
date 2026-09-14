@@ -23,7 +23,7 @@ const read = (path: string) => readFileSync(join(root, path), 'utf8')
 
 const webVersion = (JSON.parse(read('apps/web/package.json')) as { version: string }).version
 const projectYml = read('apps/ios/project.yml')
-const marketing = [...projectYml.matchAll(/MARKETING_VERSION: '([^']*)'/g)].map((m) => m[1])
+const marketing = [...projectYml.matchAll(/MARKETING_VERSION: "([^"]*)"/g)].map((m) => m[1])
 
 describe('one version, four copies', () => {
   it('the web version is x.y.z', () => {
