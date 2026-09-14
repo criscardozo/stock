@@ -41,22 +41,22 @@ extension Color {
 ///
 /// Same values as the web's Tailwind theme — do not invent colours here.
 enum Theme {
-    static let ground = Color.hex(light: 0xF3F4EE, dark: 0x141813)
-    static let surface = Color.hex(light: 0xFCFCF8, dark: 0x1E231C)
+    static let ground = Color.hex(light: 0xF4F4F4, dark: 0x161616)
+    static let surface = Color.hex(light: 0xFCFCFC, dark: 0x212121)
 
-    static let ink = Color.hex(light: 0x1B2119, dark: 0xECEFE9)
-    static let ink2 = Color.hex(light: 0x7C8578, dark: 0x9AA396)
-    static let ink3 = Color.hex(light: 0x6E776A, dark: 0x8A9386)
-    static let ink4 = Color.hex(light: 0x9AA394, dark: 0x4A5247)
+    static let ink = Color.hex(light: 0x1F1F1F, dark: 0xEEEEEE)
+    static let ink2 = Color.hex(light: 0x838383, dark: 0xA1A1A1)
+    static let ink3 = Color.hex(light: 0x747474, dark: 0x919191)
+    static let ink4 = Color.hex(light: 0xA1A1A1, dark: 0x4A5247)
 
-    static let line = Color.hex(light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.09, darkAlpha: 0.10)
+    static let line = Color.hex(light: 0x1F1F1F, dark: 0xEEEEEE, lightAlpha: 0.09, darkAlpha: 0.10)
     static let lineSoft = Color.hex(
-        light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.07, darkAlpha: 0.08)
+        light: 0x1F1F1F, dark: 0xEEEEEE, lightAlpha: 0.07, darkAlpha: 0.08)
     static let lineStrong = Color.hex(
-        light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.18, darkAlpha: 0.20)
-    static let track = Color.hex(light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.11, darkAlpha: 0.14)
+        light: 0x1F1F1F, dark: 0xEEEEEE, lightAlpha: 0.18, darkAlpha: 0.20)
+    static let track = Color.hex(light: 0x1F1F1F, dark: 0xEEEEEE, lightAlpha: 0.11, darkAlpha: 0.14)
     static let neutralSoft = Color.hex(
-        light: 0x1B2119, dark: 0xECEFE9, lightAlpha: 0.07, darkAlpha: 0.08)
+        light: 0x1F1F1F, dark: 0xEEEEEE, lightAlpha: 0.07, darkAlpha: 0.08)
 
     static let primary = Color.hex(light: 0x2E9E5B, dark: 0x45BC72)
     static let primaryDeep = Color.hex(light: 0x1D7A43, dark: 0x7FD79E)
@@ -75,7 +75,7 @@ enum Theme {
     /// repaint itself when the system flips — only the green under it
     /// brightens. Declared as a pair anyway so the token test can hold web and
     /// iOS to it.
-    static let markGlyph = Color.hex(light: 0xFCFCF8, dark: 0xFCFCF8)
+    static let markGlyph = Color.hex(light: 0xFCFCFC, dark: 0xFCFCFC)
 
     static let danger = Color.hex(light: 0xE5484D, dark: 0xFF6B6E)
     static let dangerDeep = Color.hex(light: 0xC0353A, dark: 0xFF8C8E)

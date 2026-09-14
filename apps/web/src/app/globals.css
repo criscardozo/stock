@@ -10,19 +10,19 @@
  * palette below arrive as ONE extra block rather than a rewrite.
  */
 :root {
-  --ground: #f3f4ee;
-  --surface: #fcfcf8;
+  --ground: #f4f4f4;
+  --surface: #fcfcfc;
 
-  --ink: #1b2119;
-  --ink-secondary: #7c8578;
-  --ink-tertiary: #6e776a;
-  --ink-quaternary: #9aa394;
+  --ink: #1f1f1f;
+  --ink-secondary: #838383;
+  --ink-tertiary: #747474;
+  --ink-quaternary: #a1a1a1;
 
-  --line-card: rgba(27, 33, 25, 0.09);
-  --line-soft: rgba(27, 33, 25, 0.07);
-  --line-strong: rgba(27, 33, 25, 0.18);
-  --neutral-soft: rgba(27, 33, 25, 0.07);
-  --track: rgba(27, 33, 25, 0.11);
+  --line-card: rgba(31, 31, 31, 0.09);
+  --line-soft: rgba(31, 31, 31, 0.07);
+  --line-strong: rgba(31, 31, 31, 0.18);
+  --neutral-soft: rgba(31, 31, 31, 0.07);
+  --track: rgba(31, 31, 31, 0.11);
 
   --primary: #2e9e5b;
   --primary-deep: #1d7a43;
@@ -35,7 +35,7 @@
   /* The drawing on that field. Cream in BOTH appearances, unlike everything
      else here: the mark is the icon, and the icon does not repaint itself when
      the system flips. Only the green underneath it brightens. */
-  --mark-glyph: #fcfcf8;
+  --mark-glyph: #fcfcfc;
 
   --danger: #e5484d;
   --danger-deep: #c0353a;
@@ -82,19 +82,19 @@
  */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --ground: #141813;
-    --surface: #1e231c;
+    --ground: #161616;
+    --surface: #212121;
 
-    --ink: #ecefe9;
-    --ink-secondary: #9aa396;
-    --ink-tertiary: #8a9386;
+    --ink: #eeeeee;
+    --ink-secondary: #a1a1a1;
+    --ink-tertiary: #919191;
     --ink-quaternary: #4a5247;
 
-    --line-card: rgba(236, 239, 233, 0.1);
-    --line-soft: rgba(236, 239, 233, 0.08);
-    --line-strong: rgba(236, 239, 233, 0.2);
-    --neutral-soft: rgba(236, 239, 233, 0.08);
-    --track: rgba(236, 239, 233, 0.14);
+    --line-card: rgba(238, 238, 238, 0.1);
+    --line-soft: rgba(238, 238, 238, 0.08);
+    --line-strong: rgba(238, 238, 238, 0.2);
+    --neutral-soft: rgba(238, 238, 238, 0.08);
+    --track: rgba(238, 238, 238, 0.14);
 
     --primary: #45bc72;
     --primary-deep: #7fd79e;
@@ -104,7 +104,7 @@
     /* Unchanged from light, and repeated here on purpose: the mark's drawing
        does not repaint when the system flips, and stating it is what lets the
        token test hold both halves to the same value. */
-    --mark-glyph: #fcfcf8;
+    --mark-glyph: #fcfcfc;
     /* Text ON the accent: near-black, because the accent is now light. */
     --on-primary: #0f1a12;
 
@@ -141,19 +141,19 @@
 
 /* Manual dark override — same values as the media-query block above. */
 :root[data-theme='dark'] {
-  --ground: #141813;
-  --surface: #1e231c;
+  --ground: #161616;
+  --surface: #212121;
 
-  --ink: #ecefe9;
-  --ink-secondary: #9aa396;
-  --ink-tertiary: #8a9386;
+  --ink: #eeeeee;
+  --ink-secondary: #a1a1a1;
+  --ink-tertiary: #919191;
   --ink-quaternary: #4a5247;
 
-  --line-card: rgba(236, 239, 233, 0.1);
-  --line-soft: rgba(236, 239, 233, 0.08);
-  --line-strong: rgba(236, 239, 233, 0.2);
-  --neutral-soft: rgba(236, 239, 233, 0.08);
-  --track: rgba(236, 239, 233, 0.14);
+  --line-card: rgba(238, 238, 238, 0.1);
+  --line-soft: rgba(238, 238, 238, 0.08);
+  --line-strong: rgba(238, 238, 238, 0.2);
+  --neutral-soft: rgba(238, 238, 238, 0.08);
+  --track: rgba(238, 238, 238, 0.14);
 
   --primary: #45bc72;
   --primary-deep: #7fd79e;
@@ -163,7 +163,7 @@
   /* Unchanged from light, and repeated here on purpose: the mark's drawing
      does not repaint when the system flips, and stating it is what lets the
      token test hold both halves to the same value. */
-  --mark-glyph: #fcfcf8;
+  --mark-glyph: #fcfcfc;
   /* Text ON the accent: near-black, because the accent is now light. */
   --on-primary: #0f1a12;
 
@@ -264,7 +264,7 @@
 
   /* The one strong shadow in the system, and it is coloured, never black. */
   --shadow-primary: 0 8px 20px rgba(46, 158, 91, 0.35);
-  --shadow-sheet: 0 20px 50px rgba(27, 33, 25, 0.14);
+  --shadow-sheet: 0 20px 50px rgba(31, 31, 31, 0.14);
   --shadow-lift: 0 6px 18px rgba(46, 158, 91, 0.14);
 }
 
