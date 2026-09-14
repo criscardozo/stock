@@ -30,13 +30,22 @@ interface AuthState {
 const Ctx = createContext<AuthState | null>(null)
 
 /** Installed PWAs run standalone, where a popup's handshake back is unreliable. */
-function isStandalone(): boolean {
+export function isStandalone(): boolean {
   if (typeof window === 'undefined') return false
-  return (
-    window.matchMedia('(display-mode: standalone)').matches ||
-    // iOS Safari's own flag, which predates the standard media query.
-    (window.navigator as { standalone?: boolean }).standalone === true
+  // iOS Safari's own flag first: it predates the standard media query and is the
+  // one that answers on the device this app is actually installed on.
+  if ((window.navigator as { standalone?: boolean }).standalone === true) return true
+  // `standalone` is not the only display mode without a usable popup —
+  // `fullscreen` and `minimal-ui` are equally installed windows.
+  return ['standalone', 'fullscreen', 'minimal-ui'].some(
+    (mode) => window.matchMedia(`(display-mode: ${mode})`).matches,
   )
+}
+
+/** Closing the popup is a decision, not a failure to route around. */
+export function isUserCancelled(error: unknown): boolean {
+  const code = (error as { code?: string } | null)?.code
+  return code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request'
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -56,7 +65,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await signInWithRedirect(auth(), provider)
       return
     }
-    await signInWithPopup(auth(), provider)
+    try {
+      await signInWithPopup(auth(), provider)
+    } catch (error) {
+      // A popup can be unusable for reasons that are not the person changing
+      // their mind — blocked by the browser, or a context that refuses to open
+      // one — and without this the login button simply does nothing. Redirect
+      // always works; it is the worse experience, not the broken one.
+      if (isUserCancelled(error)) throw error
+      await signInWithRedirect(auth(), provider)
+    }
   }
 
   const signOut = async () => {
