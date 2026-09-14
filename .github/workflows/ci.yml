@@ -33,6 +33,17 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+      # The web suite reads the submodule: kyber-config.test.ts asserts it is
+      # checked out at all, because an uninitialised submodule is an empty
+      # directory and everything pointing into it goes quiet instead of loud.
+      - id: kyber
+        run: echo "sha=$(git rev-parse HEAD:kyber)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          repository: criscardozo/kyber
+          ref: ${{ steps.kyber.outputs.sha }}
+          ssh-key: ${{ secrets.KYBER_DEPLOY_KEY }}
+          path: kyber
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
