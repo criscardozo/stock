@@ -113,28 +113,30 @@ Exige **un cambio de consola por dominio** ⏳:
 `localhost` no necesita nada: `next dev` aplica el mismo rewrite y ya está
 autorizado.
 
-### El submódulo `kyber` y Vercel ⏳
+### El submódulo `kyber` y Vercel
 
-`.gitmodules` apunta a kyber por **HTTPS** porque Vercel no clona submódulos por
-SSH. Pero HTTPS no alcanza: kyber es **privado**, así que la GitHub App de Vercel
-necesita acceso a *ese* repo además de a `stock`. Se lo da en
-[GitHub → Settings → Applications → Vercel → Repository access][vercelapp],
-agregando `criscardozo/kyber`.
+**Vercel no clona submódulos privados.** No es una cuestión de permisos: su
+documentación de build dice que un submódulo se despliega sólo si es accesible
+públicamente por HTTP, y los privados o por SSH fallan en el clone. Medido con
+la GitHub App en *All repositories*: el warning sigue igual.
 
-**Sin ese permiso el deploy queda verde igual.** El build imprime una sola línea
-entre el clon y la compilación:
+Así que todo deploy imprime una línea entre el clon y la compilación —
 
 ```
 Warning: Failed to fetch one or more git submodules
 ✓ Compiled successfully
 ```
 
-y sigue, porque hoy nada del bundle importa desde `kyber/`. El día que algo lo
-importe, el error va a ser un `Module not found` con la causa semanas atrás. Por
-eso, **después de tocar `.gitmodules` se lee el log del build**, no el color del
-deploy: es la única falla de esta migración que no cambia nada de lo que se mira.
+— y queda **verde con `kyber/` vacío**, de forma permanente mientras kyber sea
+privado. No rompe nada **mientras nada de lo que entra al bundle venga de
+`kyber/`**. Los scripts, los tests, los hooks y CI no se ven afectados: corren
+donde el submódulo sí está.
 
-[vercelapp]: https://github.com/settings/installations
+Como el warning es permanente, leer el log no protege de nada: sólo avisa el día
+que alguien se acuerde de leerlo. Lo que protege es
+`apps/web/src/lib/domain/kyber-config.test.ts`, que falla si algún archivo del
+bundle importa desde el submódulo. Si algún día hace falta, la salida no es
+configurar Vercel: es kyber público, o publicarlo como dependencia privada.
 
 ## 4. Instalar la PWA en el iPhone
 

@@ -153,3 +153,30 @@ describe('the submodule is actually here', () => {
     })
   })
 })
+
+describe('nothing the bundle ships comes from the submodule', () => {
+  it('no file under apps/web/src imports from kyber/', () => {
+    // Vercel cannot clone a private submodule — not a permission, a documented
+    // limit — so every deploy builds with `kyber/` empty and stays green. The
+    // warning it prints is permanent, which makes reading the log worth
+    // nothing: it says the same thing on the day it matters and on every other
+    // day. This is the part that only speaks when something changed.
+    //
+    // Scripts, tests, hooks and CI are unaffected: they run where the submodule
+    // is there. The line is the deployed bundle.
+    const offenders = execFileSync('git', ['ls-files', '-co', '--exclude-standard', 'apps/web/src'], {
+      cwd: root,
+      encoding: 'utf8',
+    })
+      .split('\n')
+      .filter((path) => /\.(ts|tsx|css)$/.test(path))
+      .filter((path) => /from\s+['"][^'"]*kyber\/|@import\s+['"][^'"]*kyber\//.test(read(path)))
+    expect({
+      offenders,
+      why: 'Vercel builds with kyber/ empty; this would be Module not found in production',
+    }).toEqual({
+      offenders: [],
+      why: 'Vercel builds with kyber/ empty; this would be Module not found in production',
+    })
+  })
+})
