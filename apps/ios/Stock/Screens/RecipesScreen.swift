@@ -19,7 +19,7 @@ struct RecipesScreen: View {
             ScrollView {
                 LazyVStack(spacing: 10) {
                     Text("Recetas")
-                        .font(.stock(18, .bold))
+                        .appFont(18, .bold)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 20)
                         .padding(.top, 6)
@@ -63,9 +63,9 @@ struct RecipesScreen: View {
         return HStack(spacing: 12) {
             HueBadge(icon: recipe.icon ?? "restaurant", hue: "green", size: 42)
             VStack(alignment: .leading, spacing: 3) {
-                Text(recipe.title).font(.stock(16, .bold))
+                Text(recipe.title).appFont(16, .bold)
                 Text("\(recipe.servings) porciones · \(recipe.timesCooked) veces")
-                    .font(.stock(12))
+                    .appFont(12)
                     .foregroundStyle(Theme.ink2)
             }
             Spacer()
@@ -94,16 +94,16 @@ struct RecipesScreen: View {
     private var recipeSearchField: some View {
         HStack(spacing: 9) {
             Image(systemName: "magnifyingglass")
-                .font(.stockSymbol(15, .semibold))
+                .appSymbol(15, .semibold)
                 .foregroundStyle(Theme.ink3)
             TextField("Buscar", text: $search)
-                .font(.stock(15))
+                .appFont(15)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
             if !search.isEmpty {
                 Button { search = "" } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.stockSymbol(15))
+                        .appSymbol(15)
                         .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)
@@ -141,7 +141,7 @@ struct RecipeDetailSheet: View {
                         Label("\(recipe.servings) porciones", systemImage: "person.2.fill")
                         Label("\(recipe.timesCooked) veces", systemImage: "arrow.clockwise")
                     }
-                    .font(.stock(13))
+                    .appFont(13)
                     .foregroundStyle(Theme.ink2)
 
                     SectionLabel(text: "Ingredientes")
@@ -159,7 +159,7 @@ struct RecipeDetailSheet: View {
                     if let steps = recipe.steps, !steps.isEmpty {
                         SectionLabel(text: "Preparación")
                         Text(steps)
-                            .font(.stock(14))
+                            .appFont(14)
                             .lineSpacing(4)
                             .padding(16)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -167,7 +167,7 @@ struct RecipeDetailSheet: View {
                     }
 
                     Text("Los ingredientes de texto libre no generan faltantes: inventar «250 g de sal» sería peor que no decir nada.")
-                        .font(.stock(12))
+                        .appFont(12)
                         .foregroundStyle(Theme.ink3)
                 }
                 .padding(20)

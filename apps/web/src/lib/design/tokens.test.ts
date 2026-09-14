@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -280,5 +281,46 @@ describe('the type scale is one scale, not two', () => {
     // changed `$extensions` shape — cannot pass by having nothing to check.
     expect({ counted: sizes.length, drift }).toEqual({ counted: sizes.length, drift: [] })
     expect(sizes.length).toBeGreaterThan(8)
+  })
+})
+
+describe('typography is applied one way', () => {
+  /**
+   * `View.appFont(15, .semibold)`, never `Font.stock(15)`. Both produced the same
+   * font; the difference is what a script can do with them.
+   *
+   * A modifier is a CALL SITE — it sits where the text is, so an emitter that
+   * rewrites the scale can find it and a sweep like this one can count it. A
+   * `Font` value can be assigned to a variable, stored in a model, returned from
+   * a function, and applied three files away. Gastos Diarios settled on the
+   * modifier for exactly that reason and its emitter assumes it, so adopting the
+   * shape here is what lets one emitter serve both without a branch.
+   *
+   * Which means the old spelling coming back is not a style slip. It is a call
+   * site the shared tooling cannot see, and nothing else would report it.
+   */
+  it('no Swift file applies a font the old way', () => {
+    const files = execFileSync('git', ['ls-files', 'apps/ios/**/*.swift'], {
+      cwd: root,
+      encoding: 'utf8',
+    })
+      .split('\n')
+      .filter(Boolean)
+
+    const offenders: string[] = []
+    let swept = 0
+    for (const file of files) {
+      const text = readFileSync(join(root, file), 'utf8')
+      swept += 1
+      text.split('\n').forEach((line, i) => {
+        // Skip comments: this file's own doc comment names the old spelling in
+        // order to explain why it is gone, and so does Theme.swift's.
+        if (line.trimStart().startsWith('//')) return
+        if (/\.font\(\s*\.stock/.test(line) || /Font\.stock\s*\(/.test(line)) {
+          offenders.push(`${file}:${i + 1}`)
+        }
+      })
+    }
+    expect({ swept: swept > 20, offenders }).toEqual({ swept: true, offenders: [] })
   })
 })

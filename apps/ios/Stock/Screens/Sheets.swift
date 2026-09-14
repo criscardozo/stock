@@ -23,7 +23,7 @@ struct CloseShoppingSheet: View {
                             let item = entry.itemId.flatMap { store.itemsById[$0] }
                             VStack(spacing: 0) {
                                 HStack(spacing: 12) {
-                                    Text(entry.label).font(.stock(15, .semibold))
+                                    Text(entry.label).appFont(15, .semibold)
                                     Spacer()
                                     if let item, item.tracking == .quantity {
                                         Stepper(
@@ -39,7 +39,7 @@ struct CloseShoppingSheet: View {
                                         // left in the open one.
                                         HStack(spacing: 8) {
                                             Text("sin abrir")
-                                                .font(.stock(12))
+                                                .appFont(12)
                                                 .foregroundStyle(Theme.ink3)
                                             Stepper(
                                                 value: amounts[entry.id] ?? 0,
@@ -54,7 +54,7 @@ struct CloseShoppingSheet: View {
                                             name: entry.label
                                         ) { levels[entry.id] = $0 }
                                     } else {
-                                        Text("suelto").font(.stock(12)).foregroundStyle(Theme.ink3)
+                                        Text("suelto").appFont(12).foregroundStyle(Theme.ink3)
                                     }
                                 }
                                 .padding(.vertical, 12)
@@ -64,7 +64,7 @@ struct CloseShoppingSheet: View {
                     }
 
                     Text("Lo tildado entra al stock y sale de la lista. Lo que no conseguiste queda para la próxima.")
-                        .font(.stock(12))
+                        .appFont(12)
                         .foregroundStyle(Theme.ink3)
 
                     PrimaryButton(icon: "checkmark", title: "Guardar y cerrar", action: confirm)
@@ -131,12 +131,12 @@ struct CookSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     Text("Destildá lo que no gastaste.")
-                        .font(.stock(13))
+                        .appFont(13)
                         .foregroundStyle(Theme.ink2)
 
                     if linked.isEmpty {
                         Text("Esta receta no tiene ingredientes linkeados al catálogo, así que no hay nada que descontar.")
-                            .font(.stock(14))
+                            .appFont(14)
                             .foregroundStyle(Theme.ink2)
                             .padding(16)
                             .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
@@ -159,7 +159,7 @@ struct CookSheet: View {
                                             }
                                             .buttonStyle(.plain)
 
-                                            Text(item.name).font(.stock(15, .semibold))
+                                            Text(item.name).appFont(15, .semibold)
                                             Spacer()
 
                                             if enabled[item.id] ?? true {
@@ -179,7 +179,7 @@ struct CookSheet: View {
                                                 }
                                             } else {
                                                 Text("no descontar")
-                                                    .font(.stock(12))
+                                                    .appFont(12)
                                                     .foregroundStyle(Theme.ink3)
                                             }
                                         }
@@ -195,7 +195,7 @@ struct CookSheet: View {
 
                     PrimaryButton(icon: "checkmark", title: "Descontar y marcar") { confirm(all: true) }
                     Button("Solo marcar cocinada") { confirm(all: false) }
-                        .font(.stock(14, .semibold))
+                        .appFont(14, .semibold)
                         .foregroundStyle(Theme.ink2)
                         .frame(maxWidth: .infinity)
                 }
@@ -539,12 +539,12 @@ struct MoveHistorySection: View {
         Section("Últimos movimientos") {
             if failed {
                 Text("No pude leer el historial.")
-                    .font(.stock(12))
+                    .appFont(12)
                     .foregroundStyle(Theme.ink3)
             } else if let moves {
                 if moves.isEmpty {
                     Text("Todavía no se movió desde que está en la casa.")
-                        .font(.stock(12))
+                        .appFont(12)
                         .foregroundStyle(Theme.ink3)
                 } else {
                     ForEach(moves) { move in
@@ -553,7 +553,7 @@ struct MoveHistorySection: View {
                 }
             } else {
                 Text("Buscando…")
-                    .font(.stock(12))
+                    .appFont(12)
                     .foregroundStyle(Theme.ink3)
             }
         }
@@ -570,23 +570,23 @@ struct MoveHistorySection: View {
     private func row(_ move: Move) -> some View {
         HStack(spacing: 12) {
             Image(systemName: Self.icon(move.type))
-                .font(.stockSymbol(13))
+                .appSymbol(13)
                 .foregroundStyle(Theme.ink2)
                 .frame(width: 26, height: 26)
                 .background(Theme.ground, in: Circle())
 
             VStack(alignment: .leading, spacing: 1) {
                 Text(Self.label(move.type))
-                    .font(.stock(13, .semibold))
+                    .appFont(13, .semibold)
                 Text(subtitle(move))
-                    .font(.stock(11.5))
+                    .appFont(11.5)
                     .foregroundStyle(Theme.ink3)
             }
 
             Spacer(minLength: 8)
 
             Text(amount(move))
-                .font(.stock(13, .bold))
+                .appFont(13, .bold)
                 .monospacedDigit()
         }
     }

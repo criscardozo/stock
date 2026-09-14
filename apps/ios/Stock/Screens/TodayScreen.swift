@@ -13,11 +13,11 @@ struct TodayScreen: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Hoy")
-                        .font(.stock(18, .bold))
+                        .appFont(18, .bold)
                         .padding(.horizontal, 20)
                         .padding(.top, 6)
                     Text(DayFormat.long(store.today))
-                        .font(.stock(13, .semibold))
+                        .appFont(13, .semibold)
                         .foregroundStyle(Theme.ink2)
                         .padding(.horizontal, 20)
 
@@ -25,8 +25,8 @@ struct TodayScreen: View {
                         meal(recipe)
                     } else if let label = store.todaysDay?.label {
                         VStack(alignment: .leading, spacing: 10) {
-                            Text(label).font(.stock(26, .bold))
-                            Text("Nada que cocinar hoy.").font(.stock(14)).foregroundStyle(Theme.ink2)
+                            Text(label).appFont(26, .bold)
+                            Text("Nada que cocinar hoy.").appFont(14).foregroundStyle(Theme.ink2)
                         }
                         .padding(.horizontal, 20)
                     } else {
@@ -36,7 +36,7 @@ struct TodayScreen: View {
                             message: "Elegí algo de las recetas o dejalo libre."
                         )
                         Button("Elegir una receta") { picking = true }
-                            .font(.stock(15, .bold))
+                            .appFont(15, .bold)
                             .foregroundStyle(Theme.primaryDeep)
                             .frame(maxWidth: .infinity)
                     }
@@ -44,7 +44,7 @@ struct TodayScreen: View {
                     if let next = tomorrow {
                         VStack(alignment: .leading, spacing: 6) {
                             SectionLabel(text: "Mañana")
-                            Text(next).font(.stock(15, .semibold))
+                            Text(next).appFont(15, .semibold)
                         }
                         .padding(.horizontal, 20)
                     }
@@ -76,12 +76,12 @@ struct TodayScreen: View {
 
         VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 6) {
-                Text(recipe.title).font(.stock(28, .bold))
+                Text(recipe.title).appFont(28, .bold)
                 HStack(spacing: 14) {
                     Label("\(recipe.servings) porciones", systemImage: "person.2.fill")
                     Label("\(recipe.timesCooked) veces", systemImage: "arrow.clockwise")
                 }
-                .font(.stock(13))
+                .appFont(13)
                 .foregroundStyle(Theme.ink2)
             }
 
@@ -96,7 +96,7 @@ struct TodayScreen: View {
                     )
                     Spacer()
                     Button("A la lista") { sendMissing(recipe) }
-                        .font(.stock(13, .bold))
+                        .appFont(13, .bold)
                         .foregroundStyle(Theme.primaryDeep)
                 }
             }
@@ -116,7 +116,7 @@ struct TodayScreen: View {
             if let steps = recipe.steps, !steps.isEmpty {
                 SectionLabel(text: "Preparación")
                 Text(steps)
-                    .font(.stock(14))
+                    .appFont(14)
                     .lineSpacing(4)
                     .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -169,19 +169,19 @@ struct IngredientRow: View {
         VStack(spacing: 0) {
             HStack(spacing: 10) {
                 Image(systemName: icon)
-                    .font(.stockSymbol(15, .semibold))
+                    .appSymbol(15, .semibold)
                     .foregroundStyle(colour)
-                Text(ingredient.label).font(.stock(15, .semibold))
+                Text(ingredient.label).appFont(15, .semibold)
                 Spacer()
                 if let quantity = ingredient.quantity, let unit = ingredient.unit {
                     Text(Quantities.format(quantity, unit))
-                        .font(.stock(13))
+                        .appFont(13)
                         .monospacedDigit()
                         .foregroundStyle(Theme.ink2)
                 } else if status == .unlinked {
-                    Text("texto libre").font(.stock(12)).foregroundStyle(Theme.ink3)
+                    Text("texto libre").appFont(12).foregroundStyle(Theme.ink3)
                 } else if let item, item.tracking == .level {
-                    Text(Levels.name(item.level ?? 0)).font(.stock(12)).foregroundStyle(Theme.ink2)
+                    Text(Levels.name(item.level ?? 0)).appFont(12).foregroundStyle(Theme.ink2)
                 }
             }
             .padding(.vertical, 10)

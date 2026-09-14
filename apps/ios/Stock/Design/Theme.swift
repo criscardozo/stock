@@ -299,10 +299,26 @@ enum AppFont {
     }
 }
 
-extension Font {
-    static func stock(_ size: CGFloat, _ weight: Font.Weight = .regular) -> Font {
-        AppFont.font(size, weight)
+extension View {
+    /// Outfit typography shorthand: `.appFont(15, .semibold)`.
+    ///
+    /// A View modifier and not a `Font` value, which is the shape Gastos Diarios
+    /// settled on and the one its token emitter and `components.py` assume. The
+    /// difference is not cosmetic for them: a modifier is a call site a script can
+    /// find and rewrite, whereas `Font.stock(15)` can be assigned to a variable and
+    /// applied somewhere else entirely. Adopting it here means the shared emitter
+    /// needs no branch per consumer.
+    func appFont(_ size: CGFloat, _ weight: Font.Weight = .regular) -> some View {
+        font(AppFont.font(size, weight))
     }
+
+    /// An SF Symbol that grows with the text beside it. See `AppFont.scaledSymbol`.
+    func appSymbol(_ size: CGFloat, _ weight: Font.Weight = .regular) -> some View {
+        font(.stockSymbol(size, weight))
+    }
+}
+
+extension Font {
 
     /// An SF Symbol that grows with the text beside it.
     ///

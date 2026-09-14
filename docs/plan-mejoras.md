@@ -526,6 +526,16 @@ debe hacer caer exactamente su test.
 
 ### 2.1 · iOS es inutilizable con texto grande
 
+> **Hecho, salvo un punto.** Lo de abajo es la evidencia del día que se escribió
+> y se deja tal cual: es lo que justificó el trabajo, no una descripción del
+> código de hoy. Medido ahora: **7** usos de `relativeTo:`, **11**
+> `accessibilityLabel`, **1** `accessibilityHidden`. Los puntos 1 y 2 están.
+> **El punto 3 sigue abierto: `accessibilityValue` está en 0.** El stepper dice
+> su nombre y no su cantidad.
+>
+> La API también cambió de nombre: `.stock(N, .peso)` pasó a ser el modifier
+> `.appFont(N, .peso)`, y los símbolos a `.appSymbol(N)`.
+
 **Evidencia.** 103 usos de `.stock(N)` con tamaño fijo, **0** usos de
 `@ScaledMetric` o `relativeTo:`, **1** `accessibilityLabel` en toda la app,
 **0** `accessibilityHint`/`Value`. Una persona con "Texto más grande" activado

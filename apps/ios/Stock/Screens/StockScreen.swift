@@ -19,11 +19,11 @@ struct StockScreen: View {
                     // The title lives in the scroll at 18, not in UIKit's large
                     // title bar — that bar belongs to a different design system.
                     Text("Stock")
-                        .font(.stock(18, .bold))
+                        .appFont(18, .bold)
                         .padding(.horizontal, 20)
                         .padding(.top, 6)
                     Text(summary)
-                        .font(.stock(13))
+                        .appFont(13)
                         .foregroundStyle(Theme.ink2)
                         .padding(.horizontal, 20)
                     searchField
@@ -90,10 +90,10 @@ struct StockScreen: View {
     private var searchField: some View {
         HStack(spacing: 9) {
             Image(systemName: "magnifyingglass")
-                .font(.stockSymbol(15, .semibold))
+                .appSymbol(15, .semibold)
                 .foregroundStyle(Theme.ink3)
             TextField("Buscar en la casa", text: $search)
-                .font(.stock(15))
+                .appFont(15)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
             if !search.isEmpty {
@@ -101,7 +101,7 @@ struct StockScreen: View {
                     search = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.stockSymbol(15))
+                        .appSymbol(15)
                         .foregroundStyle(Theme.ink3)
                 }
                 .buttonStyle(.plain)
@@ -201,7 +201,7 @@ struct FilterPill: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.stock(13, active ? .bold : .semibold))
+                .appFont(13, active ? .bold : .semibold)
                 // On `ink`, not on white: in dark the ink token IS the light one,
                 // so a fixed white here is white on white.
                 .foregroundStyle(active ? Theme.ground : Theme.ink2)
@@ -255,7 +255,7 @@ struct ItemRow: View {
     private var nameAndSubtitle: some View {
         Button(action: onOpen) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.name).font(.stock(15, .semibold)).foregroundStyle(Theme.ink)
+                Text(item.name).appFont(15, .semibold).foregroundStyle(Theme.ink)
                 subtitle
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -326,15 +326,15 @@ struct ItemRow: View {
                     .compactMap { $0 }
                     .joined(separator: " · ")
             )
-            .font(.stock(12))
+            .appFont(12)
             .foregroundStyle(Theme.ink3)
         }
     }
 
     private func label(_ icon: String, _ text: String, _ colour: Color) -> some View {
         HStack(spacing: 4) {
-            Image(systemName: icon).font(.stockSymbol(11, .semibold))
-            Text(text).font(.stock(12, .semibold))
+            Image(systemName: icon).appSymbol(11, .semibold)
+            Text(text).appFont(12, .semibold)
         }
         .foregroundStyle(colour)
     }

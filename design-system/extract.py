@@ -156,11 +156,37 @@ def tracked(*globs) -> list:
     return out
 
 
+def code_only(text: str) -> str:
+    """Drop comments, so prose about a token is not counted as a use of it.
+
+    This is the third time today that a pattern found itself in a comment, and
+    the first two were caught by a test rather than by care. Here it was the doc
+    comment on `appFont` — which SHOWS the call as `.appFont(15, .semibold)` and
+    so counted as a sixteenth use of 15px. A count is exactly the kind of output
+    that absorbs an error like that without looking wrong.
+
+    Line-based on purpose. A regex that stripped everything after `//` would eat
+    the middle of a URL inside a string literal; dropping whole comment lines
+    cannot. The cost is that a trailing comment on a line of code is still read,
+    which is a real gap and is left standing rather than papered over: no line in
+    either platform currently has one, and the alternative trades a gap for a
+    false positive in string literals.
+    """
+    text = re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), text, flags=re.S)
+    keep = []
+    for line in text.split("\n"):
+        stripped = line.lstrip()
+        if stripped.startswith(("//", "*", "{/*")):
+            continue
+        keep.append(line)
+    return "\n".join(keep)
+
+
 def count(pattern: str, files: list) -> dict:
     """How often each captured value appears, across tracked files only."""
     tally: dict = {}
     for f in files:
-        for m in re.finditer(pattern, f.read_text(encoding="utf-8")):
+        for m in re.finditer(pattern, code_only(f.read_text(encoding="utf-8"))):
             tally[m[1]] = tally.get(m[1], 0) + 1
     return tally
 
@@ -202,7 +228,11 @@ def main() -> int:
     ios = tracked("apps/ios/**/*.swift")
 
     sizes_web = count(r"text-\[([0-9.]+)px\]", web)
-    sizes_ios = count(r"\.stock\(([0-9.]+)", ios)
+    # `.appFont(15, .semibold)`, the View modifier. Not `.stock(` — that used to
+    # be the spelling AND it is still the name of `ItemState.stock(item)`, an
+    # unrelated function. Counting the old pattern would have quietly mixed
+    # domain calls into the type scale.
+    sizes_ios = count(r"\.appFont\(([0-9.]+)", ios)
     type_tokens = {}
     for size in sorted(set(sizes_web) | set(sizes_ios), key=float):
         key = "s" + size.replace(".", "_")

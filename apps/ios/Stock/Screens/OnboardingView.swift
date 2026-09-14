@@ -19,9 +19,9 @@ struct OnboardingView: View {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 8) {
                     AppMark(size: 44)
-                    Text("Tu hogar").font(.stock(26, .bold))
+                    Text("Tu hogar").appFont(26, .bold)
                     Text("Creá uno nuevo o entrá con el código que te pasaron.")
-                        .font(.stock(14))
+                        .appFont(14)
                         .foregroundStyle(Theme.ink2)
                 }
 
@@ -30,7 +30,7 @@ struct OnboardingView: View {
                     TextField("Código de invitación", text: $code)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                        .font(.stock(16, .semibold))
+                        .appFont(16, .semibold)
                         .padding(14)
                         .background(RoundedRectangle(cornerRadius: 10).fill(Theme.ground))
                     PrimaryButton(title: "Unirme") { join() }
@@ -43,7 +43,7 @@ struct OnboardingView: View {
                     SectionLabel(text: "Empezar de cero")
                     TextField("Nombre", text: $name)
                     LimitNote(value: name, limit: FieldLimits.householdName)
-                        .font(.stock(16, .semibold))
+                        .appFont(16, .semibold)
                         .padding(14)
                         .background(RoundedRectangle(cornerRadius: 10).fill(Theme.ground))
                     Picker("Zona horaria", selection: $timezone) {
@@ -52,7 +52,7 @@ struct OnboardingView: View {
                     .pickerStyle(.menu)
                     .tint(Theme.ink)
                     Text("Las fechas del plan se calculan en esta zona, no en la del dispositivo.")
-                        .font(.stock(12))
+                        .appFont(12)
                         .foregroundStyle(Theme.ink3)
                     PrimaryButton(title: "Crear hogar") { create() }
                         .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || busy
@@ -62,15 +62,15 @@ struct OnboardingView: View {
                 .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
 
                 if let error {
-                    Text(error).font(.stock(13)).foregroundStyle(Theme.dangerDeep)
+                    Text(error).appFont(13).foregroundStyle(Theme.dangerDeep)
                 }
 
                 Text("Un hogar tiene dos miembros como máximo. El tercero lo rechazan las reglas, no la app.")
-                    .font(.stock(12))
+                    .appFont(12)
                     .foregroundStyle(Theme.ink3)
 
                 Button("Salir") { session.signOut() }
-                    .font(.stock(13))
+                    .appFont(13)
                     .foregroundStyle(Theme.ink3)
             }
             .padding(20)

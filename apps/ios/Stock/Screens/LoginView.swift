@@ -25,10 +25,10 @@ struct LoginView: View {
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("Qué hay en casa,\nqué falta,\nqué se cocina.")
-                    .font(.stock(30, .bold))
+                    .appFont(30, .bold)
                     .lineSpacing(2)
                 Text("El inventario y el plan de comidas, compartidos entre los dos.")
-                    .font(.stock(15))
+                    .appFont(15)
                     .foregroundStyle(Theme.ink2)
             }
 
@@ -39,7 +39,7 @@ struct LoginView: View {
             }
 
             if let error = session.error {
-                Text(error).font(.stock(13)).foregroundStyle(Theme.dangerDeep)
+                Text(error).appFont(13).foregroundStyle(Theme.dangerDeep)
             }
 
             if Session.useEmulators {
@@ -50,7 +50,7 @@ struct LoginView: View {
                             Button(email.split(separator: "@").first.map(String.init) ?? email) {
                                 Task { await session.devSignIn(email: email) }
                             }
-                            .font(.stock(13, .semibold))
+                            .appFont(13, .semibold)
                             .foregroundStyle(Theme.ink2)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
@@ -62,7 +62,7 @@ struct LoginView: View {
             }
 
             Text("Google es el único proveedor, en las dos plataformas: mezclar Apple y Google crea dos cuentas distintas para la misma persona.")
-                .font(.stock(12))
+                .appFont(12)
                 .foregroundStyle(Theme.ink3)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

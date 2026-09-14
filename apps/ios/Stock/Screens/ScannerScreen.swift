@@ -72,7 +72,7 @@ struct ScannerScreen: View {
                 guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
                 UIApplication.shared.open(url)
             }
-            .font(.stock(15, .bold))
+            .appFont(15, .bold)
             .foregroundStyle(Theme.primaryDeep)
         }
     }
@@ -88,15 +88,15 @@ struct ScannerScreen: View {
                             hue: store.household?.categories[known.categoryId]?.hue
                         )
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(known.name).font(.stock(17, .bold))
+                            Text(known.name).appFont(17, .bold)
                             Text("\(code) · ya está en tu catálogo")
-                                .font(.stock(12))
+                                .appFont(12)
                                 .foregroundStyle(Theme.ink2)
                         }
                     }
 
                     HStack {
-                        Text("Ahora hay").font(.stock(13, .semibold)).foregroundStyle(Theme.ink2)
+                        Text("Ahora hay").appFont(13, .semibold).foregroundStyle(Theme.ink2)
                         Spacer()
                         if known.tracking == .quantity {
                             Stepper(
@@ -115,23 +115,23 @@ struct ScannerScreen: View {
                         barcode = nil
                     }
                 } else if searching {
-                    ProgressView("Buscando…").font(.stock(14))
+                    ProgressView("Buscando…").appFont(14)
                 } else {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(lookedUp?.product?.name ?? "No está en el catálogo")
-                            .font(.stock(17, .bold))
+                            .appFont(17, .bold)
                         // Says which of the two happened. "Tampoco en Open Food
                         // Facts" was shown even when the phone never reached
                         // them, which is the opposite of what to do next.
                         Text(subtitle(for: code))
-                            .font(.stock(12))
+                            .appFont(12)
                             .foregroundStyle(Theme.ink2)
                     }
                     PrimaryButton(icon: "plus", title: "Crear ítem") { creating = true }
                 }
 
                 Button("Escanear otro") { reset() }
-                    .font(.stock(14, .semibold))
+                    .appFont(14, .semibold)
                     .foregroundStyle(Theme.ink2)
                     .frame(maxWidth: .infinity)
             }

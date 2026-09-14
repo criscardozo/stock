@@ -30,9 +30,9 @@ struct RootView: View {
             if let message = store.loadError {
                 HStack(spacing: 8) {
                     Image(systemName: "wifi.exclamationmark")
-                        .font(.stockSymbol(13, .semibold))
+                        .appSymbol(13, .semibold)
                     Text("No pude leer los datos. \(message)")
-                        .font(.stock(12, .semibold))
+                        .appFont(12, .semibold)
                         .lineLimit(2)
                 }
                 .foregroundStyle(Theme.ground)
@@ -120,11 +120,11 @@ struct EmptyStateView: View {
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.stockSymbol(34))
+                .appSymbol(34)
                 .foregroundStyle(Theme.ink3)
-            Text(title).font(.stock(17, .bold))
+            Text(title).appFont(17, .bold)
             Text(message)
-                .font(.stock(14))
+                .appFont(14)
                 .foregroundStyle(Theme.ink2)
                 .multilineTextAlignment(.center)
         }

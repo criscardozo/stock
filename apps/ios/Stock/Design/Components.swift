@@ -60,9 +60,9 @@ struct Chip: View {
     var body: some View {
         HStack(spacing: 5) {
             if let icon {
-                Image(systemName: icon).font(.stockSymbol(11, .bold))
+                Image(systemName: icon).appSymbol(11, .bold)
             }
-            Text(text).font(.stock(12, .bold))
+            Text(text).appFont(12, .bold)
         }
         .foregroundStyle(tone.foreground)
         .padding(.horizontal, 11)
@@ -96,7 +96,7 @@ struct Stepper: View {
                 onChange(max(0, value - step))
             } label: {
                 Image(systemName: "minus")
-                    .font(.stockSymbol(15, .semibold))
+                    .appSymbol(15, .semibold)
                     .foregroundStyle(value == 0 ? Theme.ink4 : Theme.ink2)
                     .frame(width: tapWidth, height: tapHeight)
             }
@@ -113,7 +113,7 @@ struct Stepper: View {
             .accessibilityLabel("Restar \(name)")
 
             Text(label)
-                .font(.stock(14, .bold))
+                .appFont(14, .bold)
                 .monospacedDigit()
                 .frame(minWidth: 58)
                 // The reading is the value of the thing named on either side of
@@ -124,7 +124,7 @@ struct Stepper: View {
                 onChange(value + step)
             } label: {
                 Image(systemName: "plus")
-                    .font(.stockSymbol(15, .semibold))
+                    .appSymbol(15, .semibold)
                     .foregroundStyle(Theme.ink2)
                     .frame(width: tapWidth, height: tapHeight)
             }
@@ -175,7 +175,7 @@ struct LevelDial: View {
             }
             if showName {
                 Text(Levels.name(level))
-                    .font(.stock(12, .semibold))
+                    .appFont(12, .semibold)
                     .foregroundStyle(Theme.ink2)
                     .frame(width: 40, alignment: .leading)
                     .accessibilityLabel("\(name): \(Levels.name(level))")
@@ -189,7 +189,7 @@ struct SectionLabel: View {
 
     var body: some View {
         Text(text.uppercased())
-            .font(.stock(11, .bold))
+            .appFont(11, .bold)
             .tracking(0.8)
             .foregroundStyle(Theme.ink3)
             .padding(.leading, 4)
@@ -219,8 +219,8 @@ struct PrimaryButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                if let icon { Image(systemName: icon).font(.stockSymbol(17, .bold)) }
-                Text(title).font(.stock(16, .bold))
+                if let icon { Image(systemName: icon).appSymbol(17, .bold) }
+                Text(title).appFont(16, .bold)
             }
             .foregroundStyle(Theme.onPrimary)
             .frame(maxWidth: .infinity, minHeight: 54)
@@ -243,7 +243,7 @@ struct Avatar: View {
             .frame(width: size, height: size)
             .overlay(
                 Text(String(name?.prefix(1) ?? "?").uppercased())
-                    .font(.stock(size * 0.47, .bold))
+                    .appFont(size * 0.47, .bold)
                     .foregroundStyle(.white)
             )
     }
@@ -338,7 +338,7 @@ struct LimitNote: View {
     var body: some View {
         if let note = FieldLimits.note(value, limit) {
             Text(note)
-                .font(.stock(11.5, .semibold))
+                .appFont(11.5, .semibold)
                 .foregroundStyle(Theme.dangerDeep)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }

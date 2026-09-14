@@ -15,7 +15,7 @@ struct ShoppingScreen: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 14) {
                     Text("Falta")
-                        .font(.stock(18, .bold))
+                        .appFont(18, .bold)
                         .padding(.horizontal, 20)
                         .padding(.top, 6)
                     if !store.list.isEmpty { progress }
@@ -62,7 +62,7 @@ struct ShoppingScreen: View {
                 if !checked.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Cerrar compra") { closing = true }
-                            .font(.stock(15, .bold))
+                            .appFont(15, .bold)
                     }
                 }
             }
@@ -73,10 +73,10 @@ struct ShoppingScreen: View {
     private var progress: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text("En el changuito").font(.stock(13, .semibold)).foregroundStyle(Theme.ink2)
+                Text("En el changuito").appFont(13, .semibold).foregroundStyle(Theme.ink2)
                 Spacer()
                 Text("\(checked.count) de \(store.list.count)")
-                    .font(.stock(13)).monospacedDigit().foregroundStyle(Theme.ink3)
+                    .appFont(13).monospacedDigit().foregroundStyle(Theme.ink3)
             }
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
@@ -97,7 +97,7 @@ struct ShoppingScreen: View {
             HStack(spacing: 12) {
                 Image(systemName: "plus.circle").foregroundStyle(Theme.ink3)
                 TextField("Agregar algo suelto…", text: $manual)
-                    .font(.stock(15))
+                    .appFont(15)
                     .onSubmit(addManual)
                 // The button leaves rather than going grey: there is nothing
                 // else in this row to explain a disabled control, and the note
@@ -106,7 +106,7 @@ struct ShoppingScreen: View {
                    FieldLimits.overBy(manual, FieldLimits.shoppingLabel) == 0 {
                     Button("Agregar", action: addManual)
                         .accessibilityLabel("Agregar a la lista")
-                        .font(.stock(13, .bold))
+                        .appFont(13, .bold)
                         .foregroundStyle(Theme.primaryDeep)
                 }
             }
@@ -128,7 +128,7 @@ struct ShoppingScreen: View {
                 SectionLabel(text: "Sugerencias (\(store.orderedSuggestions.count))")
                 Spacer()
                 Button("Agregar todo") { store.orderedSuggestions.forEach(add) }
-                    .font(.stock(13, .semibold))
+                    .appFont(13, .semibold)
                     .foregroundStyle(Theme.ink2)
             }
             Card {
@@ -141,20 +141,20 @@ struct ShoppingScreen: View {
                                     hue: store.household?.categories[item.categoryId]?.hue
                                 )
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(item.name).font(.stock(15, .semibold))
+                                    Text(item.name).appFont(15, .semibold)
                                     Text(reason(for: suggestion, item: item))
-                                        .font(.stock(12))
+                                        .appFont(12)
                                         .foregroundStyle(Theme.ink2)
                                 }
                                 Spacer()
                                 if let quantity = suggestion.quantity {
                                     Text(Quantities.format(quantity, item.unit ?? .unit))
-                                        .font(.stock(13, .bold))
+                                        .appFont(13, .bold)
                                         .monospacedDigit()
                                 }
                                 Button { add(suggestion) } label: {
                                     Text("Agregar")
-                                        .font(.stock(12, .bold))
+                                        .appFont(12, .bold)
                                         .foregroundStyle(Theme.primaryDeep)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 6)
@@ -295,7 +295,7 @@ struct ShoppingRow: View {
                         )
                         .overlay(
                             Image(systemName: "checkmark")
-                                .font(.stockSymbol(13, .bold))
+                                .appSymbol(13, .bold)
                                 .foregroundStyle(Theme.onPrimary)
                                 .opacity(entry.checked ? 1 : 0)
                         )
@@ -316,10 +316,10 @@ struct ShoppingRow: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(entry.label)
-                        .font(.stock(15, .semibold))
+                        .appFont(15, .semibold)
                         .strikethrough(entry.checked)
                     Text(entry.reason ?? (entry.source == .manual ? "lo agregó \(memberName ?? "alguien")" : ""))
-                        .font(.stock(12))
+                        .appFont(12)
                         .foregroundStyle(Theme.ink2)
                 }
 
@@ -327,14 +327,14 @@ struct ShoppingRow: View {
 
                 if entry.pending {
                     Image(systemName: "icloud.slash")
-                        .font(.stockSymbol(13, .semibold))
+                        .appSymbol(13, .semibold)
                         .foregroundStyle(Theme.ink3)
                         .accessibilityLabel("Todavía no subió")
                 }
 
                 if let quantity = entry.quantity {
                     Text(Quantities.format(quantity, entry.unit ?? .unit))
-                        .font(.stock(13, .bold))
+                        .appFont(13, .bold)
                         .monospacedDigit()
                 }
                 if entry.source == .manual {
