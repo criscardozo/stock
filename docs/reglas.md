@@ -264,6 +264,25 @@ de «una medición que no puede dar el resultado contrario»: si el comparador
 falló una vez por su propia culpa y lo arreglaste, ya sabés que puede reportar
 diferencias. Si dio OK de entrada, no sabés si compara o si mira para otro lado.
 
+**Una afirmación que decide algo viaja con cómo se obtuvo.** Entre sesiones, el
+mecanismo por el que circula una frase falsa no es que esté mal escrita: es que
+llega **separada de su procedencia**, y separada ya no se puede ponderar. En una
+hora escribí tres versiones del mismo consejo sobre Vercel y submódulos —«dale
+acceso a la app» (falso), «no se puede nunca» (cierto entonces), «anda» (cierto
+ahora)— y sólo la tercera la medí en este repo. Las dos primeras venían de otras
+sesiones, de buena fe, y las repetí con la misma firmeza que las medidas. La
+única que se trató distinto fue la que llegó marcada como no verificada: cuando
+mandé lo de Vercel como PLAUSIBLE, del otro lado lo midieron antes de usarlo.
+Así que basta con tres etiquetas —**medido acá**, **leído en la doc**, **lo
+supongo**— y ponerlas donde la afirmación decide algo. Es de Gastos Diarios, y
+el caso que la motivó es mío.
+
+**Y una instrucción puede ser correcta en contenido y falsa en el momento.**
+«Borrá la deploy key» era verdad *después* de un push que todavía no había
+ocurrido; dada antes, rompía el CI del otro repo en la siguiente corrida. Cuando
+lo que se pide depende de un estado que todavía no existe, la condición va en la
+misma oración.
+
 **Escribí la guarda ANTES de arreglar lo que va a guardar.** En ese orden la
 primera corrida es un control positivo gratis: no hace falta preguntarse si la
 sonda puede dar el resultado contrario porque arranca dándolo. La de versiones
