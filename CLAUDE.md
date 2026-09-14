@@ -184,6 +184,11 @@ before inventing a pattern this project has already met.**
   nothing, restore, compare). The round trip runs a negative control FIRST: it breaks the data
   on purpose and requires the comparison to report exactly that damage. Emulator only, and not
   in CI — it needs the emulator suite plus a seed, and adding a job was not asked for.
+- `python3 design-system/extract.py [--write]` — rebuilds `design-system/tokens.json` from
+  `globals.css` and `Theme.swift`. The JSON is **extracted, never hand-edited**: editing it
+  by hand would make it a fourth place the palette can disagree with itself. `tokens.test.ts`
+  runs it without `--write` and fails if the file would change, which proves the tokens can be
+  REBUILT rather than merely that they currently match.
 - Deploy rules: `firebase deploy --only firestore:rules,firestore:indexes --config firebase/firebase.json --project qcris-stock`.
 - One-time console setup (Firebase project creation, Google provider, Vercel, domain):
   `docs/setup.md`.

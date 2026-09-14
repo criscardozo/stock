@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -19,7 +20,7 @@ import { describe, expect, it } from 'vitest'
  */
 
 const root = join(__dirname, '../../../../..')
-const css = readFileSync(join(root, 'apps/web/src/app/globals.css'), 'utf8')
+const source = readFileSync(join(root, 'apps/web/src/app/globals.css'), 'utf8')
 const swift = readFileSync(join(root, 'apps/ios/Stock/Design/Theme.swift'), 'utf8')
 const watch = readFileSync(join(root, 'apps/ios/StockWatch/WatchTheme.swift'), 'utf8')
 
@@ -32,8 +33,24 @@ function hexDeclarations(block: string): Map<string, string> {
   return out
 }
 
+/**
+ * Blank out CSS block comments, keeping newlines so offsets stay usable.
+ *
+ * `globals.css` opens with a comment that NAMES `:root` and `@theme`, so
+ * `indexOf(':root')` has always found the prose, not the rule, and counted
+ * braces from there. It reached the right block anyway — the declaration regex
+ * ignores prose — so this passed for months by luck. `extract.py` asked for
+ * `@theme` the same way and got the `:root` block back: a real block, fully
+ * parseable, silently the wrong one. Same bug, and only the second caller had
+ * the shape to reveal it.
+ */
+function withoutComments(text: string): string {
+  return text.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '))
+}
+
 /** The whole `{...}` body that starts at `marker`, brace-counted. */
 function blockAt(marker: string): string {
+  const css = withoutComments(source)
   const start = css.indexOf(marker)
   if (start < 0) throw new Error(`no encontré ${marker} en globals.css`)
   let depth = 0
@@ -165,5 +182,66 @@ describe('the watch is the fourth copy, and nothing was holding it', () => {
     // red on the shape, reporting `checked: 0`, instead of agreeing that zero
     // tokens all matched.
     expect({ checked, wrong }).toEqual({ checked: 8, wrong: [] })
+  })
+})
+
+describe('tokens.json is extracted, not maintained', () => {
+  /**
+   * The check is "can it be rebuilt", not "does it match". Those differ: a file
+   * that merely matches could have been hand-edited into agreement, and would
+   * stop agreeing the next time anyone touched the CSS. Running the extractor
+   * and requiring no change proves the JSON is a FUNCTION of the two platform
+   * files, which is the property that lets a generator later run the other way.
+   *
+   * Gastos Diarios does the same in CI for the same reason, and their README
+   * says it in one line worth keeping: it proves the files can be rebuilt, not
+   * merely that they currently match.
+   */
+  it('re-running extract.py changes nothing', () => {
+    const run = spawnSync('python3', [join(root, 'design-system/extract.py')], {
+      cwd: root,
+      encoding: 'utf8',
+    })
+    // Distinguish "python is missing" from "the tokens are stale". They are
+    // different problems and the second one is the one this test is about.
+    expect(run.error, 'no pude ejecutar python3 — ¿está instalado?').toBeUndefined()
+    expect(`${run.status}: ${run.stdout.trim()}${run.stderr.trim()}`).toBe(
+      '0: tokens.json is up to date'
+    )
+  })
+
+  it('every colour token in the JSON is the pair both platforms hold', () => {
+    const tokens = JSON.parse(readFileSync(join(root, 'design-system/tokens.json'), 'utf8'))
+    const light = hexDeclarations(blockAt(':root'))
+    const dark = hexDeclarations(blockAt('@media (prefers-color-scheme: dark)'))
+    const ios = swiftTokens()
+
+    // Only the opaque ones: `hexDeclarations` reads `#rrggbb`, and the alpha
+    // tokens are stored as a base/alpha pair on purpose. The extractor is what
+    // holds those, and the test above is what holds the extractor.
+    type Token = {
+      $value: { light: string | object; dark: string | object }
+      $extensions?: { swift?: string }
+    }
+    const wrong: string[] = []
+    let checked = 0
+    for (const group of Object.values(tokens.color) as Record<string, Token>[]) {
+      for (const [name, token] of Object.entries(group)) {
+        const { light: l, dark: d } = token.$value
+        if (typeof l !== 'string') continue
+        checked += 1
+        if (light.get(name) !== l || dark.get(name) !== d) {
+          wrong.push(`--${name}: css ${light.get(name)}/${dark.get(name)} vs json ${l}/${d}`)
+        }
+        const swiftName = token.$extensions?.swift
+        if (swiftName && String(ios.get(swiftName)) !== String([l, d])) {
+          wrong.push(`${swiftName}: swift ${ios.get(swiftName)} vs json ${[l, d]}`)
+        }
+      }
+    }
+    // 25: the 6 core, 3 opaque accent, 3 mark, 3 opaque state, 2 member and 8
+    // hue foregrounds. The whole `line` group and every `-soft` are alpha
+    // pairs and are counted by the extractor test instead.
+    expect({ checked, wrong }).toEqual({ checked: 25, wrong: [] })
   })
 })
