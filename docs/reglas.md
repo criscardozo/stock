@@ -307,6 +307,25 @@ contestar la pregunta que le hice, y su salida tenía forma de respuesta. Para
 esto no hay atajo textual: se leen los caminos de ejecución, que en este repo
 eran cuatro.
 
+**La verificación tiene que estar encadenada a lo que autoriza, no simplemente
+ocurrir antes.** Correr el chequeo y después commitear en la línea siguiente no
+es verificar: si el chequeo falla, el commit se hace igual. Es de Kyber, a quien
+le pasó con un `;` donde iba `&&` —el `assert` de anclaje funcionó, no escribió
+nada, y el commit se fue afirmando el cambio igual— y me aplica entero: yo
+encadeno con salto de línea y leo el exit code impreso, que funciona hasta que
+no lo leo.
+
+Medido en este repo el 14/09/2026: **tres commits entraron a `main` con CI en
+rojo.** Uno porque el job de web no tenía el checkout del submódulo y las suites
+locales no podían verlo; uno porque verifiqué con un parche aplicado y pusheé sin
+él; y el tercero es el interesante, porque **elegí el orden que lo garantizaba**.
+Discutí con Kyber si mover el valor en kyber antes o después de mergear el PR de
+Dependabot, argumenté que mergear primero dejaba la rama roja en el medio, y
+tomé la otra opción — que la deja roja igual. Las dos la dejan roja. La salida
+era que fueran **un solo commit**: poner el bump del gitlink en la rama del PR y
+que un merge aterrice las dos mitades. Cuando dos cambios sólo son válidos
+juntos, la pregunta no es en qué orden van sino por qué son dos commits.
+
 **Una edición que no encuentra su anclaje no cambia nada y no lo dice.** Un
 `sed`, un `replace` o un parche cuyo patrón no matchea sale con éxito, deja el
 archivo igual, y el commit se va describiendo contenido que nunca entró. Ni el
