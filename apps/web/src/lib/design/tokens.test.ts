@@ -44,10 +44,10 @@ function blockAt(marker: string): string {
   throw new Error(`bloque sin cerrar: ${marker}`)
 }
 
-/** `static let name = Color.hex(light: 0xAABBCC, dark: 0xDDEEFF)` */
+/** `static let name = Color.hex(light: "#AABBCC", dark: "#DDEEFF")` */
 function swiftTokens(): Map<string, [string, string]> {
   const out = new Map<string, [string, string]>()
-  const re = /static let (\w+) = Color\.hex\(\s*light: 0x([0-9A-Fa-f]{6}),\s*dark: 0x([0-9A-Fa-f]{6})/g
+  const re = /static let (\w+) = Color\.hex\(\s*light: "#([0-9A-Fa-f]{6})",\s*dark: "#([0-9A-Fa-f]{6})"/g
   for (const m of swift.matchAll(re)) {
     out.set(m[1], [`#${m[2].toLowerCase()}`, `#${m[3].toLowerCase()}`])
   }
@@ -117,11 +117,40 @@ describe('the watch is the fourth copy, and nothing was holding it', () => {
    * rule, different surface — written here so whoever puts the two files side
    * by side does not read one of them as a mistake.
    */
+  /**
+   * The watch carries its OWN `init(hex:)`. It has to: the target compiles no
+   * phone code, and the extension would collide with the phone's if both were
+   * linked.
+   *
+   * That matters more since the argument became a String. A number could not be
+   * parsed wrongly; a string can, and `Scanner.scanHexInt64` reports failure by
+   * leaving the value at 0 — so a broken parse does not crash, it renders the
+   * whole app black. `StockTests/ThemeColorTests` measures that, byte by byte,
+   * against arithmetic it does itself.
+   *
+   * But it measures the PHONE's copy. `StockWatch` has no test target and adding
+   * one to check four lines is not worth a target. So the coverage is claimed
+   * transitively and this is the link that makes the claim true: the two bodies
+   * are the same text, therefore the phone's test speaks for both. The day they
+   * differ, this fails and says which one is untested.
+   */
+  it("the watch's own hex parser is the one the phone's tests cover", () => {
+    const body = (src: string) => {
+      const m = src.match(/init\(hex: String, alpha: Double = 1\) \{[\s\S]*?\n {4}\}/)
+      return m?.[0]
+    }
+    const phone = body(swift)
+    const onWatch = body(watch)
+    expect(phone, 'Theme.swift ya no define init(hex: String)').toBeDefined()
+    expect(onWatch, 'WatchTheme.swift ya no define init(hex: String)').toBeDefined()
+    expect(onWatch).toEqual(phone)
+  })
+
   it('every watch token is the dark half of the phone token', () => {
     const phone = swiftTokens()
     const wrong: string[] = []
     let checked = 0
-    for (const m of watch.matchAll(/static let (\w+) = Color\(hex: 0x([0-9A-Fa-f]{6})\)/g)) {
+    for (const m of watch.matchAll(/static let (\w+) = Color\(hex: "#([0-9A-Fa-f]{6})"\)/g)) {
       const [, name, hex] = m
       checked += 1
       const pair = phone.get(name)
@@ -131,7 +160,10 @@ describe('the watch is the fourth copy, and nothing was holding it', () => {
       }
     }
     // The count is asserted because a regex that stops matching would otherwise
-    // check nothing and pass — the failure that does not fail.
+    // check nothing and pass — the failure that does not fail. It earned that
+    // line the day the literals went from `0x…` to `"#…"`: both tests here went
+    // red on the shape, reporting `checked: 0`, instead of agreeing that zero
+    // tokens all matched.
     expect({ checked, wrong }).toEqual({ checked: 8, wrong: [] })
   })
 })
