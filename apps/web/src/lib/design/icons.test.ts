@@ -104,6 +104,15 @@ describe('the subsetted icon list', () => {
     expect(ICON_NAMES.filter((name) => !used.has(name))).toEqual([])
   })
 
+  it('the comment does not claim a count that has drifted', () => {
+    // `icons.ts` opens by saying how many glyphs this app uses, next to the two
+    // measured sizes that justify subsetting. A number written in prose beside a
+    // list that grows is the shape that goes stale in silence — this file's list
+    // went 50 → 54 → 65 in one afternoon.
+    const stated = read('apps/web/src/lib/design/icons.ts').match(/uses (\d+) glyphs/)
+    expect(Number(stated?.[1])).toBe(ICON_NAMES.length)
+  })
+
   it('the URL carries the list and the display mode', () => {
     const href = materialSymbolsHref()
     expect({

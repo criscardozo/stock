@@ -55,9 +55,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {/*
           Material Symbols is not in next/font's catalogue, so it comes over the
-          wire — subsetted to the glyphs this app renders, which is 48 KB against
-          2,616 KB for the whole family. The list, and what happens when it is
-          incomplete, are in lib/design/icons.ts.
+          wire — subsetted to the glyphs this app renders. The list, the two
+          measured sizes and what happens when the list is incomplete are all in
+          lib/design/icons.ts; repeating the figure here would be a second copy
+          of a number that moves every time the list does.
         
           The no-page-custom-font rule is about the Pages Router; this is the App
           Router's ROOT layout, so it is global by definition.

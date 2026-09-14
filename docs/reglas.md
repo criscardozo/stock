@@ -307,6 +307,16 @@ contestar la pregunta que le hice, y su salida tenía forma de respuesta. Para
 esto no hay atajo textual: se leen los caminos de ejecución, que en este repo
 eran cuatro.
 
+**Una edición que no encuentra su anclaje no cambia nada y no lo dice.** Un
+`sed`, un `replace` o un parche cuyo patrón no matchea sale con éxito, deja el
+archivo igual, y el commit se va describiendo contenido que nunca entró. Ni el
+diff resumido ni el mensaje lo muestran. Por eso **todo reemplazo automático
+afirma primero que el anclaje existe** —`assert s.count(old) == 1` antes de
+tocar nada—, y un `sed -i` sin verificación posterior no califica. Kyber lo
+encontró en un commit propio cuyo mensaje anunciaba dos reglas que el commit no
+tenía; acá la variante fue más barata sólo porque los `assert` ya estaban
+puestos y fallaron ruidoso varias veces en el día.
+
 **Una lista vacía es verdad en los dos mundos.** Apareció dos veces el mismo
 día: `expect(wrong).toEqual([])` pasa igual si la sonda no encontró diferencias
 que si no miró nada. La aserción tiene que llevar **cuánto se miró** al lado —
