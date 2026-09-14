@@ -109,7 +109,7 @@ export function ItemSheet({
           {onDelete && (
             <button
               onClick={onDelete}
-              className="text-center text-[13.5px] font-semibold text-danger-deep"
+              className="text-center text-[13px] font-semibold text-danger-deep"
             >
               Eliminar del catálogo
             </button>
@@ -177,7 +177,7 @@ export function ItemSheet({
               key={mode}
               type="button"
               onClick={() => setTracking(mode)}
-              className={`flex-1 rounded-full py-2.5 text-[13.5px] ${
+              className={`flex-1 rounded-full py-2.5 text-[13px] ${
                 tracking === mode
                   ? 'bg-primary font-bold text-on-primary'
                   : 'font-semibold text-ink-2'

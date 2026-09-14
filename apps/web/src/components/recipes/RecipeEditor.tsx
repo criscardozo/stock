@@ -114,7 +114,7 @@ export function RecipeEditor({
       footer={
         <div className="flex flex-col gap-3">
           {shortNameTaken && (
-            <p className="text-[12.5px] font-semibold text-danger-deep">
+            <p className="text-[13px] font-semibold text-danger-deep">
               Ese nombre corto ya lo usa «{shortNameTaken}». Tienen que ser distintos, si no el
               calendario no sabe a cuál te referís.
             </p>
@@ -142,7 +142,7 @@ export function RecipeEditor({
           {onDelete && (
             <button
               onClick={onDelete}
-              className="text-center text-[13.5px] font-semibold text-danger-deep"
+              className="text-center text-[13px] font-semibold text-danger-deep"
             >
               Eliminar receta
             </button>

@@ -121,7 +121,7 @@ function Sidebar() {
       <div className="mb-[22px] flex items-center gap-2.5 px-2">
         <AppMark size={34} />
         <div className="flex flex-col leading-tight">
-          <span className="text-[15.5px] font-bold">Stock</span>
+          <span className="text-[15px] font-bold">Stock</span>
           <span className="text-[11px] text-ink-3">{household?.name}</span>
         </div>
       </div>
@@ -232,7 +232,7 @@ function TabBar() {
           >
             <Icon name={tab.icon} size={23} className={active ? 'text-primary' : 'text-ink-3'} />
             <span
-              className={`max-w-full truncate text-[10.5px] ${
+              className={`max-w-full truncate text-[11px] ${
                 active ? 'font-bold text-primary-deep' : 'font-semibold text-ink-3'
               }`}
             >

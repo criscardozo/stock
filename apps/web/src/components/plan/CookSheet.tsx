@@ -71,7 +71,7 @@ export function CookSheet({
           </PrimaryAction>
           <button
             onClick={onJustMark}
-            className="text-center text-[13.5px] font-semibold text-ink-2"
+            className="text-center text-[13px] font-semibold text-ink-2"
           >
             Solo marcar cocinada
           </button>

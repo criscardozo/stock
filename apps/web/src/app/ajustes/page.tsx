@@ -123,7 +123,7 @@ export default function SettingsPage() {
                     onClick={() =>
                       reportWrite(updateHousehold(householdId, { 'planConfig.startWeekday': index }))
                     }
-                    className={`h-9 w-11 rounded-full text-[12.5px] ${
+                    className={`h-9 w-11 rounded-full text-[13px] ${
                       household.planConfig.startWeekday === index
                         ? 'bg-ink font-bold text-ground'
                         : 'border border-line bg-surface font-semibold text-ink-2'
@@ -197,7 +197,7 @@ export default function SettingsPage() {
               >
                 <HueBadge icon={location.icon} hue={location.hue} size={32} />
                 <span className="flex-1 text-sm font-semibold">{location.name}</span>
-                <span className="text-[12.5px] text-ink-3">
+                <span className="text-[13px] text-ink-3">
                   {plural(perLocation.get(id) ?? 0, 'ítem', 'ítems')}
                 </span>
               </div>
@@ -286,7 +286,7 @@ export default function SettingsPage() {
                   {household.members[uid]?.displayName ?? uid}
                 </span>
                 {uid === user.uid && (
-                  <span className="rounded-full bg-neutral-soft px-2.5 py-1 text-[12.5px] font-semibold text-ink-2">
+                  <span className="rounded-full bg-neutral-soft px-2.5 py-1 text-[13px] font-semibold text-ink-2">
                     vos
                   </span>
                 )}

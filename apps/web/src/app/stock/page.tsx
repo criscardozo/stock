@@ -142,7 +142,7 @@ export default function StockPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nombre o marca"
-            className="w-full bg-transparent text-[13.5px] outline-none"
+            className="w-full bg-transparent text-[13px] outline-none"
           />
         </label>
 

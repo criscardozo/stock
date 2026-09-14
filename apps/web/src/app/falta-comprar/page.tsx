@@ -260,7 +260,7 @@ export default function ShoppingPage() {
                       already explains the row.
                     */}
                     {suggestion.quantity !== undefined && (
-                      <span className="hidden text-[13.5px] text-ink-2 sm:block">
+                      <span className="hidden text-[13px] text-ink-2 sm:block">
                         sugerido{' '}
                         <strong className="tnum font-bold text-ink">
                           {formatQuantity(suggestion.quantity, item.unit ?? 'unit')}
@@ -393,7 +393,7 @@ function ShoppingRow({
       )}
 
       {entry.quantity !== undefined && (
-        <span className="tnum hidden text-[13.5px] font-bold sm:block">
+        <span className="tnum hidden text-[13px] font-bold sm:block">
           {formatQuantity(entry.quantity, entry.unit ?? 'unit')}
         </span>
       )}

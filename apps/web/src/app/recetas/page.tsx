@@ -58,7 +58,7 @@ export default function RecipesPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar"
-          className="w-full bg-transparent text-[13.5px] outline-none"
+          className="w-full bg-transparent text-[13px] outline-none"
         />
       </label>
 
@@ -299,7 +299,7 @@ function RecipeDetail({
                     )}
                   </span>
                   {ingredient.quantity !== undefined && ingredient.unit && (
-                    <span className="tnum text-[13.5px] text-ink-2">
+                    <span className="tnum text-[13px] text-ink-2">
                       {formatQuantity(ingredient.quantity, ingredient.unit)}
                     </span>
                   )}

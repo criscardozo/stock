@@ -30,14 +30,14 @@ export function VersionCard() {
     <div className="flex items-center justify-between gap-3 rounded-panel border border-line bg-surface px-[18px] py-3.5">
       <div className="flex flex-col gap-0.5">
         <span className="section-label">Versión</span>
-        <span className="tnum text-[13.5px] font-bold">
+        <span className="tnum text-[13px] font-bold">
           {version !== '' ? `v${version}` : 'desconocida'}
           {sha !== '' && <span className="ml-1.5 font-semibold text-ink-3">{sha}</span>}
         </span>
       </div>
       <div className="flex flex-col items-end gap-0.5">
         <span className="section-label">Actualizada</span>
-        <span className="tnum text-[13.5px] font-semibold text-ink-2">{updated}</span>
+        <span className="tnum text-[13px] font-semibold text-ink-2">{updated}</span>
       </div>
     </div>
   )

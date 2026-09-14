@@ -63,7 +63,7 @@ struct SettingsScreen: View {
             Card {
                 VStack(spacing: 0) {
                     HStack {
-                        Text("Largo").font(.stock(14.5, .semibold))
+                        Text("Largo").font(.stock(14, .semibold))
                         Spacer()
                         Picker("", selection: planLength) {
                             ForEach(PlanLength.allCases, id: \.self) { Text($0.label).tag($0) }
@@ -76,7 +76,7 @@ struct SettingsScreen: View {
                     Divider().overlay(Theme.lineSoft)
 
                     HStack {
-                        Text("Arranca el día").font(.stock(14.5, .semibold))
+                        Text("Arranca el día").font(.stock(14, .semibold))
                         Spacer()
                         Picker("", selection: startWeekday) {
                             ForEach(0..<7, id: \.self) { Text(Self.weekdays[$0]).tag($0) }
@@ -102,7 +102,7 @@ struct SettingsScreen: View {
             SectionLabel(text: "Preferencias")
             Card {
                 HStack {
-                    Text("Apariencia").font(.stock(14.5, .semibold))
+                    Text("Apariencia").font(.stock(14, .semibold))
                     Spacer()
                     Picker("", selection: $themeRaw) {
                         ForEach(ThemePreference.allCases, id: \.self) {
@@ -123,7 +123,7 @@ struct SettingsScreen: View {
             Card {
                 VStack(spacing: 0) {
                     Toggle(isOn: $expiryAlerts) {
-                        Text("Avisarme").font(.stock(14.5, .semibold))
+                        Text("Avisarme").font(.stock(14, .semibold))
                     }
                     .tint(Theme.primary)
                     .padding(.vertical, 9)
@@ -131,7 +131,7 @@ struct SettingsScreen: View {
                     if expiryAlerts {
                         Divider().overlay(Theme.lineSoft)
                         HStack {
-                            Text("Con cuántos días").font(.stock(14.5, .semibold))
+                            Text("Con cuántos días").font(.stock(14, .semibold))
                             Spacer()
                             Picker("", selection: $expiryDays) {
                                 ForEach([1, 2, 3, 5, 7], id: \.self) { Text("\($0)").tag($0) }
@@ -169,10 +169,10 @@ struct SettingsScreen: View {
 
     private func catalogueRow(_ title: String, _ count: Int) -> some View {
         HStack {
-            Text(title).font(.stock(14.5, .semibold))
+            Text(title).font(.stock(14, .semibold))
             Spacer()
             Text("\(count)")
-                .font(.stock(14.5, .semibold))
+                .font(.stock(14, .semibold))
                 .monospacedDigit()
                 .foregroundStyle(Theme.ink2)
         }
@@ -221,10 +221,10 @@ struct SettingsScreen: View {
             Card {
                 VStack(spacing: 0) {
                     HStack {
-                        Text("Versión").font(.stock(14.5, .semibold))
+                        Text("Versión").font(.stock(14, .semibold))
                         Spacer()
                         Text(Self.appVersion)
-                            .font(.stock(14.5, .semibold))
+                            .font(.stock(14, .semibold))
                             .monospacedDigit()
                             .foregroundStyle(Theme.ink2)
                     }
@@ -238,7 +238,7 @@ struct SettingsScreen: View {
                     Divider().overlay(Theme.lineSoft)
                     Link(destination: URL(string: "https://stock.cardozo.dev")!) {
                         HStack {
-                            Text("Abrir la web").font(.stock(14.5, .semibold))
+                            Text("Abrir la web").font(.stock(14, .semibold))
                             Spacer()
                             Image(systemName: "arrow.up.forward.square")
                                 .font(.stockSymbol(15))
@@ -261,7 +261,7 @@ struct SettingsScreen: View {
             HStack(spacing: 10) {
                 Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.stockSymbol(16, .semibold))
-                Text("Cerrar sesión").font(.stock(14.5, .semibold))
+                Text("Cerrar sesión").font(.stock(14, .semibold))
                 Spacer()
             }
             .foregroundStyle(Theme.dangerDeep)
@@ -293,7 +293,7 @@ struct SettingsScreen: View {
 
         return HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("La firma vence").font(.stock(14.5, .semibold))
+                Text("La firma vence").font(.stock(14, .semibold))
                 Text(DayFormat.long(Self.iso(expiry)))
                     .font(.stock(11.5))
                     .foregroundStyle(Theme.ink3)

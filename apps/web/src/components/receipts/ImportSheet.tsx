@@ -179,7 +179,7 @@ export function ImportSheet({
       )}
 
       {failed.length > 0 && (
-        <p className="rounded-field bg-danger-soft px-4 py-3 text-[12.5px] font-semibold text-danger-deep">
+        <p className="rounded-field bg-danger-soft px-4 py-3 text-[13px] font-semibold text-danger-deep">
           No pude leer {failed.length}: {failed.join(', ')}
         </p>
       )}
@@ -274,7 +274,7 @@ export function ImportSheet({
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="rounded-field bg-surface px-2.5 py-1.5 text-[12.5px] font-semibold"
+                  className="rounded-field bg-surface px-2.5 py-1.5 text-[13px] font-semibold"
                 >
                   {categories.map(([id, c]) => (
                     <option key={id} value={id}>
@@ -285,7 +285,7 @@ export function ImportSheet({
                 <select
                   value={locationId}
                   onChange={(e) => setLocationId(e.target.value)}
-                  className="rounded-field bg-surface px-2.5 py-1.5 text-[12.5px] font-semibold"
+                  className="rounded-field bg-surface px-2.5 py-1.5 text-[13px] font-semibold"
                 >
                   {locations.map(([id, l]) => (
                     <option key={id} value={id}>
@@ -310,7 +310,7 @@ export function ImportSheet({
                           {line.name}
                         </span>
                         <span className="text-[11.5px] text-ink-3">{line.buys}×</span>
-                        <span className="tnum text-[12.5px] text-ink-2">
+                        <span className="tnum text-[13px] text-ink-2">
                           {money(priceToStore(line))}
                         </span>
                       </div>
@@ -397,7 +397,7 @@ export function ImportSheet({
                             }))
                           }
                           placeholder="Cómo le decimos en casa (opcional)"
-                          className="rounded-field bg-surface px-3 py-2 text-[12.5px] font-semibold"
+                          className="rounded-field bg-surface px-3 py-2 text-[13px] font-semibold"
                         />
                       )}
 

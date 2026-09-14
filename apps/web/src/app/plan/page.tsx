@@ -89,7 +89,7 @@ export default function PlanPage() {
         title={
           <span className="flex flex-wrap items-center gap-3.5">
             Plan
-            <span className="flex items-center gap-0.5 rounded-full border border-line bg-surface px-2 py-1.5 text-[13.5px] font-semibold">
+            <span className="flex items-center gap-0.5 rounded-full border border-line bg-surface px-2 py-1.5 text-[13px] font-semibold">
               <button onClick={() => setOffset(offset - 1)} aria-label="Período anterior">
                 <Icon name="chevron_left" size={18} className="text-ink-2" />
               </button>
@@ -392,7 +392,7 @@ function PickMealSheet({
       footer={
         <button
           onClick={() => onPick(null)}
-          className="text-center text-[13.5px] font-semibold text-ink-2"
+          className="text-center text-[13px] font-semibold text-ink-2"
         >
           Dejarlo sin plan
         </button>

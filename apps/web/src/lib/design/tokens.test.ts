@@ -245,3 +245,40 @@ describe('tokens.json is extracted, not maintained', () => {
     expect({ checked, wrong }).toEqual({ checked: 25, wrong: [] })
   })
 })
+
+describe('the type scale is one scale, not two', () => {
+  /**
+   * Stock's web and iOS did not use the same sizes. Measured across tracked
+   * files at the time this was written: 20 distinct sizes, 12 of them on ONE
+   * platform. Some of that is a real design question — a screen title is 22 on
+   * the web and 18 on iOS, the same role four pixels apart, and choosing is a
+   * decision with a visible consequence.
+   *
+   * This test is NOT about that. It is about the other kind: a size used by one
+   * platform sitting HALF A PIXEL from a size both platforms use. `13.5` beside
+   * `13`, `14.5` beside `14`. Nobody chose those; they are what happens when two
+   * people type a number into two files, and no eye can tell them apart. They
+   * are drift, and drift is what a guard is for.
+   *
+   * The role disagreements are deliberately allowed through. A test that failed
+   * on them would be asserting an answer nobody has given yet.
+   */
+  it('no size sits within half a pixel of a size both platforms use', () => {
+    const tokens = JSON.parse(readFileSync(join(root, 'design-system/tokens.json'), 'utf8'))
+    const sizes = Object.values(tokens.type).map((t: unknown) => {
+      const token = t as { $value: string; $extensions: { 'stock.uses': { web: number; ios: number } } }
+      return { px: parseFloat(token.$value), ...token.$extensions['stock.uses'] }
+    })
+    const shared = sizes.filter((s) => s.web > 0 && s.ios > 0).map((s) => s.px)
+    const drift = sizes
+      .filter((s) => s.web === 0 || s.ios === 0)
+      .filter((s) => shared.some((c) => Math.abs(c - s.px) <= 0.5))
+      .map((s) => `${s.px}px (web ${s.web}, ios ${s.ios}) está a medio píxel de ${
+        shared.filter((c) => Math.abs(c - s.px) <= 0.5).join('/')
+      }`)
+    // The count is asserted so that a scale read as empty — a renamed key, a
+    // changed `$extensions` shape — cannot pass by having nothing to check.
+    expect({ counted: sizes.length, drift }).toEqual({ counted: sizes.length, drift: [] })
+    expect(sizes.length).toBeGreaterThan(8)
+  })
+})
