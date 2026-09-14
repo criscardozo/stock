@@ -279,7 +279,7 @@ artifact por 90 días, que es el techo del tier gratuito. Cuesta un par de los
 2000 minutos mensuales.
 
 **El mismo job chequea que las reglas desplegadas coincidan con el repo**
-(`scripts/check-rules-drift.mjs`). Las reglas son el único límite de seguridad
+(`kyber/scripts/check-rules-drift.mjs`). Las reglas son el único límite de seguridad
 del proyecto y se despliegan a mano, así que un arreglo escrito, revisado,
 mergeado y nunca desplegado se lee como hecho en todos los lugares donde alguien
 miraría. Una diferencia **falla el job**, que es lo que manda el mail.

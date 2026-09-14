@@ -33,8 +33,8 @@ const repoRoot = consumerRoot();
 // not five. They are spawned rather than imported on purpose: this rehearses
 // the scripts a person runs, not a copy of their internals.
 const SCRIPTS = {
-  backup: join(repoRoot, "scripts/backup.mjs"),
-  restore: join(repoRoot, "scripts/restore.mjs"),
+  backup: join(repoRoot, "kyber/scripts/backup.mjs"),
+  restore: join(repoRoot, "kyber/scripts/restore.mjs"),
 };
 const PROJECT = "demo-stock";
 const { emulators } = JSON.parse(readFileSync(join(repoRoot, "firebase/firebase.json"), "utf8"));
