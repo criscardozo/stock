@@ -46,6 +46,37 @@ describe('one version, four copies', () => {
     expect(Number(declared?.[1])).toBe(marketing.length)
   })
 
+  it('every target hands CFBundleShortVersionString to MARKETING_VERSION, not a literal', () => {
+    // MARKETING_VERSION is the build setting. CFBundleShortVersionString is
+    // the Info.plist key Ajustes actually reads (SettingsScreen.swift). The
+    // first two tests above held the setting to 1.0.0 on all three targets and
+    // went green while the app target's plist said `'0.1'` — a literal in
+    // project.yml that overrides the setting, so the phone showed 0.1 under a
+    // green guard. The guard measured the noun, not the connection.
+    const shortVersions = [...projectYml.matchAll(/CFBundleShortVersionString: (\S+)/g)].map((m) => m[1])
+    const bundleVersions = [...projectYml.matchAll(/CFBundleVersion: (\S+)/g)].map((m) => m[1])
+    expect({ short: shortVersions, bundle: bundleVersions }).toEqual({
+      short: Array(marketing.length).fill('$(MARKETING_VERSION)'),
+      bundle: Array(marketing.length).fill('$(CURRENT_PROJECT_VERSION)'),
+    })
+  })
+
+  it('the generated Info.plist files agree, so xcodegen was actually run', () => {
+    // The plists are XcodeGen output AND tracked, so this reads what the app
+    // will ship without needing Xcode — it runs in the Linux CI job. It is the
+    // half the yml check cannot cover: edit project.yml, forget `xcodegen`, and
+    // the yml says $(MARKETING_VERSION) while the plist still says 0.1.
+    const plists = ['apps/ios/Stock/Info.plist', 'apps/ios/StockWidget/Info.plist', 'apps/ios/StockWatch/Info.plist']
+    expect(plists.length).toBe(marketing.length)
+    const shipped = Object.fromEntries(
+      plists.map((path) => [
+        path,
+        read(path).match(/<key>CFBundleShortVersionString<\/key>\s*<string>([^<]*)<\/string>/)?.[1] ?? '(missing)',
+      ]),
+    )
+    expect(shipped).toEqual(Object.fromEntries(plists.map((p) => [p, '$(MARKETING_VERSION)'])))
+  })
+
   it('the private packages stay out of it', () => {
     // Deliberately NOT copies. They are workspace plumbing — never published,
     // never displayed — so they are pinned at 0.0.0 rather than kept in step.

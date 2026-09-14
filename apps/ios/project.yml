@@ -73,8 +73,8 @@ targets:
       path: Stock/Info.plist
       properties:
         CFBundleDisplayName: Stock
-        CFBundleShortVersionString: '0.1'
-        CFBundleVersion: '1'
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
@@ -93,6 +93,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.cardozo.stock
         MARKETING_VERSION: '1.0.0'
+        CURRENT_PROJECT_VERSION: '1'
         SWIFT_VERSION: '5.10'
         # The bag mark from the design bundle, in the three appearances iOS 18
         # asks for: light, dark, and the tinted monochrome the system recolours.

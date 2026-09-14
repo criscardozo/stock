@@ -139,6 +139,21 @@ if [ "$soonest" -lt 86400 ]; then
   exit 1
 fi
 
+# Guard 5. What the built app will actually SHOW. project.yml carried a literal
+# `CFBundleShortVersionString: '0.1'` while MARKETING_VERSION said 1.0.0 and the
+# version guard was green, so the phone displayed 0.1 for days. The guard now
+# reads the tracked plists, but those hold `$(MARKETING_VERSION)` — only the
+# built bundle has the substituted value, and this is the only place that sees
+# it. Measures the connection, not the setting.
+declared=$(python3 -c "import json;print(json.load(open('$PROJECT_DIR/../web/package.json'))['version'])")
+shipped=$(plutil -extract CFBundleShortVersionString raw "$APP/Info.plist" 2>/dev/null || echo "(sin clave)")
+echo "   la app declara $shipped · package.json dice $declared"
+if [ "$shipped" != "$declared" ]; then
+  echo "   ABORTO: lo que se instalaría muestra $shipped en Ajustes, no $declared."
+  echo "   Revisá CFBundleShortVersionString en apps/ios/project.yml y corré xcodegen."
+  exit 1
+fi
+
 say "4. Instalando"
 # The phone sometimes answers "disconnected immediately after connecting" on the
 # first try and is fine on the second.
