@@ -1,28 +1,23 @@
-# Stock
+<p align="center">
+  <img src="apps/web/public/icons/banner.png" alt="Stock" width="360">
+</p>
 
-Household pantry tracker for two people: what's in the house, how much is left,
-what needs buying — and a fortnightly meal plan that feeds the shopping list.
-A SwiftUI iOS app for the quick checks you do standing in front of the fridge, a
-Next.js web app for everything you sit down to do on a Friday night, both talking
-directly to Firebase (Auth + Firestore, Spark free tier), with no custom backend
-and **$0 infrastructure**.
+Household pantry tracker for two people: what is in the house, how much is left,
+what needs buying, and a fortnightly meal plan that feeds the shopping list. A
+SwiftUI iOS app for the checks you do standing in front of the fridge, a Next.js
+web app for what you sit down to do on a Friday, both talking straight to
+Firebase with no server in between — and **$0 of infrastructure, which is the
+constraint behind almost every decision below**.
 
-> **Status:** both clients are built. The web is live at
-> [stock.cardozo.dev](https://stock.cardozo.dev); the iOS app runs in the
-> Simulator against the emulators. Still pending: deploying the Firestore
-> rules, whitelisting the domain for Google sign-in, and registering the iOS
-> app in Firebase — see [`docs/setup.md`](docs/setup.md).
-> [`docs/PLAN.md`](docs/PLAN.md) has the architecture and the phase order.
-
-| | |
-|---|---|
-| 📱 iOS | `apps/ios` — SwiftUI, iOS 17+, Firebase SDK via SPM, offline-first. Barcode scanning, expiry notifications, home-screen widget |
-| 🌐 Web | `apps/web` — Next.js App Router, Tailwind, Vercel (`stock.cardozo.dev`). Also an installable **PWA**, which is how it stays on the phone |
-| 🔥 Firebase | `firebase/` — security rules (the only security boundary), indexes, emulator tests |
-| 🤝 Contracts | `shared/` — Firestore schema, seed categories, and the test vectors both platforms must pass |
-| 📐 Design | [`docs/design-system.md`](docs/design-system.md) — the system Stock shares with Gastos Diarios |
-| 🗺 Plan | [`docs/PLAN.md`](docs/PLAN.md) — architecture decisions and phases |
-| 📜 Rules | [`docs/reglas.md`](docs/reglas.md) — the project's constraints and the reasoning behind them |
+|  |  |
+| --- | --- |
+| 📱 `apps/ios` | SwiftUI app, iOS 17+, with a widget and a watchOS companion. Barcode scanning, expiry notifications. |
+| 🌐 `apps/web` | Next.js App Router, fully client-rendered, an installable PWA. Where the week gets planned. |
+| 🔥 `firebase` | Security rules, indexes, emulator config, and the rules tests. The rules are the only security boundary. |
+| 🤝 `shared` | The cross-platform contract: the Firestore schema, the seed taxonomies, and the vectors both platforms run. |
+| 🧰 `tools` | Seeding the emulators, sideloading onto the phone, rebuilding the icons and this banner. |
+| 📐 `kyber` | Submodule: the tooling and the rules shared with the sibling apps. |
+| 📚 `docs` | The plan, the design system, the setup, and the rules with their reasoning. |
 
 ## What it does
 
@@ -67,6 +62,54 @@ exception: an item with a reserve HAS a number — how many sealed ones it is
 short of its minimum. When a
 planned meal needs a level-tracked item that sits at `poco` or `vacío`, the item
 goes on the list with the meal as its reason — no invented numbers.
+
+## Quick start
+
+```sh
+pnpm install
+pnpm emulators      # Auth 9280, Firestore 8280, UI 4280
+pnpm seed           # a household that looks real, in the emulator
+NEXT_PUBLIC_USE_EMULATORS=1 pnpm dev      # then use the "Emulador" sign-in buttons
+pnpm test           # domain vectors + Firestore rules (needs Java)
+```
+
+iOS, against the same emulators:
+
+```sh
+cd apps/ios && xcodegen && open Stock.xcodeproj
+xcodebuild test -project Stock.xcodeproj -scheme Stock \
+  -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:StockTests
+# Launch straight into a screen, signed in, no Google account needed:
+xcrun simctl launch booted dev.cardozo.stock -useEmulators -devSignIn -tab falta
+```
+
+One-time console setup (Firebase project, Vercel, domain): [`docs/setup.md`](docs/setup.md).
+
+## Key invariants
+
+- **Quantities are integers** in the item's own unit (`unit`, `g`, `ml`). No
+  floats — same reasoning as money in cents. Display formatting (`1,2 kg`) is a
+  client concern.
+- **Dates are `"YYYY-MM-DD"` strings in the household timezone** (stored on the
+  household doc, default `Australia/Sydney`) — never the device's, never UTC
+  bucketing. A meal planned for Wednesday is Wednesday in Sydney.
+- **One item, one row.** Expiry is a single date on the item — the soonest one
+  you care about — not a batch ledger. Two milks with different dates is not
+  worth the modelling cost for a two-person household.
+- **Firestore security rules are the security boundary.** Client-side gating is
+  cosmetic; client config is public by design.
+- **Bounded reads.** The catalogue (~150 docs) and the shopping list (~30) are
+  bounded by nature, so both are listened to whole — that live listener is what
+  makes two people ticking in the same supermarket work. `moves` grows forever
+  and is therefore always paged with `limit()` via `getDocs`, never a live
+  listener. In React, always return the unsubscribe from `useEffect`.
+- **Google Sign-In only**, on both platforms — mixing providers creates two
+  Firebase UIDs for the same person, and the household caps at 2.
+- Logic duplicated across Swift and TypeScript must pass the shared vectors in
+  `shared/` (plan period arithmetic, shopping-list derivation). Change the
+  vectors first.
+- **Source code and comments in English**; the UI is Spanish only.
+- MIT license.
 
 ## Screens
 
@@ -145,54 +188,6 @@ which is the whole point of not rebuilding the list from scratch.
 **No backend, on purpose.** Both clients talk straight to Firebase. Cloud
 Functions require the paid Blaze plan and are therefore out of the question;
 anything that would want a server runs in a client.
-
-## Key invariants
-
-- **Quantities are integers** in the item's own unit (`unit`, `g`, `ml`). No
-  floats — same reasoning as money in cents. Display formatting (`1,2 kg`) is a
-  client concern.
-- **Dates are `"YYYY-MM-DD"` strings in the household timezone** (stored on the
-  household doc, default `Australia/Sydney`) — never the device's, never UTC
-  bucketing. A meal planned for Wednesday is Wednesday in Sydney.
-- **One item, one row.** Expiry is a single date on the item — the soonest one
-  you care about — not a batch ledger. Two milks with different dates is not
-  worth the modelling cost for a two-person household.
-- **Firestore security rules are the security boundary.** Client-side gating is
-  cosmetic; client config is public by design.
-- **Bounded reads.** The catalogue (~150 docs) and the shopping list (~30) are
-  bounded by nature, so both are listened to whole — that live listener is what
-  makes two people ticking in the same supermarket work. `moves` grows forever
-  and is therefore always paged with `limit()` via `getDocs`, never a live
-  listener. In React, always return the unsubscribe from `useEffect`.
-- **Google Sign-In only**, on both platforms — mixing providers creates two
-  Firebase UIDs for the same person, and the household caps at 2.
-- Logic duplicated across Swift and TypeScript must pass the shared vectors in
-  `shared/` (plan period arithmetic, shopping-list derivation). Change the
-  vectors first.
-- **Source code and comments in English**; the UI is Spanish only.
-- MIT license.
-
-## Quick start
-
-```sh
-pnpm install
-pnpm emulators      # Auth 9280, Firestore 8280, UI 4280
-pnpm seed           # a household that looks real, in the emulator
-NEXT_PUBLIC_USE_EMULATORS=1 pnpm dev      # then use the "Emulador" sign-in buttons
-pnpm test           # domain vectors + Firestore rules (needs Java)
-```
-
-iOS, against the same emulators:
-
-```sh
-cd apps/ios && xcodegen && open Stock.xcodeproj
-xcodebuild test -project Stock.xcodeproj -scheme Stock \
-  -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:StockTests
-# Launch straight into a screen, signed in, no Google account needed:
-xcrun simctl launch booted dev.cardozo.stock -useEmulators -devSignIn -tab falta
-```
-
-One-time console setup (Firebase project, Vercel, domain): [`docs/setup.md`](docs/setup.md).
 
 ## License
 

@@ -66,7 +66,21 @@ export const firebaseConfig = {
    * see docs/setup.md.
    */
   get authDomain(): string {
-    if (typeof window !== 'undefined') return window.location.host
-    return process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ?? `${DEFAULTS.projectId}.firebaseapp.com`
+    const explicit = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    if (explicit !== undefined && explicit !== '') return explicit
+    if (typeof window === 'undefined') return `${DEFAULTS.projectId}.firebaseapp.com`
+    // Firebase always builds the handler URL as `https://<authDomain>/__/auth/…`
+    // and there is no way to make it http. So on a plain-http origin — the dev
+    // server on localhost:3000 — pointing authDomain at ourselves produces
+    // `https://localhost:3000/__/auth/handler` and the sign-in dies with
+    // ERR_SSL_PROTOCOL_ERROR. Firebase's own domain is the right answer there:
+    // localhost is an authorised domain out of the box, and the same-origin
+    // proxy only matters on the deployed HTTPS site, where Safari's ITP is what
+    // it exists to survive.
+    //
+    // Ported from Gastos Diarios, who hit it; verified here by reading the two
+    // files side by side rather than by reproducing the error.
+    if (window.location.protocol !== 'https:') return `${DEFAULTS.projectId}.firebaseapp.com`
+    return window.location.host
   },
 }

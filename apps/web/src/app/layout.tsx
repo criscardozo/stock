@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Outfit } from 'next/font/google'
+import { materialSymbolsHref } from '@/lib/design/icons'
 import './globals.css'
 import { AppShell } from '@/components/AppShell'
 import { ServiceWorker } from '@/components/ServiceWorker'
@@ -54,18 +55,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {/*
           Material Symbols is not in next/font's catalogue, so it comes over the
-          wire. Both lint rules below are knowingly overridden:
-          - `display=block` on purpose — a ligature font that swaps renders the
-            literal word "inventory_2" until it lands, which is worse than a
-            beat of blank.
-          - the no-page-custom-font rule is about the Pages Router; this is the
-            App Router's ROOT layout, so it is global by definition.
+          wire — subsetted to the glyphs this app renders. The list, the two
+          measured sizes and what happens when the list is incomplete are all in
+          lib/design/icons.ts; repeating the figure here would be a second copy
+          of a number that moves every time the list does.
+        
+          The no-page-custom-font rule is about the Pages Router; this is the App
+          Router's ROOT layout, so it is global by definition.
         */}
         {/* eslint-disable-next-line @next/next/google-font-display, @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,1,0&display=block"
-          rel="stylesheet"
-        />
+        <link href={materialSymbolsHref()} rel="stylesheet" />
       </head>
       <body className="min-h-dvh bg-ground font-sans text-ink antialiased">
         {/*

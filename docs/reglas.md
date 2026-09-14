@@ -10,7 +10,7 @@ en vez de repetirlas de memoria.
 
 ---
 
-## 1. Nada se publica sin que se pida
+## 1. Publicar
 
 → [`kyber/docs/publicar.md`](../kyber/docs/publicar.md)
 
@@ -33,21 +33,18 @@ Si algún día hace falta inglés, se agrega entonces.
 
 ## 4. Los datos, antes que la pantalla
 
-- **Las cantidades son enteros** en la unidad del ítem (`unit`, `g`, `ml`).
-  Jamás floats: `1,2 kg` es formateo de presentación sobre `1200 g`. Lo que no
-  se cuenta en enteros usa el modo `level`, no un decimal.
-- **Las fechas son `"YYYY-MM-DD"` en la timezone del hogar**, nunca la del
-  dispositivo ni buckets UTC.
-- **Lo derivable no se guarda; lo que dos personas editan, sí.** El estado de un
-  ítem (`out`/`low`/`expiring`) y las *sugerencias* de compra son funciones de
-  datos que el cliente ya tiene en cache: persistirlos obligaría a reescribirlos
-  para mantenerlos sincronizados con algo que ya los determina. La **lista de
-  compras**, en cambio, es estado compartido de verdad —dos personas tildando en
-  góndolas distintas— y por eso es una colección real. La línea no es "cuánto
-  cuesta calcularlo", es **si alguien lo edita**.
-- **Las reglas de Firestore son la única frontera de seguridad.** Cualquier
-  chequeo en el cliente es cosmético.
-- **Sin backend propio.** Los dos clientes hablan directo con Firebase.
+→ [`kyber/docs/datos.md`](../kyber/docs/datos.md)
+
+La unidad base acá es la del ítem (`unit`, `g`, `ml`), y lo que no se cuenta en
+enteros usa el modo `level` — un dial de 0 a 3, no un decimal.
+
+Y el delta que es sólo nuestro: **lo derivable no se guarda; lo que dos personas
+editan, sí.** El estado de un ítem (`out`/`low`/`expiring`) y las *sugerencias*
+de compra son funciones de datos que el cliente ya tiene en cache; persistirlos
+obligaría a reescribirlos para mantenerlos sincronizados con algo que ya los
+determina. La **lista de compras**, en cambio, es estado compartido de verdad
+—dos personas tildando en góndolas distintas— y por eso es una colección real.
+La línea no es "cuánto cuesta calcularlo", es **si alguien lo edita**.
 
 ## 5. Firestore: el free tier es parte del diseño
 
@@ -82,12 +79,13 @@ plan y la derivación de la lista de compras: `shared/plan-period-vectors.json` 
 
 → [`kyber/docs/secretos.md`](../kyber/docs/secretos.md)
 
-## 9. La máquina de Cristian
+## 9. La máquina
 
-- **No tocar el stack de Docker propio (`ecko`/`holocron`, puerto 8080).** Por
-  eso el emulador de Firestore de este proyecto escucha en **8280**: así nunca
-  hay que decidir cuál de los dos vive.
-- No dejar emuladores ni servidores de dev corriendo al terminar.
+→ [`kyber/docs/maquina.md`](../kyber/docs/maquina.md)
+
+El puerto propio de este proyecto es **8280** para Firestore; el bloque entero
+está en `firebase/firebase.json` y `apps/web/src/lib/domain/ports.test.ts` lo
+sostiene.
 
 ## Versiones
 
@@ -98,40 +96,26 @@ correr `xcodegen` para que el `Info.plist` las tome.
 
 ## 10. Familia con Gastos Diarios
 
-Las dos apps son del mismo autor, la misma casa y el mismo lenguaje visual, así
-que lo que se refinó en una vale en la otra. Lo que Stock tomó de Gastos
-Diarios, y por qué —para que una tercera app arranque con esto puesto:
+→ [`kyber/docs/interfaz.md`](../kyber/docs/interfaz.md)
 
-- **Tokens en `:root`, Tailwind sólo los mapea** (`@theme inline`). El día que
-  haya dark, es un bloque de tokens más, no un rediseño.
-- **Los controles de formulario van en `@layer base`.** Una regla sin capa le
-  gana a cualquier utilidad de Tailwind por más específica que sea: un
-  `bg-*` escrito en un `<input>` perdía en silencio.
-- **`font-size: 16px` en `@media (pointer: coarse)`**, y esta *sin* capa a
-  propósito. Safari en iOS hace zoom al enfocar un campo de menos de 16 px, y
-  las dos apps viven como PWA en el teléfono.
-- **Tarjeta de versión en Ajustes** — versión, commit y fecha, resueltos en
-  build. Un número que alguien tiene que acordarse de subir es un número que
-  miente.
-- **Outfit bundleada también en iOS**, con fallback a la del sistema. Es lo que
-  hace que se vean como un producto y no como dos que coinciden en los colores.
-- **Aviso de vencimiento de la firma**, leído del `embedded.mobileprovision` y
-  no de una fecha guardada: re-firmar no borra el contenedor, así que la fecha
-  guardada mentiría para siempre.
-- **`hasPendingWrites` a la vista.** Lo que todavía no subió se dice; el súper
-  es justo donde no hay señal.
-- **Háptica en la acción que se hace sin mirar** (tildar en la góndola).
-- **Sin `setState` sincrónico dentro de un `useEffect`.** Para leer algo externo
-  —localStorage— va `useSyncExternalStore`.
+Lo que se refinó en una app vale en la otra, y las diez reglas que sobrevivieron
+medidas de los dos lados están ahí — **escritas como reglas y no como
+inventario**, que es la corrección que salió de verificar esta sección: un
+inventario dice «las dos apps hacen X» y caduca en silencio porque nada lo
+ejecuta; una regla dice «hacé X porque Y», y una app que deja de cumplirla no
+vuelve falso el texto, queda incumplida, que es detectable.
 
-- **El Watch como relé, no como cliente.** No puede loguearse (Google necesita
-  un navegador y en la muñeca no hay), así que nunca toca Firebase: el teléfono
-  le manda la lista ya formateada por `updateApplicationContext` y hace todas
-  las escrituras. Los tildes vuelven por `sendMessage` si el teléfono está al
-  alcance —son dos personas mirando la misma lista, el tilde tiene que llegar
-  ya— y por `transferUserInfo` si no, que encola en disco y llega igual.
-- **El tilde se escribe al valor que pidió el reloj**, no invirtiendo el que
-  está: así una entrega repetida no deshace nada.
+Dos de los doce ítems no sobrevivieron la verificación del 14/09/2026 y por eso
+no están allá. Quedan acá como registro de cómo falla una lista así:
+
+- **`useSyncExternalStore` para leer localStorage no vino de Gastos Diarios.**
+  `git log -S useSyncExternalStore --all` en su repo no devuelve nada, y
+  degradaron a `warn` la regla de lint que empuja hacia eso (`201e834`). No
+  caducó: **nació falso**, y lo hizo falso el encabezado —«lo que Stock tomó de
+  Gastos»— que le presta su afirmación a todo lo que cuelga. La regla sigue
+  valiendo acá; la atribución no.
+- **«Outfit bundleada también en iOS»** insinuaba que la web también la
+  vendorea. Ninguno de los dos versiona un `.woff2`. Corregido en `interfaz.md`.
 
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
@@ -264,6 +248,36 @@ de «una medición que no puede dar el resultado contrario»: si el comparador
 falló una vez por su propia culpa y lo arreglaste, ya sabés que puede reportar
 diferencias. Si dio OK de entrada, no sabés si compara o si mira para otro lado.
 
+**Un encabezado le presta su procedencia a todo lo que cuelga de él.** §10 de
+este archivo se llama «lo que Stock tomó de Gastos Diarios», y bajo ese título
+terminó un ítem que nadie tomó de ahí: `useSyncExternalStore` para leer
+localStorage, que su repo **nunca tuvo** —`git log -S … --all` no devuelve nada—
+y cuya regla de lint ellos degradaron a `warn` a propósito. No caducó: nació
+falso, y lo hizo falso el encabezado, no el autor del bullet. Es la forma
+inversa del hallazgo del título que ya está más arriba — allá un título repetía
+una regla que había cambiado; acá le regala una atribución a una lista entera.
+Al escribir una lista bajo un encabezado que afirma algo de todos sus ítems,
+cada ítem hereda esa afirmación sin que nadie la haya verificado para él.
+
+**Una afirmación que decide algo viaja con cómo se obtuvo.** Entre sesiones, el
+mecanismo por el que circula una frase falsa no es que esté mal escrita: es que
+llega **separada de su procedencia**, y separada ya no se puede ponderar. En una
+hora escribí tres versiones del mismo consejo sobre Vercel y submódulos —«dale
+acceso a la app» (falso), «no se puede nunca» (cierto entonces), «anda» (cierto
+ahora)— y sólo la tercera la medí en este repo. Las dos primeras venían de otras
+sesiones, de buena fe, y las repetí con la misma firmeza que las medidas. La
+única que se trató distinto fue la que llegó marcada como no verificada: cuando
+mandé lo de Vercel como PLAUSIBLE, del otro lado lo midieron antes de usarlo.
+Así que basta con tres etiquetas —**medido acá**, **leído en la doc**, **lo
+supongo**— y ponerlas donde la afirmación decide algo. Es de Gastos Diarios, y
+el caso que la motivó es mío.
+
+**Y una instrucción puede ser correcta en contenido y falsa en el momento.**
+«Borrá la deploy key» era verdad *después* de un push que todavía no había
+ocurrido; dada antes, rompía el CI del otro repo en la siguiente corrida. Cuando
+lo que se pide depende de un estado que todavía no existe, la condición va en la
+misma oración.
+
 **Escribí la guarda ANTES de arreglar lo que va a guardar.** En ese orden la
 primera corrida es un control positivo gratis: no hace falta preguntarse si la
 sonda puede dar el resultado contrario porque arranca dándolo. La de versiones
@@ -292,6 +306,23 @@ archivos. Los tres eran ruido: dos `import` que mencionaban `writeFileSync` y la
 contestar la pregunta que le hice, y su salida tenía forma de respuesta. Para
 esto no hay atajo textual: se leen los caminos de ejecución, que en este repo
 eran cuatro.
+
+**Una edición que no encuentra su anclaje no cambia nada y no lo dice.** Un
+`sed`, un `replace` o un parche cuyo patrón no matchea sale con éxito, deja el
+archivo igual, y el commit se va describiendo contenido que nunca entró. Ni el
+diff resumido ni el mensaje lo muestran. Por eso **todo reemplazo automático
+afirma primero que el anclaje existe** —`assert s.count(old) == 1` antes de
+tocar nada—, y un `sed -i` sin verificación posterior no califica. Kyber lo
+encontró en un commit propio cuyo mensaje anunciaba dos reglas que el commit no
+tenía; acá la variante fue más barata sólo porque los `assert` ya estaban
+puestos y fallaron ruidoso varias veces en el día.
+
+**Una lista vacía es verdad en los dos mundos.** Apareció dos veces el mismo
+día: `expect(wrong).toEqual([])` pasa igual si la sonda no encontró diferencias
+que si no miró nada. La aserción tiene que llevar **cuánto se miró** al lado —
+`{ checked: 8, wrong: [] }` — y la mutación que lo justifica es romper el
+matcher, no los datos. Es la misma forma que contar hogares cuando el conteo da
+1 en los dos casos.
 
 **No la escribas, corrila — y antes de mirar, decí qué significaría cada color.**
 La formulación abstracta («una medición que no puede dar el resultado contrario»)

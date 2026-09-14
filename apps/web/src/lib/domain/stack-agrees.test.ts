@@ -80,6 +80,18 @@ describe('this repo runs the stack kyber declares', () => {
     expect(entries.length).toBeGreaterThan(10)
   })
 
+  it('every required key resolves to something', () => {
+    // Separate from the comparison below, and this is the one that saves it: a
+    // regex that stops matching returns `undefined`, and `undefined` compared
+    // against a string is simply "not equal" — which reads as drift and sends
+    // someone to change a version that was never wrong. Two of the six failures
+    // on this guard's first run were exactly that.
+    const unresolved = entries
+      .filter(([key, { required }]) => required && declared[key] === undefined)
+      .map(([key]) => key)
+    expect(unresolved).toEqual([])
+  })
+
   it('every declared version is the shared one', () => {
     const wrong = entries
       .filter(([key, { value }]) => declared[key] !== undefined && declared[key] !== value)
@@ -87,12 +99,17 @@ describe('this repo runs the stack kyber declares', () => {
     expect(wrong).toEqual([])
   })
 
-  it('nothing required is missing', () => {
-    // Optional is for what a consumer legitimately does not use — the third app
-    // has no PWA and no next-intl. Required is the toolchain everyone has.
-    const missing = entries
-      .filter(([key, { required }]) => required && declared[key] === undefined)
-      .map(([key]) => key)
-    expect(missing).toEqual([])
+  it('an optional key this repo does not use is fine', () => {
+    // The control that makes the rest mean anything: without it, a guard that
+    // fails on everything looks identical to one that discriminates. Optional
+    // is for what a consumer legitimately does not have — the third app has no
+    // PWA, this one has no next-intl.
+    const optionalAndAbsent = entries.filter(
+      ([key, { required }]) => !required && declared[key] === undefined,
+    )
+    for (const [key] of optionalAndAbsent) {
+      expect(declared[key], `${key} is optional and absent, which must not fail`).toBeUndefined()
+    }
+    expect(entries.some(([, { required }]) => !required)).toBe(true)
   })
 })

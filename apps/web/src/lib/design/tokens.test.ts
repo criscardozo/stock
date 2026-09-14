@@ -21,6 +21,7 @@ import { describe, expect, it } from 'vitest'
 const root = join(__dirname, '../../../../..')
 const css = readFileSync(join(root, 'apps/web/src/app/globals.css'), 'utf8')
 const swift = readFileSync(join(root, 'apps/ios/Stock/Design/Theme.swift'), 'utf8')
+const watch = readFileSync(join(root, 'apps/ios/StockWatch/WatchTheme.swift'), 'utf8')
 
 /** `--name: #rrggbb;` pairs inside one block. */
 function hexDeclarations(block: string): Map<string, string> {
@@ -94,5 +95,43 @@ describe('design tokens', () => {
 
       expect([light.get(cssName), dark.get(cssName)], `--${cssName} vs ${swiftName}`).toEqual(onIOS)
     }
+  })
+})
+
+describe('the watch is the fourth copy, and nothing was holding it', () => {
+  /**
+   * `StockWatch/WatchTheme.swift` restates eight tokens. That is deliberate and
+   * documented there — the watch target compiles no phone code, and watchOS
+   * always renders dark, so carrying the light halves would be dead weight and
+   * a claim about the screen that is not true.
+   *
+   * What was not deliberate is that nothing checked it. The eight agree today;
+   * they agree because whoever wrote them was careful on a Tuesday, which is
+   * the same guarantee Gastos Diarios had when their `--warn-text` drifted for
+   * months. Gastos found their own third copy in the widget and told us to look
+   * for ours; ours is the watch.
+   *
+   * SCOPE, and it differs from theirs on purpose: this compares against the
+   * `dark:` half only, because the watch has no light half to compare. Their
+   * widget renders both appearances, so their guard checks the whole pair. Same
+   * rule, different surface — written here so whoever puts the two files side
+   * by side does not read one of them as a mistake.
+   */
+  it('every watch token is the dark half of the phone token', () => {
+    const phone = swiftTokens()
+    const wrong: string[] = []
+    let checked = 0
+    for (const m of watch.matchAll(/static let (\w+) = Color\(hex: 0x([0-9A-Fa-f]{6})\)/g)) {
+      const [, name, hex] = m
+      checked += 1
+      const pair = phone.get(name)
+      if (pair === undefined) wrong.push(`${name}: no existe en Theme.swift`)
+      else if (pair[1] !== `#${hex.toLowerCase()}`) {
+        wrong.push(`${name}: el reloj dice #${hex.toLowerCase()}, el teléfono #${pair[1].replace('#', '')}`)
+      }
+    }
+    // The count is asserted because a regex that stops matching would otherwise
+    // check nothing and pass — the failure that does not fail.
+    expect({ checked, wrong }).toEqual({ checked: 8, wrong: [] })
   })
 })

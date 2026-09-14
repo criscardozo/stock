@@ -23,7 +23,7 @@
     "backup": "node kyber/scripts/backup.mjs",
     "restore": "node kyber/scripts/restore.mjs",
     "round-trip": "node scripts/round-trip.mjs",
-    "set-version": "node scripts/set-version.mjs"
+    "set-version": "node kyber/scripts/set-version.mjs"
   },
   "devDependencies": {
     "firebase-admin": "^14.4.0",

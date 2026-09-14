@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -21,7 +22,11 @@ import { describe, expect, it } from 'vitest'
 const root = join(__dirname, '../../../../..')
 const read = (path: string) => readFileSync(join(root, path), 'utf8')
 
-const webVersion = (JSON.parse(read('apps/web/package.json')) as { version: string }).version
+const APP_WORKSPACE = (
+  JSON.parse(read('.kyber/config.json')) as { webWorkspace: string }
+).webWorkspace
+const webVersion = (JSON.parse(read(`apps/${APP_WORKSPACE}/package.json`)) as { version: string })
+  .version
 const projectYml = read('apps/ios/project.yml')
 const marketing = [...projectYml.matchAll(/MARKETING_VERSION: "([^"]*)"/g)].map((m) => m[1])
 
@@ -37,14 +42,13 @@ describe('one version, four copies', () => {
     })
   })
 
-  it('set-version knows how many targets there are', () => {
-    // The script refuses to write unless it finds exactly IOS_TARGETS of them,
-    // which only helps while that number is the true one. Add a target, update
-    // project.yml, forget the script, and it starts refusing every release for
-    // a reason nobody will guess from the message.
-    const declared = read('scripts/set-version.mjs').match(/IOS_TARGETS = (\d+)/)
-    expect(Number(declared?.[1])).toBe(marketing.length)
-  })
+  // The test that lived here coupled `IOS_TARGETS = 3` in this repo's own
+  // set-version.mjs to the real target count. That script moved to kyber and
+  // takes the NAMES from .kyber/config.json instead of carrying a constant, so
+  // there is no second copy left to hold — and the coupling that replaced it,
+  // config names against project.yml, is in kyber-config.test.ts. Deleted
+  // rather than re-pointed: a guard whose subject no longer exists is the thing
+  // this suite spends its time removing.
 
   it('every target hands CFBundleShortVersionString to MARKETING_VERSION, not a literal', () => {
     // MARKETING_VERSION is the build setting. CFBundleShortVersionString is
@@ -77,14 +81,68 @@ describe('one version, four copies', () => {
     expect(shipped).toEqual(Object.fromEntries(plists.map((p) => [p, '$(MARKETING_VERSION)'])))
   })
 
-  it('the private packages stay out of it', () => {
-    // Deliberately NOT copies. They are workspace plumbing — never published,
-    // never displayed — so they are pinned at 0.0.0 rather than kept in step.
-    // If this fails, someone "fixed" them and created three more copies for a
-    // human to remember. Put them back.
-    const versions = ['package.json', 'tools/package.json', 'firebase/rules-tests/package.json'].map(
-      (path) => (JSON.parse(read(path)) as { version: string }).version,
-    )
-    expect(versions).toEqual(['0.0.0', '0.0.0', '0.0.0'])
+  it('every manifest that is not the app stays out of it', () => {
+    // The workspace manifests are deliberately NOT copies of the version: never
+    // published, never displayed, so they are pinned at 0.0.0 rather than kept
+    // in step. If this fails, someone "fixed" them and created more numbers for
+    // a human to remember. Put them back.
+    //
+    // Asked of git rather than listed, which is Gastos Diarios' form and the
+    // stronger one: a literal list is complete only until the next workspace
+    // package, and the day it stops being complete it says nothing. The gitlink
+    // keeps kyber out by itself — `git ls-files` reports `kyber` as one entry
+    // and never matches `*package.json` inside it.
+    const manifests = execFileSync('git', ['ls-files', '*package.json'], {
+      cwd: root,
+      encoding: 'utf8',
+    })
+      .split('\n')
+      .filter(Boolean)
+      .filter((path) => path !== `apps/${APP_WORKSPACE}/package.json`)
+
+    const wrong = manifests
+      .map((path) => [path, (JSON.parse(read(path)) as { version: string }).version] as const)
+      .filter(([, version]) => version !== '0.0.0')
+      .map(([path, version]) => `${path}: ${version}`)
+
+    expect({ checked: manifests.length, wrong }).toEqual({ checked: manifests.length, wrong: [] })
+    expect(manifests.length).toBeGreaterThan(2)
+  })
+})
+
+describe('the declared version is findable in the history', () => {
+  /**
+   * Every other copy of the version says WHAT version this is. The tag is the
+   * only one that lets you go back: a report against "1.1.0" on the Ajustes
+   * screen is reachable with `git checkout v1.1.0`, and a tag is the only thing
+   * `git bisect` can walk. Without it the version a person is looking at is not
+   * locatable in the history.
+   */
+  const tags = execFileSync('git', ['tag', '--list', 'v*'], { cwd: root, encoding: 'utf8' })
+    .split('\n')
+    .filter(Boolean)
+
+  it('there are tags to look at', () => {
+    // Kept apart from the check below on purpose, because the two failures look
+    // alike and mean opposite things. No tags at all is a shallow clone —
+    // `actions/checkout` fetches none unless asked — and reading it as "this
+    // version is untagged" sends someone to tag what is already tagged, and
+    // turns the guard red on every release commit in CI until somebody silences
+    // it.
+    expect({
+      tags: tags.length,
+      hint: 'si es 0 en CI, al checkout le falta `fetch-tags: true`',
+    }).toEqual({ tags: tags.length, hint: 'si es 0 en CI, al checkout le falta `fetch-tags: true`' })
+    expect(tags.length).toBeGreaterThan(0)
+  })
+
+  it('this version has one', () => {
+    expect({
+      missing: tags.includes(`v${webVersion}`) ? [] : [`v${webVersion}`],
+      hint: `git tag -a v${webVersion} -m "v${webVersion}" && git push --follow-tags`,
+    }).toEqual({
+      missing: [],
+      hint: `git tag -a v${webVersion} -m "v${webVersion}" && git push --follow-tags`,
+    })
   })
 })
