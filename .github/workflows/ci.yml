@@ -110,6 +110,23 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+      # kyber holds the shared tooling and is a PRIVATE repo, so GITHUB_TOKEN
+      # cannot reach it: it is scoped to this repository. A deploy key can only
+      # be registered on one repo, which is why this is a second checkout and
+      # not `submodules: true` on the first — `ssh-key:` there would clone THIS
+      # repo over SSH with a key that only opens kyber.
+      #
+      # Pinned to the gitlink rather than to a branch, so the job runs the
+      # commit this repo points at. The log prints the sha, which must equal
+      # `git rev-parse HEAD:kyber` locally.
+      - id: kyber
+        run: echo "sha=$(git rev-parse HEAD:kyber)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          repository: criscardozo/kyber
+          ref: ${{ steps.kyber.outputs.sha }}
+          ssh-key: ${{ secrets.KYBER_DEPLOY_KEY }}
+          path: kyber
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
