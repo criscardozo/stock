@@ -96,55 +96,26 @@ correr `xcodegen` para que el `Info.plist` las tome.
 
 ## 10. Familia con Gastos Diarios
 
-Las dos apps son del mismo autor, la misma casa y el mismo lenguaje visual, así
-que lo que se refinó en una vale en la otra. Lo que Stock tomó de Gastos
-Diarios, y por qué —para que una tercera app arranque con esto puesto.
+→ [`kyber/docs/interfaz.md`](../kyber/docs/interfaz.md)
 
-**Verificado ítem por ítem contra los dos árboles el 14/09/2026**, porque una
-lista así es prosa pura: nada la ejecuta, así que caduca en silencio y en las dos
-direcciones a la vez. Diez de los doce resultaron ciertos de los dos lados; los
-otros dos están corregidos en su bullet. Uno de ellos estrena categoría — no
-caducó, **nació falso**: el encabezado «lo que Stock tomó de Gastos» le presta su
-procedencia a cada ítem de la lista, incluidos los que nadie tomó de ahí.
+Lo que se refinó en una app vale en la otra, y las diez reglas que sobrevivieron
+medidas de los dos lados están ahí — **escritas como reglas y no como
+inventario**, que es la corrección que salió de verificar esta sección: un
+inventario dice «las dos apps hacen X» y caduca en silencio porque nada lo
+ejecuta; una regla dice «hacé X porque Y», y una app que deja de cumplirla no
+vuelve falso el texto, queda incumplida, que es detectable.
 
-- **Tokens en `:root`, Tailwind sólo los mapea** (`@theme inline`). El día que
-  haya dark, es un bloque de tokens más, no un rediseño.
-- **Los controles de formulario van en `@layer base`.** Una regla sin capa le
-  gana a cualquier utilidad de Tailwind por más específica que sea: un
-  `bg-*` escrito en un `<input>` perdía en silencio.
-- **`font-size: 16px` en `@media (pointer: coarse)`**, y esta *sin* capa a
-  propósito. Safari en iOS hace zoom al enfocar un campo de menos de 16 px, y
-  las dos apps viven como PWA en el teléfono.
-- **Tarjeta de versión en Ajustes** — versión, commit y fecha, resueltos en
-  build. Un número que alguien tiene que acordarse de subir es un número que
-  miente.
-- **Outfit bundleada en iOS** (`Resources/Fonts/Outfit-Variable.ttf`, byte a byte
-  el mismo archivo en los dos repos), con fallback a la del sistema. En web no hay
-  `.woff2` versionado en ninguno de los dos: los dos usan `next/font/google`, que
-  la baja en build y la sirve desde el propio origen. Es lo que hace que se vean
-  como un producto y no como dos que coinciden en los colores.
-- **Aviso de vencimiento de la firma**, leído del `embedded.mobileprovision` y
-  no de una fecha guardada: re-firmar no borra el contenedor, así que la fecha
-  guardada mentiría para siempre.
-- **`hasPendingWrites` a la vista.** Lo que todavía no subió se dice; el súper
-  es justo donde no hay señal.
-- **Háptica en la acción que se hace sin mirar** (tildar en la góndola).
-- **Sin `setState` sincrónico dentro de un `useEffect`.** Para leer algo externo
-  —localStorage— va `useSyncExternalStore`. **Esto no vino de Gastos Diarios**:
-  `git log -S useSyncExternalStore --all` en su repo no devuelve nada, nunca lo
-  tuvieron, y de hecho degradaron a `warn` la regla de lint que lo empuja
-  (`201e834`, «nineteen warnings become nineteen written reasons»). Lo escribimos
-  acá y quedó archivado como tomado de ellos porque la sección entera está
-  encabezada así.
+Dos de los doce ítems no sobrevivieron la verificación del 14/09/2026 y por eso
+no están allá. Quedan acá como registro de cómo falla una lista así:
 
-- **El Watch como relé, no como cliente.** No puede loguearse (Google necesita
-  un navegador y en la muñeca no hay), así que nunca toca Firebase: el teléfono
-  le manda la lista ya formateada por `updateApplicationContext` y hace todas
-  las escrituras. Los tildes vuelven por `sendMessage` si el teléfono está al
-  alcance —son dos personas mirando la misma lista, el tilde tiene que llegar
-  ya— y por `transferUserInfo` si no, que encola en disco y llega igual.
-- **El tilde se escribe al valor que pidió el reloj**, no invirtiendo el que
-  está: así una entrega repetida no deshace nada.
+- **`useSyncExternalStore` para leer localStorage no vino de Gastos Diarios.**
+  `git log -S useSyncExternalStore --all` en su repo no devuelve nada, y
+  degradaron a `warn` la regla de lint que empuja hacia eso (`201e834`). No
+  caducó: **nació falso**, y lo hizo falso el encabezado —«lo que Stock tomó de
+  Gastos»— que le presta su afirmación a todo lo que cuelga. La regla sigue
+  valiendo acá; la atribución no.
+- **«Outfit bundleada también en iOS»** insinuaba que la web también la
+  vendorea. Ninguno de los dos versiona un `.woff2`. Corregido en `interfaz.md`.
 
 Lo que **no** se copió, porque no aplica: i18n (Stock es sólo español), todo lo
 de plata y presupuesto, y la ingesta del banco.
