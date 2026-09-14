@@ -113,6 +113,29 @@ Exige **un cambio de consola por dominio** ⏳:
 `localhost` no necesita nada: `next dev` aplica el mismo rewrite y ya está
 autorizado.
 
+### El submódulo `kyber` y Vercel ⏳
+
+`.gitmodules` apunta a kyber por **HTTPS** porque Vercel no clona submódulos por
+SSH. Pero HTTPS no alcanza: kyber es **privado**, así que la GitHub App de Vercel
+necesita acceso a *ese* repo además de a `stock`. Se lo da en
+[GitHub → Settings → Applications → Vercel → Repository access][vercelapp],
+agregando `criscardozo/kyber`.
+
+**Sin ese permiso el deploy queda verde igual.** El build imprime una sola línea
+entre el clon y la compilación:
+
+```
+Warning: Failed to fetch one or more git submodules
+✓ Compiled successfully
+```
+
+y sigue, porque hoy nada del bundle importa desde `kyber/`. El día que algo lo
+importe, el error va a ser un `Module not found` con la causa semanas atrás. Por
+eso, **después de tocar `.gitmodules` se lee el log del build**, no el color del
+deploy: es la única falla de esta migración que no cambia nada de lo que se mira.
+
+[vercelapp]: https://github.com/settings/installations
+
 ## 4. Instalar la PWA en el iPhone
 
 Es como la app se queda en el teléfono para siempre — a diferencia del build
