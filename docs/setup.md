@@ -115,28 +115,15 @@ autorizado.
 
 ### El submódulo `kyber` y Vercel
 
-**Vercel no clona submódulos privados.** No es una cuestión de permisos: su
-documentación de build dice que un submódulo se despliega sólo si es accesible
-públicamente por HTTP, y los privados o por SSH fallan en el clone. Medido con
-la GitHub App en *All repositories*: el warning sigue igual.
+Nada que configurar: **kyber es público**, así que Vercel lo clona sin
+credencial y el bundle puede importar de ahí.
 
-Así que todo deploy imprime una línea entre el clon y la compilación —
-
-```
-Warning: Failed to fetch one or more git submodules
-✓ Compiled successfully
-```
-
-— y queda **verde con `kyber/` vacío**, de forma permanente mientras kyber sea
-privado. No rompe nada **mientras nada de lo que entra al bundle venga de
-`kyber/`**. Los scripts, los tests, los hooks y CI no se ven afectados: corren
-donde el submódulo sí está.
-
-Como el warning es permanente, leer el log no protege de nada: sólo avisa el día
-que alguien se acuerde de leerlo. Lo que protege es
-`apps/web/src/lib/domain/kyber-config.test.ts`, que falla si algún archivo del
-bundle importa desde el submódulo. Si algún día hace falta, la salida no es
-configurar Vercel: es kyber público, o publicarlo como dependencia privada.
+Mientras fue privado no podía, y no por permisos — la documentación de build de
+Vercel dice que un submódulo se despliega sólo si es accesible públicamente por
+HTTP. El deploy quedaba **verde** con `kyber/` vacío y una sola línea de
+`Warning: Failed to fetch one or more git submodules` entre el clon y la
+compilación. Queda escrito porque es la forma de falla que no cambia el color de
+nada, y porque si algún día kyber vuelve a ser privado, vuelve ese techo.
 
 ## 4. Instalar la PWA en el iPhone
 
