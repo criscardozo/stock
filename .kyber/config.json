@@ -28,7 +28,8 @@
     "deepRoute": "/falta-comprar"
   },
   "prePush": [
-    "pnpm --filter web typecheck"
+    "pnpm --filter web typecheck",
+    "pnpm --filter web test"
   ],
   "bundleId": "dev.cardozo.stock",
   "iosScheme": "Stock",
