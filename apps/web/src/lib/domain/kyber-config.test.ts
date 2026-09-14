@@ -116,14 +116,17 @@ describe('.kyber/config.json describes this repo', () => {
       ciStart: ci.includes(`next start -p ${config.pwa.port}`),
       ciWaitOn: ci.includes(`http://localhost:${config.pwa.port}${config.pwa.entry}`),
       claudeMd: read('CLAUDE.md').includes(`-p ${config.pwa.port}`),
-      verifyThreshold: read('apps/web/scripts/verify-pwa.mjs').includes(`>= ${config.pwa.minStaticAssets}`),
+      // The entry has to be one of the precached routes: the service worker
+      // installs from there, so a shell that leaves it out caches everything
+      // except the door. kyber's rule, and this repo satisfies it.
+      entryIsPrecached: config.pwa.precachedRoutes.includes(config.pwa.entry),
     }).toEqual({
       entryIsFirst: true,
       precachedAreShell: true,
       ciStart: true,
       ciWaitOn: true,
       claudeMd: true,
-      verifyThreshold: true,
+      entryIsPrecached: true,
     })
   })
 

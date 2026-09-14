@@ -6,13 +6,28 @@
   "firebaseDir": "firebase",
   "rulesTestsDir": "firebase/rules-tests",
   "iosDir": "apps/ios",
-  "iosTargets": ["Stock", "StockWidget", "StockWatch"],
+  "iosTargets": [
+    "Stock",
+    "StockWidget",
+    "StockWatch"
+  ],
   "webWorkspace": "web",
   "pwa": {
     "port": 3113,
     "entry": "/stock",
-    "precachedRoutes": ["/stock", "/falta-comprar", "/plan", "/recetas", "/ajustes"],
-    "minStaticAssets": 5
+    "precachedRoutes": [
+      "/stock",
+      "/falta-comprar",
+      "/plan",
+      "/recetas",
+      "/ajustes"
+    ],
+    "minStaticAssets": 5,
+    "offlineText": "Stock",
+    "signedOutText": "Continuar con Google",
+    "deepRoute": "/falta-comprar"
   },
-  "prePush": ["pnpm --filter web typecheck"]
+  "prePush": [
+    "pnpm --filter web typecheck"
+  ]
 }

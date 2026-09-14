@@ -42,14 +42,13 @@ describe('one version, four copies', () => {
     })
   })
 
-  it('set-version knows how many targets there are', () => {
-    // The script refuses to write unless it finds exactly IOS_TARGETS of them,
-    // which only helps while that number is the true one. Add a target, update
-    // project.yml, forget the script, and it starts refusing every release for
-    // a reason nobody will guess from the message.
-    const declared = read('scripts/set-version.mjs').match(/IOS_TARGETS = (\d+)/)
-    expect(Number(declared?.[1])).toBe(marketing.length)
-  })
+  // The test that lived here coupled `IOS_TARGETS = 3` in this repo's own
+  // set-version.mjs to the real target count. That script moved to kyber and
+  // takes the NAMES from .kyber/config.json instead of carrying a constant, so
+  // there is no second copy left to hold — and the coupling that replaced it,
+  // config names against project.yml, is in kyber-config.test.ts. Deleted
+  // rather than re-pointed: a guard whose subject no longer exists is the thing
+  // this suite spends its time removing.
 
   it('every target hands CFBundleShortVersionString to MARKETING_VERSION, not a literal', () => {
     // MARKETING_VERSION is the build setting. CFBundleShortVersionString is
