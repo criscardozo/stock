@@ -13,14 +13,28 @@ export const BOB = 'bob'
 export const CAROL = 'carol'
 
 export async function makeTestEnv(): Promise<RulesTestEnvironment> {
+  // No host, no port, on purpose. `initializeTestEnvironment` prefers an
+  // explicit host/port over FIRESTORE_EMULATOR_HOST, so a helper that names one
+  // silently overrules the runner: the runner would start an emulator on a free
+  // port, the tests would connect to 8280 anyway, and if `pnpm emulators` were
+  // up they would load these rules into the development emulator and
+  // clearFirestore() would wipe the seed. Green, wrong database.
+  //
+  // The variable decides. This throws rather than letting the library fall back
+  // to its own default, because that default is localhost:8080 — which on this
+  // machine is an SSH forward to a real, empty Firestore emulator that answers
+  // every probe correctly.
+  if (process.env.FIRESTORE_EMULATOR_HOST === undefined) {
+    throw new Error(
+      'FIRESTORE_EMULATOR_HOST no está seteada: corré `pnpm test:rules`, que levanta ' +
+        'el emulador en un puerto libre y la exporta. Un vitest pelado se conectaría ' +
+        'a localhost:8080, que acá es un forward a otro emulador, vacío y real.',
+    )
+  }
   return initializeTestEnvironment({
     projectId: 'demo-stock',
     firestore: {
       rules: readFileSync(new URL('../../firestore.rules', import.meta.url), 'utf8'),
-      host: '127.0.0.1',
-      // 8280 by default, and pinned to firebase.json by
-      // apps/web/src/lib/domain/ports.test.ts — this file cannot read it.
-      port: Number(process.env.FIRESTORE_EMULATOR_PORT ?? 8280),
     },
   })
 }
