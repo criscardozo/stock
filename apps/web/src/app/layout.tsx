@@ -60,10 +60,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           lib/design/icons.ts; repeating the figure here would be a second copy
           of a number that moves every time the list does.
         
-          The no-page-custom-font rule is about the Pages Router; this is the App
-          Router's ROOT layout, so it is global by definition.
+          This used to carry an eslint-disable for `google-font-display` and
+          `no-page-custom-font`, and it is gone because neither rule fires any
+          more. Not because they stopped applying — because they only read a
+          LITERAL href. Extracting the URL into `materialSymbolsHref()` blinded
+          both: put the string back inline and both warn again, which is how this
+          was checked rather than assumed.
+
+          Worth knowing which direction that cuts. `display=block` is still
+          required and lint cannot see whether it is there; `icons.test.ts` is
+          what holds it. And a suppression that suppresses nothing is worse than
+          none — it reads as "these rules are known to be wrong here", which is
+          not what was measured.
         */}
-        {/* eslint-disable-next-line @next/next/google-font-display, @next/next/no-page-custom-font */}
         <link href={materialSymbolsHref()} rel="stylesheet" />
       </head>
       <body className="min-h-dvh bg-ground font-sans text-ink antialiased">
