@@ -312,6 +312,13 @@ contestar la pregunta que le hice, y su salida tenía forma de respuesta. Para
 esto no hay atajo textual: se leen los caminos de ejecución, que en este repo
 eran cuatro.
 
+**Una lista vacía es verdad en los dos mundos.** Apareció dos veces el mismo
+día: `expect(wrong).toEqual([])` pasa igual si la sonda no encontró diferencias
+que si no miró nada. La aserción tiene que llevar **cuánto se miró** al lado —
+`{ checked: 8, wrong: [] }` — y la mutación que lo justifica es romper el
+matcher, no los datos. Es la misma forma que contar hogares cuando el conteo da
+1 en los dos casos.
+
 **No la escribas, corrila — y antes de mirar, decí qué significaría cada color.**
 La formulación abstracta («una medición que no puede dar el resultado contrario»)
 se aplica pensando, y pensando fallamos los dos varias veces en dos días: cada

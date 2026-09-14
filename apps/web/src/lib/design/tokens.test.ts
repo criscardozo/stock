@@ -110,6 +110,12 @@ describe('the watch is the fourth copy, and nothing was holding it', () => {
    * the same guarantee Gastos Diarios had when their `--warn-text` drifted for
    * months. Gastos found their own third copy in the widget and told us to look
    * for ours; ours is the watch.
+   *
+   * SCOPE, and it differs from theirs on purpose: this compares against the
+   * `dark:` half only, because the watch has no light half to compare. Their
+   * widget renders both appearances, so their guard checks the whole pair. Same
+   * rule, different surface — written here so whoever puts the two files side
+   * by side does not read one of them as a mistake.
    */
   it('every watch token is the dark half of the phone token', () => {
     const phone = swiftTokens()

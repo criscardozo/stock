@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -21,7 +22,11 @@ import { describe, expect, it } from 'vitest'
 const root = join(__dirname, '../../../../..')
 const read = (path: string) => readFileSync(join(root, path), 'utf8')
 
-const webVersion = (JSON.parse(read('apps/web/package.json')) as { version: string }).version
+const APP_WORKSPACE = (
+  JSON.parse(read('.kyber/config.json')) as { webWorkspace: string }
+).webWorkspace
+const webVersion = (JSON.parse(read(`apps/${APP_WORKSPACE}/package.json`)) as { version: string })
+  .version
 const projectYml = read('apps/ios/project.yml')
 const marketing = [...projectYml.matchAll(/MARKETING_VERSION: "([^"]*)"/g)].map((m) => m[1])
 
@@ -77,14 +82,31 @@ describe('one version, four copies', () => {
     expect(shipped).toEqual(Object.fromEntries(plists.map((p) => [p, '$(MARKETING_VERSION)'])))
   })
 
-  it('the private packages stay out of it', () => {
-    // Deliberately NOT copies. They are workspace plumbing — never published,
-    // never displayed — so they are pinned at 0.0.0 rather than kept in step.
-    // If this fails, someone "fixed" them and created three more copies for a
-    // human to remember. Put them back.
-    const versions = ['package.json', 'tools/package.json', 'firebase/rules-tests/package.json'].map(
-      (path) => (JSON.parse(read(path)) as { version: string }).version,
-    )
-    expect(versions).toEqual(['0.0.0', '0.0.0', '0.0.0'])
+  it('every manifest that is not the app stays out of it', () => {
+    // The workspace manifests are deliberately NOT copies of the version: never
+    // published, never displayed, so they are pinned at 0.0.0 rather than kept
+    // in step. If this fails, someone "fixed" them and created more numbers for
+    // a human to remember. Put them back.
+    //
+    // Asked of git rather than listed, which is Gastos Diarios' form and the
+    // stronger one: a literal list is complete only until the next workspace
+    // package, and the day it stops being complete it says nothing. The gitlink
+    // keeps kyber out by itself — `git ls-files` reports `kyber` as one entry
+    // and never matches `*package.json` inside it.
+    const manifests = execFileSync('git', ['ls-files', '*package.json'], {
+      cwd: root,
+      encoding: 'utf8',
+    })
+      .split('\n')
+      .filter(Boolean)
+      .filter((path) => path !== `apps/${APP_WORKSPACE}/package.json`)
+
+    const wrong = manifests
+      .map((path) => [path, (JSON.parse(read(path)) as { version: string }).version] as const)
+      .filter(([, version]) => version !== '0.0.0')
+      .map(([path, version]) => `${path}: ${version}`)
+
+    expect({ checked: manifests.length, wrong }).toEqual({ checked: manifests.length, wrong: [] })
+    expect(manifests.length).toBeGreaterThan(2)
   })
 })
