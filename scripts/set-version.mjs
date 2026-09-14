@@ -19,10 +19,10 @@
 // somebody has to keep in step.
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import { consumerRoot } from "./lib/consumer-root.mjs";
 
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const repoRoot = consumerRoot();
 const IOS_TARGETS = 3;
 
 const version = process.argv[2];

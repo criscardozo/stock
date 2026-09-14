@@ -1,4 +1,5 @@
-import { readdirSync, readFileSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
@@ -78,26 +79,32 @@ function fallbackIn(path: string, marker: string): number {
 }
 
 /**
- * The tree, minus what is not this repo's source. Both skips are trees a clone
- * does not build and CI never sees — `.agents` is vendored third-party skills
- * and `docs/design` is the generated Claude Design bundle, gitignored — so a
- * test that read them would pass or fail depending on the machine. Measured
- * before skipping: between them they name 4000, 8080 and 9099, all foreign.
+ * The files this repo actually ships, asked of git rather than walked.
+ *
+ * The walk it replaces carried a hand-written skip list — `node_modules`,
+ * `.agents`, `docs/design`, `build-*`, `Pods` — every entry of which was a
+ * directory git already ignores. A list that duplicates `.gitignore` is a
+ * second copy of the same decision, and the copies drift.
+ *
+ * It also settles the submodule without an exception. `git ls-files` reports a
+ * gitlink as ONE entry and does not descend into it, so `kyber/` is outside the
+ * sweep by construction rather than by a name somebody has to keep aligned with
+ * `.gitmodules`. That matters more than tidiness here: a clone without
+ * `--recurse-submodules` has an empty `kyber/`, so a sweep that read it would
+ * pass or fail depending on the machine.
+ *
+ * `-co --exclude-standard` is tracked plus untracked-not-ignored, so a new
+ * spec that nobody has `git add`ed yet is still swept — which is the case the
+ * probe file in this suite's own controls exercises.
  */
 function sourceFiles(): string[] {
-  const out: string[] = []
-  const walk = (dir: string) => {
-    for (const entry of readdirSync(join(root, dir), { withFileTypes: true })) {
-      const path = dir === '' ? entry.name : `${dir}/${entry.name}`
-      if (entry.isDirectory()) {
-        if (/^(node_modules|\.git|\.next|\.agents|build-\w+|Pods)$/.test(entry.name)) continue
-        if (path === 'docs/design') continue
-        walk(path)
-      } else out.push(path)
-    }
-  }
-  walk('')
-  return out
+  return execFileSync('git', ['ls-files', '-co', '--exclude-standard'], {
+    cwd: root,
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024,
+  })
+    .split('\n')
+    .filter(Boolean)
 }
 
 /** Every file that repeats a port as a `??` default. */

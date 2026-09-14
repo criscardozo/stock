@@ -22,12 +22,20 @@
 import { spawnSync } from "node:child_process";
 import { readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, resolve } from "node:path";
+import { consumerRoot } from "./lib/consumer-root.mjs";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const repoRoot = consumerRoot();
+
+// One place, so moving backup and restore into the submodule is one edit and
+// not five. They are spawned rather than imported on purpose: this rehearses
+// the scripts a person runs, not a copy of their internals.
+const SCRIPTS = {
+  backup: join(repoRoot, "scripts/backup.mjs"),
+  restore: join(repoRoot, "scripts/restore.mjs"),
+};
 const PROJECT = "demo-stock";
 const { emulators } = JSON.parse(readFileSync(join(repoRoot, "firebase/firebase.json"), "utf8"));
 const HOST = `127.0.0.1:${emulators.firestore.port}`;
@@ -60,10 +68,27 @@ function run(label, command, args) {
 }
 
 /** The newest dump in backups/, which is the one the run just wrote. */
-function newestDump() {
+/**
+ * The dump this run just wrote — the one file that was not there before.
+ *
+ * It used to sort the names and take the last, which is the same answer only
+ * while every filename shares a prefix. The moment the format changes, an older
+ * `stock-…` sorts AFTER a newer `emulator-…` and the comparison silently comes
+ * from the stale file: a round trip that passes without having read back
+ * anything it just wrote.
+ */
+function dumpWrittenBy(before) {
   const dir = join(repoRoot, "backups");
-  const files = readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
-  const path = join(dir, files[files.length - 1]);
+  const fresh = readdirSync(dir).filter((f) => f.endsWith(".json") && !before.has(f));
+  if (fresh.length !== 1) {
+    console.error(
+      `\nEsperaba exactamente un dump nuevo en backups/, encontré ${fresh.length}` +
+        (fresh.length > 0 ? `: ${fresh.join(", ")}` : "") +
+        ".\n  No comparo contra un archivo que no sé si escribió esta corrida.",
+    );
+    process.exit(1);
+  }
+  const path = join(dir, fresh[0]);
   return { path, dump: JSON.parse(readFileSync(path, "utf8")) };
 }
 
@@ -147,8 +172,9 @@ async function main() {
     console.log(`  verifying an existing dump instead of seeding`);
   } else {
     run("seeding", "pnpm", ["seed"]);
-    run("backing up", "node", ["scripts/backup.mjs"]);
-    ({ path: original, dump: before } = newestDump());
+    const beforeSeed = new Set(readdirSync(join(repoRoot, "backups")));
+    run("backing up", "node", [SCRIPTS.backup]);
+    ({ path: original, dump: before } = dumpWrittenBy(beforeSeed));
   }
   console.log(`  dump: ${original.replace(`${repoRoot}/`, "")}`);
   console.log(`  labelled source="${before.source}" project="${before.project}"\n`);
@@ -165,9 +191,10 @@ async function main() {
   // named like them, is the artefact this whole afternoon was about.
   const damagedPath = join(tmpdir(), "stock-round-trip-damaged.json");
   writeFileSync(damagedPath, JSON.stringify(damaged));
-  run("restoring the damaged copy", "node", ["scripts/restore.mjs", damagedPath]);
-  run("backing up again", "node", ["scripts/backup.mjs"]);
-  const seen = diff(byId(before), byId(newestDump().dump));
+  run("restoring the damaged copy", "node", [SCRIPTS.restore, damagedPath]);
+  const beforeDamaged = new Set(readdirSync(join(repoRoot, "backups")));
+  run("backing up again", "node", [SCRIPTS.backup]);
+  const seen = diff(byId(before), byId(dumpWrittenBy(beforeDamaged).dump));
   const sawQuantity = seen.some((d) => d.includes(`/${victim.id}/`));
   const sawMissing = seen.some((d) => d.includes(`/${dropped.id}`));
   if (!sawQuantity || !sawMissing) {
@@ -184,9 +211,10 @@ async function main() {
   console.log("The real thing:");
   await wipe(db);
   console.log("  wiped, and the wipe left nothing");
-  run("restoring", "node", ["scripts/restore.mjs", original]);
-  run("backing up", "node", ["scripts/backup.mjs"]);
-  const differences = diff(byId(before), byId(newestDump().dump));
+  run("restoring", "node", [SCRIPTS.restore, original]);
+  const beforeFinal = new Set(readdirSync(join(repoRoot, "backups")));
+  run("backing up", "node", [SCRIPTS.backup]);
+  const differences = diff(byId(before), byId(dumpWrittenBy(beforeFinal).dump));
   if (differences.length > 0) {
     console.error(`\nThe restore did not reproduce the backup:\n${differences.map((d) => `  ${d}`).join("\n")}`);
     process.exit(1);
