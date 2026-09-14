@@ -67,6 +67,8 @@ contracts in `shared/`.
 > @kyber/docs/codigo.md
 > @kyber/docs/secretos.md
 > @kyber/docs/versiones.md
+> @kyber/docs/datos.md
+> @kyber/docs/maquina.md
 
 - **$0 infra budget.** Firebase Spark plan only — never introduce Cloud Functions (they require
   the paid Blaze plan). Vercel Hobby for web hosting. No paid services.

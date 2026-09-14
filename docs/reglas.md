@@ -33,21 +33,18 @@ Si algún día hace falta inglés, se agrega entonces.
 
 ## 4. Los datos, antes que la pantalla
 
-- **Las cantidades son enteros** en la unidad del ítem (`unit`, `g`, `ml`).
-  Jamás floats: `1,2 kg` es formateo de presentación sobre `1200 g`. Lo que no
-  se cuenta en enteros usa el modo `level`, no un decimal.
-- **Las fechas son `"YYYY-MM-DD"` en la timezone del hogar**, nunca la del
-  dispositivo ni buckets UTC.
-- **Lo derivable no se guarda; lo que dos personas editan, sí.** El estado de un
-  ítem (`out`/`low`/`expiring`) y las *sugerencias* de compra son funciones de
-  datos que el cliente ya tiene en cache: persistirlos obligaría a reescribirlos
-  para mantenerlos sincronizados con algo que ya los determina. La **lista de
-  compras**, en cambio, es estado compartido de verdad —dos personas tildando en
-  góndolas distintas— y por eso es una colección real. La línea no es "cuánto
-  cuesta calcularlo", es **si alguien lo edita**.
-- **Las reglas de Firestore son la única frontera de seguridad.** Cualquier
-  chequeo en el cliente es cosmético.
-- **Sin backend propio.** Los dos clientes hablan directo con Firebase.
+→ [`kyber/docs/datos.md`](../kyber/docs/datos.md)
+
+La unidad base acá es la del ítem (`unit`, `g`, `ml`), y lo que no se cuenta en
+enteros usa el modo `level` — un dial de 0 a 3, no un decimal.
+
+Y el delta que es sólo nuestro: **lo derivable no se guarda; lo que dos personas
+editan, sí.** El estado de un ítem (`out`/`low`/`expiring`) y las *sugerencias*
+de compra son funciones de datos que el cliente ya tiene en cache; persistirlos
+obligaría a reescribirlos para mantenerlos sincronizados con algo que ya los
+determina. La **lista de compras**, en cambio, es estado compartido de verdad
+—dos personas tildando en góndolas distintas— y por eso es una colección real.
+La línea no es "cuánto cuesta calcularlo", es **si alguien lo edita**.
 
 ## 5. Firestore: el free tier es parte del diseño
 
@@ -82,12 +79,13 @@ plan y la derivación de la lista de compras: `shared/plan-period-vectors.json` 
 
 → [`kyber/docs/secretos.md`](../kyber/docs/secretos.md)
 
-## 9. La máquina de Cristian
+## 9. La máquina
 
-- **No tocar el stack de Docker propio (`ecko`/`holocron`, puerto 8080).** Por
-  eso el emulador de Firestore de este proyecto escucha en **8280**: así nunca
-  hay que decidir cuál de los dos vive.
-- No dejar emuladores ni servidores de dev corriendo al terminar.
+→ [`kyber/docs/maquina.md`](../kyber/docs/maquina.md)
+
+El puerto propio de este proyecto es **8280** para Firestore; el bloque entero
+está en `firebase/firebase.json` y `apps/web/src/lib/domain/ports.test.ts` lo
+sostiene.
 
 ## Versiones
 
