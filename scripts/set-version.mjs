@@ -20,7 +20,7 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { consumerRoot } from "./lib/consumer-root.mjs";
+import { consumerRoot } from "../kyber/scripts/lib/consumer.mjs";
 
 const repoRoot = consumerRoot();
 const IOS_TARGETS = 3;

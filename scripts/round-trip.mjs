@@ -23,7 +23,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { consumerRoot } from "./lib/consumer-root.mjs";
+import { consumerRoot } from "../kyber/scripts/lib/consumer.mjs";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 

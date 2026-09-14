@@ -135,3 +135,21 @@ describe('.kyber/config.json describes this repo', () => {
     expect(named.filter((script) => !scripts.includes(script))).toEqual([])
   })
 })
+
+describe('the submodule is actually here', () => {
+  it('kyber has content, not just a gitlink', () => {
+    // An uninitialised submodule is an empty directory, and everything that
+    // points into it goes quiet rather than loud: `@kyber/docs/*` in CLAUDE.md
+    // imports nothing, and the scripts fail with ERR_MODULE_NOT_FOUND far from
+    // the cause. This is the one place that says the real reason.
+    const missing = [
+      'kyber/README.md',
+      'kyber/scripts/lib/consumer.mjs',
+      'kyber/docs/publicar.md',
+    ].filter((path) => !existsSync(join(root, path)))
+    expect({ missing, hint: 'git submodule update --init' }).toEqual({
+      missing: [],
+      hint: 'git submodule update --init',
+    })
+  })
+})

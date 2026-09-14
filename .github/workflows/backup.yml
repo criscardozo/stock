@@ -1,8 +1,9 @@
 name: Backup
 
 # Weekly Firestore backup. Firestore's managed export needs the Blaze plan, so
-# the $0 path is the Admin SDK dump this repo already has (scripts/backup.mjs)
-# run somewhere that is always on — which a laptop is not. GitHub Actions is
+# the $0 path is the Admin SDK dump shared with the other apps
+# (kyber/scripts/backup.mjs), run somewhere that is always on — which a laptop
+# is not. GitHub Actions is
 # that somewhere: a scheduled run costs a couple of the 2,000 free minutes a
 # month, and the dump is kept as a build artifact.
 

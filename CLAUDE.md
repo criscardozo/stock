@@ -55,6 +55,18 @@ contracts in `shared/`.
 > ones that don't live in code (when to push, what may cost money, how to verify)
 > — are collected in [`docs/reglas.md`](docs/reglas.md). This section stays the
 > authoritative short form for the technical ones.
+>
+> The ones shared with Gastos Diarios and the third app live in the `kyber`
+> submodule and are imported here. If these read as empty, the submodule is not
+> checked out: `git submodule update --init`.
+>
+> @kyber/docs/publicar.md
+> @kyber/docs/costo-cero.md
+> @kyber/docs/idiomas.md
+> @kyber/docs/firestore-free-tier.md
+> @kyber/docs/codigo.md
+> @kyber/docs/secretos.md
+> @kyber/docs/versiones.md
 
 - **$0 infra budget.** Firebase Spark plan only — never introduce Cloud Functions (they require
   the paid Blaze plan). Vercel Hobby for web hosting. No paid services.

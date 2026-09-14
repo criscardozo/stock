@@ -12,45 +12,24 @@ en vez de repetirlas de memoria.
 
 ## 1. Nada se publica sin que se pida
 
-- **Commitear: libre.** Terminar el trabajo y dejarlo commiteado es lo esperado.
-- **`git push`, `firebase deploy` e instalar en el iPhone: sólo cuando se pide,
-  en ese mensaje.** Un permiso dado ayer no vale hoy.
-- Al terminar, decir qué quedó sin pushear y qué implicaría publicarlo.
-
-**Por qué:** cada push a `master` deploya la web a producción por Vercel, y la
-app la usan dos personas de verdad.
-
-**Dos excepciones, y son para avisar fuerte, no para decidir solo:** cuando algo
-ya vivo en producción está *roto* por un cambio sin deployar (típicamente las
-reglas de Firestore), y cuando deployar es el único modo de completar lo que se
-acaba de pedir.
+→ [`kyber/docs/publicar.md`](../kyber/docs/publicar.md)
 
 ## 2. Cero gastos, sin excepciones
 
-- **Firebase Spark.** Nunca Cloud Functions: exigen Blaze.
-- **Vercel Hobby.** Nada de servicios pagos.
-- **GitHub Actions no puede costar nada.** Los runners de macOS facturan a 10x,
-  así que **no hay pipeline de iOS** — se compila y testea local antes de cada
-  cambio. Todo lo que corre en Actions es Ubuntu.
-- Las APIs de terceros se usan sólo si son gratis y sin API key (hoy: Open Food
-  Facts), y siempre como **comodidad**, nunca como dependencia: si no responde,
-  el flujo tiene que seguir funcionando.
-- Si algo sólo se resuelve pagando, se dice y se propone la alternativa gratis;
-  no se contrata nada.
+→ [`kyber/docs/costo-cero.md`](../kyber/docs/costo-cero.md)
+
+Acá la API de terceros que la regla contempla es **Open Food Facts**: un código
+de barras desconocido igual guarda el ítem, y el catálogo propio del hogar lo
+reconoce la próxima vez.
 
 ## 3. Idiomas
 
-- **Conversación:** español rioplatense.
-- **Código, comentarios y nombres:** inglés.
-- **La UI: sólo español.** Sin next-intl ni String Catalogs — fue una decisión
-  explícita (el contenido real, los nombres de los ítems y las recetas, lo
-  escribe el usuario en español igual). Si algún día hace falta inglés, se
-  agrega entonces.
-- **Mensajes de commit:** inglés australiano, en formato **conventional
-  commits** (`feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `test:`,
-  `build:`, `ci:`, con scope opcional entre paréntesis).
-- **Nunca** el trailer `Co-Authored-By: Claude` (ni ninguna coautoría). Es una
-  preferencia global y pisa cualquier default del harness.
+→ [`kyber/docs/idiomas.md`](../kyber/docs/idiomas.md)
+
+**La UI de Stock: sólo español.** Sin next-intl ni String Catalogs — fue una
+decisión explícita, y es donde este repo se aparta de Gastos: el contenido real
+(los nombres de los ítems y las recetas) lo escribe el usuario en español igual.
+Si algún día hace falta inglés, se agrega entonces.
 
 ## 4. Los datos, antes que la pantalla
 
@@ -72,30 +51,22 @@ acaba de pedir.
 
 ## 5. Firestore: el free tier es parte del diseño
 
-- **Se escucha lo acotado, se pagina lo que crece.** El catálogo del hogar
-  (~150 docs) y la lista de compras (~30) se escuchan enteros —ese listener es
-  lo que hace que un tilde aparezca en el otro teléfono—; `moves` crece para
-  siempre y va con `getDocs` + `limit()`, nunca con listener. En React, siempre
-  devolver el unsubscribe desde el `useEffect`.
-- Una página que se *visita* usa lectura única; una pantalla en la que se *vive*
-  usa listener.
-- Persistencia offline en los dos clientes. El súper es exactamente donde no
-  hay señal.
-- **No esperar la promesa de una escritura para mover la UI.** Firestore sólo la
-  resuelve cuando el servidor confirma: `await` congela el formulario mientras
-  no hay señal, aunque el dato ya esté guardado local. Escribir y seguir.
-- Lo que toca varios documentos (cocinar, reponer) va en un `writeBatch`.
+→ [`kyber/docs/firestore-free-tier.md`](../kyber/docs/firestore-free-tier.md)
+
+Lo acotado, acá, son el catálogo del hogar (~150 docs) y la lista de compras
+(~30): se escuchan enteros, y ese listener es lo que hace que un tilde aparezca
+en el otro teléfono. `moves` crece para siempre y va con `getDocs` + `limit()`.
+
+Y **persistencia offline en los dos clientes**: el súper es exactamente donde no
+hay señal.
 
 ## 6. Código
 
-- **Sin librerías de gráficos.** Las barras son divs y las líneas SVG a mano.
-- **Lógica duplicada entre plataformas ⇒ vectores compartidos.** Si algo se
-  implementa dos veces (aritmética de períodos, derivación de la lista de
-  compras), los casos viven en `shared/*-vectors.json` y **las dos
-  implementaciones los corren**. Se cambia primero el vector.
-- Comentar el **por qué**, no el qué; sobre todo cuando la decisión fue contra
-  la opción obvia.
-- Sin subagentes ni workflows salvo pedido explícito.
+→ [`kyber/docs/codigo.md`](../kyber/docs/codigo.md)
+
+Los dos casos de lógica duplicada de este repo son la aritmética de períodos del
+plan y la derivación de la lista de compras: `shared/plan-period-vectors.json` y
+`shared/shopping-vectors.json`.
 
 ## 7. Verificar, no suponer
 
@@ -109,9 +80,7 @@ acaba de pedir.
 
 ## 8. Secretos
 
-- Las claves de service account **nunca** entran al repo (gitignored) y cada
-  una tiene su propio alcance, para poder revocar una sin romper el resto.
-- La config pública de Firebase **es** pública: la seguridad son las reglas.
+→ [`kyber/docs/secretos.md`](../kyber/docs/secretos.md)
 
 ## 9. La máquina de Cristian
 
@@ -119,6 +88,13 @@ acaba de pedir.
   eso el emulador de Firestore de este proyecto escucha en **8280**: así nunca
   hay que decidir cuál de los dos vive.
 - No dejar emuladores ni servidores de dev corriendo al terminar.
+
+## Versiones
+
+→ [`kyber/docs/versiones.md`](../kyber/docs/versiones.md)
+
+`pnpm set-version x.y.z` mueve las cuatro copias juntas, y después hay que
+correr `xcodegen` para que el `Info.plist` las tome.
 
 ## 10. Familia con Gastos Diarios
 
