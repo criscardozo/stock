@@ -132,7 +132,7 @@ targets:
   # why the snapshot carries the DATE it describes — a widget goes on rendering
   # long after the app last ran, and a stale one does not look stale.
   #
-  # A third target is a THIRD provisioning profile. `tools/install-ios.sh`
+  # A third target is a THIRD provisioning profile. `pnpm install:ios`
   # already sweeps `PlugIns/*.appex` and `SigningExpiry` already reads every
   # profile in the bundle, so neither needs changing — but the install should
   # now report three, sharing one expiry.

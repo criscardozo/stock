@@ -555,7 +555,7 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
   reinstalar el día 6 deja la app viva un día. Para renovar hay que borrar el
   perfil de `~/Library/Developer/Xcode/UserData/Provisioning Profiles` y
   recompilar con `-allowProvisioningUpdates`, que emite uno nuevo por 7 días.
-- **Usar `tools/install-ios.sh`**, que hace el procedimiento entero con sus
+- **Usar `pnpm install:ios`** (kyber), que hace el procedimiento entero con sus
   guardas. Lo de abajo es el porqué, no una lista para seguir a mano.
 - **Instalar en el teléfono INCLUYE forzar la reemisión, siempre.** No es una
   decisión que se tome mirando cuántos días quedan: mirarlos es lo que lleva a
@@ -583,7 +583,7 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
   `no matches found`. Bash hace lo contrario — pasa el patrón literal y sigue.
   Esto convirtió un `rm -rf ~/…/DerivedData/Stock-* build-sim build-device` en
   un no-op silencioso, el build siguiente falló por caché vieja, y la app
-  arrancó igual desde un `.app` de una semana antes. `tools/install-ios.sh` no
+  arrancó igual desde un `.app` de una semana antes. `pnpm install:ios` no
   corre ese riesgo porque usa rutas fijas en bash, pero un comando suelto en la
   terminal sí. La lección de la sesión de Gastos es mejor que el flag:
   **no dejar nada que limpiar** — compilar en un directorio nuevo en vez de

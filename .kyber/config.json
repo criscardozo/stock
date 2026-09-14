@@ -29,5 +29,8 @@
   },
   "prePush": [
     "pnpm --filter web typecheck"
-  ]
+  ],
+  "bundleId": "dev.cardozo.stock",
+  "iosScheme": "Stock",
+  "iosDevice": "Kylo 👾"
 }
