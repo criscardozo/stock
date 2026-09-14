@@ -38,6 +38,12 @@ jobs:
           # the exact commit the gitlink points at. It replaced a second
           # checkout with a read-only deploy key, from when kyber was private.
           submodules: true
+          # Without this the checkout arrives with no tags at all, and the guard
+          # that asks whether the declared version is tagged cannot tell "this
+          # one is missing" from "there are none here" — it would go red on
+          # every release commit for the wrong reason.
+          fetch-tags: true
+          fetch-depth: 0
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
@@ -120,6 +126,12 @@ jobs:
           # the exact commit the gitlink points at. It replaced a second
           # checkout with a read-only deploy key, from when kyber was private.
           submodules: true
+          # Without this the checkout arrives with no tags at all, and the guard
+          # that asks whether the declared version is tagged cannot tell "this
+          # one is missing" from "there are none here" — it would go red on
+          # every release commit for the wrong reason.
+          fetch-tags: true
+          fetch-depth: 0
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:

@@ -110,3 +110,40 @@ describe('one version, four copies', () => {
     expect(manifests.length).toBeGreaterThan(2)
   })
 })
+
+describe('the declared version is findable in the history', () => {
+  /**
+   * Every other copy of the version says WHAT version this is. The tag is the
+   * only one that lets you go back: a report against "1.1.0" on the Ajustes
+   * screen is reachable with `git checkout v1.1.0`, and a tag is the only thing
+   * `git bisect` can walk. Without it the version a person is looking at is not
+   * locatable in the history.
+   */
+  const tags = execFileSync('git', ['tag', '--list', 'v*'], { cwd: root, encoding: 'utf8' })
+    .split('\n')
+    .filter(Boolean)
+
+  it('there are tags to look at', () => {
+    // Kept apart from the check below on purpose, because the two failures look
+    // alike and mean opposite things. No tags at all is a shallow clone —
+    // `actions/checkout` fetches none unless asked — and reading it as "this
+    // version is untagged" sends someone to tag what is already tagged, and
+    // turns the guard red on every release commit in CI until somebody silences
+    // it.
+    expect({
+      tags: tags.length,
+      hint: 'si es 0 en CI, al checkout le falta `fetch-tags: true`',
+    }).toEqual({ tags: tags.length, hint: 'si es 0 en CI, al checkout le falta `fetch-tags: true`' })
+    expect(tags.length).toBeGreaterThan(0)
+  })
+
+  it('this version has one', () => {
+    expect({
+      missing: tags.includes(`v${webVersion}`) ? [] : [`v${webVersion}`],
+      hint: `git tag -a v${webVersion} -m "v${webVersion}" && git push --follow-tags`,
+    }).toEqual({
+      missing: [],
+      hint: `git tag -a v${webVersion} -m "v${webVersion}" && git push --follow-tags`,
+    })
+  })
+})

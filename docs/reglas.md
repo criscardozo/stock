@@ -10,7 +10,7 @@ en vez de repetirlas de memoria.
 
 ---
 
-## 1. Nada se publica sin que se pida
+## 1. Publicar
 
 → [`kyber/docs/publicar.md`](../kyber/docs/publicar.md)
 

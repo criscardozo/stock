@@ -65,4 +65,13 @@ writeFileSync(yamlPath, yaml.replaceAll(/MARKETING_VERSION: "[^"]*"/g, `MARKETIN
 
 console.log(`web  ${wasWeb} -> ${version}`);
 console.log(`iOS  ${wasIos} -> ${version}  (${IOS_TARGETS} targets)`);
-console.log(`\nRun \`cd apps/ios && xcodegen\` so the project picks it up.`);
+// The order matters and it is easy to stop one step early: the Info.plist files
+// are XcodeGen output, so a version that never ran xcodegen is right in the yml
+// and wrong in the bundle; and a tag that is never pushed is the easiest way to
+// believe you tagged.
+console.log(`
+Next, in this order:
+  cd apps/ios && xcodegen        # the Info.plist files are generated from project.yml
+  git commit -am "chore: v${version}"
+  git tag -a v${version} -m "v${version}"
+  git push --follow-tags         # without --follow-tags the tag stays local`);
