@@ -56,9 +56,9 @@ enum Theme {
     static let surface = Color.hex(light: "#FCFCFC", dark: "#212121")
 
     static let ink = Color.hex(light: "#1F1F1F", dark: "#EEEEEE")
-    static let ink2 = Color.hex(light: "#838383", dark: "#A1A1A1")
-    static let ink3 = Color.hex(light: "#747474", dark: "#919191")
-    static let ink4 = Color.hex(light: "#A1A1A1", dark: "#4A5247")
+    static let ink2 = Color.hex(light: "#5A5A5A", dark: "#A1A1A1")
+    static let ink3 = Color.hex(light: "#4F4F4F", dark: "#919191")
+    static let ink4 = Color.hex(light: "#6F6F6F", dark: "#4A5247")
 
     static let line = Color.hex(light: "#1F1F1F", dark: "#EEEEEE", lightAlpha: 0.09, darkAlpha: 0.10)
     static let lineSoft = Color.hex(

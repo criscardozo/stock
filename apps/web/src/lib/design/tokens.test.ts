@@ -286,6 +286,53 @@ describe('tokens.json is extracted, not maintained', () => {
   })
 })
 
+describe('every text-on-neutral pair clears WCAG AA', () => {
+  /**
+   * Relative luminance per WCAG 2.x: linearise each sRGB channel, weight and
+   * sum them, then (lighter + 0.05) / (darker + 0.05) is the contrast ratio.
+   * 4.5:1 is the AA floor for regular text; nothing checked here is large
+   * enough (≥18pt, or ≥14pt bold) to claim the lower 3:1 exception — measured
+   * against `text-ink-2/-3/-4`'s actual call sites, the smallest sizes in the
+   * app, not the largest.
+   *
+   * This was found by measuring one flagged pair (`ink-secondary` on
+   * `surface`, noted at 3.70:1) and turning out to be three tokens against
+   * TWO backgrounds: `ground` is the tighter one every time, because it sits
+   * further from white than `surface` does. `ink-quaternary` was the worst —
+   * 2.52:1 — and had never been flagged at all; 11 call sites render it as
+   * body text today.
+   */
+  function relativeLuminance(hex: string): number {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+    const f = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+  }
+  function contrast(a: string, b: string): number {
+    const [la, lb] = [relativeLuminance(a), relativeLuminance(b)]
+    const [hi, lo] = la > lb ? [la, lb] : [lb, la]
+    return (hi + 0.05) / (lo + 0.05)
+  }
+
+  it('ink-2, ink-3 and ink-4 reach 4.5:1 against ground and surface, in light mode', () => {
+    const tokens = JSON.parse(readFileSync(join(root, 'design-system/tokens.json'), 'utf8'))
+    const ink = (name: string) => tokens.color.core[name].$value.light as string
+    const ground = ink('ground')
+    const surface = ink('surface')
+    const wrong: string[] = []
+    let checked = 0
+    for (const name of ['ink-secondary', 'ink-tertiary', 'ink-quaternary']) {
+      for (const [bgName, bg] of [['ground', ground], ['surface', surface]] as const) {
+        checked += 1
+        const ratio = contrast(ink(name), bg)
+        if (ratio < 4.5) wrong.push(`${name} on ${bgName}: ${ratio.toFixed(2)}:1`)
+      }
+    }
+    // The count is asserted because a renamed or removed token would
+    // otherwise leave nothing to check and this would report a clean pass.
+    expect({ checked, wrong }).toEqual({ checked: 6, wrong: [] })
+  })
+})
+
 describe('the type scale is one scale, not two', () => {
   /**
    * Stock's web and iOS did not use the same sizes. Measured across tracked
