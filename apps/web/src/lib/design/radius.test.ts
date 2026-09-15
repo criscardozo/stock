@@ -82,3 +82,60 @@ describe('every radius comes from a token', () => {
     expect(literals).toEqual([])
   })
 })
+
+describe('every radius on iOS comes from a token too', () => {
+  /**
+   * The other half, and it was missing for as long as the tokens existed.
+   * Measured before writing it: `cornerRadius: 42` planted in TodayScreen left
+   * all 296 tests green and `emit.py --verify` reporting 159 declarations
+   * matching. The emitter checks what it WROTE; a number typed somewhere else
+   * is not its question.
+   *
+   * kyber's `Block` docstring says this straight out — defining the constants
+   * is half, and the guard for the other half belongs to the consumer. This is
+   * that guard, and it is the reason the web one was written before its tokens
+   * existed: a scale that names 8 makes `rounded-[8px]` correct-looking, so the
+   * check that catches a casual number has to outlive the moment the number
+   * became legal.
+   */
+  const WATCH = 'apps/ios/StockWatch/'
+
+  function swiftSources(): string[] {
+    return execFileSync('git', ['ls-files', '-co', '--exclude-standard', 'apps/ios'], {
+      cwd: root,
+      encoding: 'utf8',
+      maxBuffer: 32 * 1024 * 1024,
+    })
+      .split('\n')
+      .filter((path) => path.endsWith('.swift'))
+  }
+
+  it('found Swift to check at all', () => {
+    // The build directories hold thousands of dependency sources and are
+    // gitignored; `--exclude-standard` is what keeps them out. A sibling repo
+    // measured 2246 files where 53 were meant by walking the filesystem.
+    expect(swiftSources().length).toBeGreaterThan(20)
+    expect(swiftSources().length).toBeLessThan(100)
+  })
+
+  it('no Swift file writes a corner radius as a number', () => {
+    const literals: string[] = []
+    for (const path of swiftSources()) {
+      // The watch target compiles no phone code, so it cannot see `Radius` —
+      // the same reason it carries its own `init(hex:)`. Its two literals are
+      // deliberate and `tokens.test.ts` holds its values against the phone.
+      if (path.startsWith(WATCH)) continue
+      const text = readFileSync(join(root, path), 'utf8')
+      text.split('\n').forEach((line, i) => {
+        // Theme.swift's own comment names these forms to explain them, and a
+        // sed over this file once rewrote that comment instead of code.
+        const code = line.trimStart()
+        if (code.startsWith('//') || code.startsWith('///') || code.startsWith('*')) return
+        for (const m of line.matchAll(/cornerRadius:\s*(\d+(?:\.\d+)?)/g)) {
+          literals.push(`${path}:${i + 1} — cornerRadius: ${m[1]} should be a Radius role`)
+        }
+      })
+    }
+    expect(literals).toEqual([])
+  })
+})
