@@ -72,25 +72,42 @@ function swiftTokens(): Map<string, [string, string]> {
   return out
 }
 
-/** Same role, different naming convention on each side. */
-const ROLES: Record<string, string> = {
-  ground: 'ground',
-  surface: 'surface',
-  ink: 'ink',
-  'ink-secondary': 'ink2',
-  'ink-tertiary': 'ink3',
-  'ink-quaternary': 'ink4',
-  primary: 'primary',
-  'primary-deep': 'primaryDeep',
-  'on-primary': 'onPrimary',
-  danger: 'danger',
-  'danger-deep': 'dangerDeep',
-  'on-danger': 'onDanger',
-  'member-a': 'memberA',
-  'member-b': 'memberB',
-  'mark-from': 'markFrom',
-  'mark-to': 'markTo',
-  'mark-glyph': 'markGlyph',
+/** One token as tokens.json holds it. Declared once: two tests read it. */
+type TokenEntry = {
+  $value: { light: string | object; dark: string | object }
+  $extensions?: { swift?: string }
+}
+
+/**
+ * Same role, different naming convention on each side — DERIVED, not retyped.
+ *
+ * This was a hand-written table of 17 entries, and it was a third copy: the
+ * mapping already lives in `extract.py`, which writes it into `tokens.json` as
+ * `$extensions.swift`. All three agreed, which is exactly why nobody looked.
+ *
+ * Nothing coupled its COMPLETENESS. A rename would have been caught — the
+ * assertion below looks the Swift name up and fails when it is missing — but a
+ * token ADDED everywhere else and not here simply went unchecked, and the
+ * suite stayed green over the smaller set. Measured before changing it:
+ * deleting `ink-quaternary` from the old table left 10/10 passing.
+ *
+ * Derived, the 17 come back as 17: of the 24 tokens carrying a Swift name,
+ * seven are alpha pairs that `hexDeclarations` cannot read, and the remaining
+ * seventeen are these. The `hue-*` tokens name no Swift identifier at all —
+ * `Theme.hue()` is a switch, not a flat list of `static let`.
+ */
+function roles(): Record<string, string> {
+  const tokens = JSON.parse(readFileSync(join(root, 'design-system/tokens.json'), 'utf8'))
+  const out: Record<string, string> = {}
+  for (const group of Object.values(tokens.color) as Record<string, TokenEntry>[]) {
+    for (const [name, token] of Object.entries(group)) {
+      const swiftName = token.$extensions?.swift
+      // Opaque only: the alpha tokens are a base/alpha pair by design, and the
+      // declaration reader below matches `#rrggbb`.
+      if (swiftName && typeof token.$value.light === 'string') out[name] = swiftName
+    }
+  }
+  return out
 }
 
 describe('design tokens', () => {
@@ -105,7 +122,13 @@ describe('design tokens', () => {
     const dark = hexDeclarations(blockAt('@media (prefers-color-scheme: dark)'))
     const ios = swiftTokens()
 
-    for (const [cssName, swiftName] of Object.entries(ROLES)) {
+    const mapping = roles()
+    // The count is asserted because the mapping is derived now: a change that
+    // made the derivation return nothing would otherwise check nothing and
+    // pass, which is the failure this whole file keeps finding.
+    expect(Object.keys(mapping).length).toBe(17)
+
+    for (const [cssName, swiftName] of Object.entries(mapping)) {
       const onIOS = ios.get(swiftName)
       // A missing token is a rename that only landed on one side.
       expect(onIOS, `Theme.swift no define ${swiftName}`).toBeDefined()
@@ -259,13 +282,9 @@ describe('tokens.json is extracted, not maintained', () => {
     // Only the opaque ones: `hexDeclarations` reads `#rrggbb`, and the alpha
     // tokens are stored as a base/alpha pair on purpose. The extractor is what
     // holds those, and the test above is what holds the extractor.
-    type Token = {
-      $value: { light: string | object; dark: string | object }
-      $extensions?: { swift?: string }
-    }
     const wrong: string[] = []
     let checked = 0
-    for (const group of Object.values(tokens.color) as Record<string, Token>[]) {
+    for (const group of Object.values(tokens.color) as Record<string, TokenEntry>[]) {
       for (const [name, token] of Object.entries(group)) {
         const { light: l, dark: d } = token.$value
         if (typeof l !== 'string') continue
