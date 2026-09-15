@@ -526,12 +526,18 @@ debe hacer caer exactamente su test.
 
 ### 2.1 · iOS es inutilizable con texto grande
 
-> **Hecho, salvo un punto.** Lo de abajo es la evidencia del día que se escribió
+> **Hecho, los tres puntos.** Lo de abajo es la evidencia del día que se escribió
 > y se deja tal cual: es lo que justificó el trabajo, no una descripción del
 > código de hoy. Medido ahora: **7** usos de `relativeTo:`, **11**
-> `accessibilityLabel`, **1** `accessibilityHidden`. Los puntos 1 y 2 están.
-> **El punto 3 sigue abierto: `accessibilityValue` está en 0.** El stepper dice
-> su nombre y no su cantidad.
+> `accessibilityLabel`, **2** `accessibilityValue`, **1** `accessibilityHidden`.
+>
+> Los dos botones del `Stepper` (`Restar`/`Sumar`) ahora llevan
+> `.accessibilityValue(label)` con la cantidad formateada, además del
+> `accessibilityLabel` que ya decía qué hace cada uno. Antes, alguien
+> navegando botón por botón escuchaba "Restar Huevos" y "Sumar Huevos" sin
+> ningún número cerca — tenía que desviarse al texto del medio y volver. El
+> `LevelDial` ya llevaba la cantidad adentro de su propio label
+> (`"Huevos: poco"`) y no necesitaba el cambio.
 >
 > La API también cambió de nombre: `.stock(N, .peso)` pasó a ser el modifier
 > `.appFont(N, .peso)`, y los símbolos a `.appSymbol(N)`.

@@ -111,6 +111,13 @@ struct Stepper: View {
             // MEASURED is these labels, and they match Gastos Diarios and the
             // web besides.
             .accessibilityLabel("Restar \(name)")
+            // The label says WHAT the button does; the value says what it would
+            // do it TO. Without this a person swiping button to button hears
+            // "Restar Huevos" and "Sumar Huevos" with no quantity anywhere near
+            // either — they have to detour to the number between them and back.
+            // `accessibilityValue` is read straight after the label on the same
+            // element, so the count arrives with the action that changes it.
+            .accessibilityValue(label)
 
             Text(label)
                 .appFont(14, .bold)
@@ -130,6 +137,7 @@ struct Stepper: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Sumar \(name)")
+            .accessibilityValue(label)
         }
         .padding(3)
         .background(Capsule().fill(Theme.ground))
