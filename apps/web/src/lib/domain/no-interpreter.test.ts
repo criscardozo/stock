@@ -21,8 +21,36 @@ import { describe, expect, it } from 'vitest'
  */
 const root = join(__dirname, '../../../../..')
 
-/** Our own tracked sources. The submodule holds itself to this separately. */
-const ours = execFileSync('git', ['ls-files'], { cwd: root, encoding: 'utf8' })
+/**
+ * Our own sources, tracked AND untracked-but-not-ignored. The submodule holds
+ * itself to this separately.
+ *
+ * `-co --exclude-standard` and not a bare `ls-files`, which is what this swept
+ * until a sibling repo's sweep walked the filesystem instead and ate its build
+ * output — 2246 files where 53 were meant. The rule that came out of that cuts
+ * both ways and is now in `kyber/docs/guardas.md`: the file set is PART of the
+ * measurement and gets chosen for the question, because there is no default
+ * that is right for every question.
+ *
+ * The question here is "does anything of ours hand a value to an interpreter",
+ * and a file written five minutes ago is the likeliest place for a new one.
+ * Measured: an untracked `.mjs` calling `spawnSync(..., { shell: true })` sat
+ * in `scripts/` and this suite passed 6/6 over it. `ports.test.ts` — same
+ * author, same day, the guard right next to this one — had already chosen
+ * `-co` for exactly that reason. This one had not, and nothing made the
+ * disagreement visible until the rule was written down.
+ *
+ * `--exclude-standard` is what keeps the iOS build directories out —
+ * `build`, `build-sim`, `build-device` — which are gitignored and hold
+ * dependency sources. Naming them with a trailing glob is what broke this
+ * comment the first time it was written: the slash after the star closed the
+ * block early and the rest of the file parsed as code.
+ */
+const ours = execFileSync('git', ['ls-files', '-co', '--exclude-standard'], {
+  cwd: root,
+  encoding: 'utf8',
+  maxBuffer: 32 * 1024 * 1024,
+})
   .split('\n')
   .filter((path) => /\.(mjs|js|ts|tsx|sh)$/.test(path) && !path.startsWith('kyber/'))
   // `git ls-files` still lists a path that is staged-as-added and then deleted
