@@ -147,6 +147,21 @@ describe('every default follows firebase.json', () => {
     const wrong = cases
       .filter(([path, marker, expected]) => fallbackIn(path, marker) !== expected)
       .map(([path, marker]) => `${path} · ${marker}`)
+    // FLOOR, and the branch is worth declaring because this case does not fit
+    // the two the rule names. `cases` is typed in this file, which by the
+    // letter of "exact when the test fixes the population" would make an exact
+    // count right. It is not: the list enumerates an OPEN set — every site in
+    // the repo that defaults a port — and that set grows when the app does.
+    //
+    // What makes a floor safe here is that completeness is enforced somewhere
+    // else: `every file with a port default is on the list above` sweeps the
+    // tree and fails when a site is missing from this list. So this test asks
+    // "does each known site name the right port" and that one asks "is any
+    // site missing". An exact count here would add churn and guard nothing the
+    // sweep does not already guard.
+    //
+    // `checked` is displayed, not asserted — it compares to itself. It is here
+    // so a failure shows the size of the set it was reading.
     expect({ checked: cases.length, wrong }).toEqual({ checked: cases.length, wrong: [] })
     expect(cases.length).toBeGreaterThan(9)
   })
