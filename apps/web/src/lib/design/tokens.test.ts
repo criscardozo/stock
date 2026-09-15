@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process'
 import { spawnSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
@@ -183,6 +183,45 @@ describe('the watch is the fourth copy, and nothing was holding it', () => {
     // red on the shape, reporting `checked: 0`, instead of agreeing that zero
     // tokens all matched.
     expect({ checked, wrong }).toEqual({ checked: 8, wrong: [] })
+  })
+})
+
+describe('tokens.json can generate both platforms back', () => {
+  /**
+   * The other direction from extract.py, and the stronger claim. `extract.py`
+   * proves the files, run through it, produce the committed tokens.json.
+   * `emit.py --write` proves the OPPOSITE: tokens.json, run through it,
+   * produces the committed files. Together they are a two-way lock — a hand
+   * edit on either side of the loop breaks at least one of them, because it
+   * would have to be the coincidence of matching what the other direction
+   * independently derives.
+   *
+   * Gastos Diarios runs the same check as a CI step rather than a vitest test,
+   * because the failure it is guarding — a hand edit to one platform's colour
+   * that the other platform never got — is exactly how their dark warning text
+   * fell under the AA contrast floor on the web only, for months. `ci.yml` runs
+   * `emit.py --write` and requires `git diff --exit-code` on the three files;
+   * this test is the fast, local echo of that, run on every `pnpm test`.
+   */
+  it('re-running emit.py --write changes none of the three files', () => {
+    const targets = [
+      'apps/web/src/app/globals.css',
+      'apps/ios/Stock/Design/Theme.swift',
+      'apps/ios/StockWatch/WatchTheme.swift',
+    ]
+    const before = targets.map((t) => readFileSync(join(root, t), 'utf8'))
+    const run = spawnSync('python3', [join(root, 'design-system/emit.py'), '--write'], {
+      cwd: root,
+      encoding: 'utf8',
+    })
+    const after = targets.map((t) => readFileSync(join(root, t), 'utf8'))
+    // Restore immediately, success or failure, so a red run here does not
+    // itself leave the repo mid-rewrite for whatever runs next.
+    targets.forEach((t, i) => writeFileSync(join(root, t), before[i]))
+    expect(run.error, 'no pude ejecutar python3 — ¿está instalado?').toBeUndefined()
+    expect(run.status, run.stderr).toBe(0)
+    const changed = targets.filter((_, i) => after[i] !== before[i])
+    expect(changed).toEqual([])
   })
 })
 

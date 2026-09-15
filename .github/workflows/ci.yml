@@ -60,6 +60,19 @@ jobs:
       # and it is why the vectors are committed before either implementation.
       - run: pnpm --filter web test
       - run: pnpm --filter web build
+      # globals.css, Theme.swift and WatchTheme.swift are GENERATED from
+      # design-system/tokens.json (design-system/emit.py). Regenerating must be
+      # a no-op: if it is not, someone edited a token by hand in one of the
+      # platforms instead of in tokens.json, which is exactly how Gastos
+      # Diarios' dark warning text ended up under the AA contrast floor on the
+      # web only, for months, with nothing to catch it. Stronger than comparing
+      # text against a stored copy — it proves the files can be REBUILT, not
+      # merely that they currently match. Ubuntu-only: no iOS toolchain needed
+      # to rewrite a string.
+      - name: Design tokens rebuild unchanged
+        run: |
+          python3 design-system/emit.py --write
+          git diff --exit-code apps/web/src/app/globals.css apps/ios/Stock/Design/Theme.swift apps/ios/StockWatch/WatchTheme.swift
       # The PWA is how this app stays on the phone without Apple signing, so
       # "does it still start with no network" is a release-blocking question.
       # It needs the PRODUCTION build above — `next dev` does not serve the

@@ -189,6 +189,12 @@ before inventing a pattern this project has already met.**
   by hand would make it a fourth place the palette can disagree with itself. `tokens.test.ts`
   runs it without `--write` and fails if the file would change, which proves the tokens can be
   REBUILT rather than merely that they currently match.
+- `python3 design-system/emit.py [--write|--verify]` — the other direction: rewrites
+  `globals.css`, `Theme.swift` and `WatchTheme.swift` FROM `tokens.json`. Colour only —
+  radius and type stay hand-written until kyber's shared emitter takes them (`kyber/README`).
+  CI runs `--write` and requires `git diff --exit-code` on the three files, which is the
+  stronger direction of the same proof: a hand-edited colour on either side of the loop
+  breaks it, because it would have to coincidentally match what the other side derives.
 - Deploy rules: `firebase deploy --only firestore:rules,firestore:indexes --config firebase/firebase.json --project qcris-stock`.
 - One-time console setup (Firebase project creation, Google provider, Vercel, domain):
   `docs/setup.md`.
