@@ -123,10 +123,20 @@ describe('design tokens', () => {
     const ios = swiftTokens()
 
     const mapping = roles()
-    // The count is asserted because the mapping is derived now: a change that
-    // made the derivation return nothing would otherwise check nothing and
-    // pass, which is the failure this whole file keeps finding.
-    expect(Object.keys(mapping).length).toBe(17)
+    // A FLOOR, not the exact 17. The derivation existed for twenty minutes
+    // asserting `toBe(17)` before kyber named what is wrong with that: a total
+    // answers "how many" to a question that is "which". Adding an eighteenth
+    // token correctly would have failed with `expected 18 to be 17`, naming
+    // nothing and demanding the number be bumped by hand — which is the
+    // hand-maintained list coming back in through a different door.
+    //
+    // A floor still catches the failure the count was for, a derivation that
+    // returns nothing. Everything else is named by the assertions inside the
+    // loop: a token added to tokens.json and not to Theme.swift fails with
+    // that token's name in the message, which is the whole point of deriving.
+    // Every other sweep in this repo already used a floor; this was the one
+    // exact count among them.
+    expect(Object.keys(mapping).length).toBeGreaterThan(10)
 
     for (const [cssName, swiftName] of Object.entries(mapping)) {
       const onIOS = ios.get(swiftName)
