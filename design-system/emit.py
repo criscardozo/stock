@@ -39,7 +39,25 @@ REPO = ROOT.parents[0]
 CSS = REPO / "apps/web/src/app/globals.css"
 SWIFT = REPO / "apps/ios/Stock/Design/Theme.swift"
 WATCH = REPO / "apps/ios/StockWatch/WatchTheme.swift"
-WATCH_NAMES = {"ground", "surface", "ink", "ink2", "ink3", "primary", "primaryDeep", "onPrimary"}
+
+
+def watch_names() -> set[str]:
+    """Which tokens the watch carries — READ from the watch, not configured here.
+
+    This was a hand-typed set of eight, and it was the same shape this whole
+    layer exists to remove: two lists nobody compared. Measured before changing
+    it — adding a ninth token to WatchTheme.swift left `--verify` reporting all
+    152 declarations green, and then a colour change moved the phone to
+    `#4A5248` while the watch stayed at `#4A5247`. Silent divergence, inside the
+    generator's own configuration.
+
+    kyber's `Destination` already says the subset should be discovered: "a
+    target that carries a SUBSET stays a subset without a list to maintain...
+    the destination simply declines the ones it does not name." The file names
+    them. Reading it is what makes that true here.
+    """
+    text = WATCH.read_text(encoding="utf-8")
+    return set(re.findall(r"static let (\w+) = Color\(hex:", text))
 
 # The line-wrap cutoff is not a guess: every `static let` declaration in
 # Theme.swift was measured before this was written. Collapsed to one line, the
@@ -101,7 +119,7 @@ def swift_pattern(name: str, entry: dict) -> re.Pattern | None:
 
 def watch_declarations(name: str, entry: dict) -> list[str]:
     ident = entry.get("$extensions", {}).get("swift")
-    if ident not in WATCH_NAMES:
+    if ident not in watch_names():
         return []
     dv = entry["$value"]["dark"]
     if not isinstance(dv, str):
