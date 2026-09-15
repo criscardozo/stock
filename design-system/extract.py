@@ -191,6 +191,30 @@ def count(pattern: str, files: list) -> dict:
     return tally
 
 
+# Tailwind's own default type scale, unmodified here — no `--text-sm` or
+# similar override exists in globals.css, so these px values are Tailwind's,
+# not this project's.
+TAILWIND_TEXT_PX = {"xs": "12", "sm": "14", "base": "16", "lg": "18", "xl": "20", "2xl": "24"}
+
+
+def count_web_sizes(files: list) -> dict:
+    """A web size is spelled two ways, and counting only one undercounts every
+    size the other also reaches.
+
+    `text-[13px]` is one spelling; `text-sm` is the other, and Tailwind decides
+    what px it means, not a token here. Measured before this existed: `count()`
+    alone, matching only the bracket form, said 14px had ONE web use. The real
+    number, once `text-sm` is read too, is 48 — a size this common is not a
+    rounding error to miss, it is most of the app's list rows read as unused.
+    """
+    tally = count(r"text-\[([0-9.]+)px\]", files)
+    named = count(r"\btext-(xs|sm|base|lg|xl|2xl)\b", files)
+    for name, uses in named.items():
+        px = TAILWIND_TEXT_PX[name]
+        tally[px] = tally.get(px, 0) + uses
+    return tally
+
+
 def main() -> int:
     css = CSS.read_text(encoding="utf-8")
     swift = SWIFT.read_text(encoding="utf-8")
@@ -227,7 +251,7 @@ def main() -> int:
     web = tracked("apps/web/src/**/*.tsx", "apps/web/src/**/*.css")
     ios = tracked("apps/ios/**/*.swift")
 
-    sizes_web = count(r"text-\[([0-9.]+)px\]", web)
+    sizes_web = count_web_sizes(web)
     # `.appFont(15, .semibold)`, the View modifier. Not `.stock(` — that used to
     # be the spelling AND it is still the name of `ItemState.stock(item)`, an
     # unrelated function. Counting the old pattern would have quietly mixed
