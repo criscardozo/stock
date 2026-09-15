@@ -101,7 +101,7 @@ export function CookSheet({
                   aria-checked={on}
                   aria-label={on ? `No descontar ${item.name}` : `Descontar ${item.name}`}
                   onClick={() => setEnabled((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
-                  className={`grid h-[22px] w-[22px] shrink-0 place-items-center rounded-[7px] ${
+                  className={`grid h-[22px] w-[22px] shrink-0 place-items-center rounded-checkbox ${
                     on ? 'bg-primary' : 'border-2 border-line-strong'
                   }`}
                 >

@@ -276,12 +276,20 @@ def main() -> int:
     # block is how this script failed its first run, and it failed LOUDLY, which
     # is the only reason the mistake is in the git history and not in the JSON.
     radius_css = declarations(css_block(css, "@theme inline"))
-    uses_class = count(r"rounded-(card|panel|sheet|field|nav)", web)
+    # The roles are READ from the stylesheet, not listed here. This enumerated
+    # five by hand and two new ones — `checkbox` and `segment`, added the day
+    # four tick controls were reconciled onto one value — came out of the
+    # extractor silently absent while every check stayed green. Fourth time in
+    # one day that a hand-kept list disagreed with the file it described.
+    roles = sorted(
+        name[len("radius-"):] for name in radius_css if name.startswith("radius-")
+    )
+    if not roles:
+        raise SystemExit("globals.css declares no --radius-* tokens")
+    uses_class = count(r"rounded-(%s)\b" % "|".join(roles), web)
     radius = {}
-    for role in ["card", "panel", "sheet", "field", "nav"]:
+    for role in roles:
         key = f"radius-{role}"
-        if key not in radius_css:
-            raise SystemExit(f"globals.css has no --{key}")
         radius[role] = {
             "$type": "dimension",
             "$value": radius_css[key],

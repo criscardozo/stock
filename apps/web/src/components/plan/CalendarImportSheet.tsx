@@ -142,7 +142,7 @@ export function CalendarImportSheet({
                   aria-checked={!off}
                   aria-label={`${off ? 'Incluir' : 'Saltear'} ${match.event.summary}`}
                   onClick={() => toggle(index)}
-                  className={`grid size-5 shrink-0 place-items-center rounded-[6px] ${
+                  className={`grid size-5 shrink-0 place-items-center rounded-checkbox ${
                     off ? 'border border-line-strong' : 'bg-primary text-on-primary'
                   }`}
                 >

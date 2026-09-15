@@ -200,7 +200,7 @@ export function LevelDial({
       <div className="flex gap-[3px]">
         {segments.map((filled, index) => {
           const target = (index + 1) as Level
-          const className = `h-2 w-3.5 rounded-[3px] ${filled ? 'bg-primary' : 'bg-track'}`
+          const className = `h-2 w-3.5 rounded-segment ${filled ? 'bg-primary' : 'bg-track'}`
           return onChange ? (
             <button
               key={index}

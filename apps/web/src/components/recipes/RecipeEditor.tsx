@@ -262,7 +262,7 @@ export function RecipeEditor({
                           unit: item.unit,
                         })
                       }
-                      className="tnum w-20 rounded-[10px] border border-line bg-surface px-2.5 py-1.5 text-sm font-semibold"
+                      className="tnum w-20 rounded-field border border-line bg-surface px-2.5 py-1.5 text-sm font-semibold"
                     />
                     <span className="w-6 text-xs text-ink-3">{item.unit}</span>
                   </>

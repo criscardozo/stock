@@ -362,7 +362,7 @@ function ShoppingRow({
         aria-checked={entry.checked}
         aria-label={entry.checked ? `Destildar ${entry.label}` : `Tildar ${entry.label}`}
         onClick={onToggle}
-        className={`grid h-6 w-6 shrink-0 place-items-center rounded-lg ${
+        className={`grid h-6 w-6 shrink-0 place-items-center rounded-checkbox ${
           entry.checked ? 'bg-primary' : 'border-2 border-line-strong'
         }`}
       >

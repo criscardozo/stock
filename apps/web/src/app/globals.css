@@ -261,6 +261,14 @@
   /* 10, measured: the family system publishes rounded-[10px] for fields. */
   --radius-field: 10px;
   --radius-nav: 12px;
+  /* 8, decided: four tick controls carried three radii — 6px on two 20px
+     boxes, 7px on a 22px one, Tailwind's `lg` on a 24px one — and iOS drew
+     the same control at 8. Nobody chose three; they were sized one box at a
+     time. 8 is the only value both platforms already used for it. */
+  --radius-checkbox: 8px;
+  /* 3: the level dial's segment, an 8x14 pip. Its own role — nothing else in
+     either platform is that shape. */
+  --radius-segment: 3px;
 
   /* The one strong shadow in the system, and it is coloured, never black. */
   --shadow-primary: 0 8px 20px rgba(46, 158, 91, 0.35);

@@ -285,7 +285,7 @@ export function ItemSheet({
         className="flex w-full items-start gap-3 rounded-panel bg-ground px-3.5 py-3 text-left"
       >
         <span
-          className={`mt-px grid size-5 shrink-0 place-items-center rounded-[6px] ${
+          className={`mt-px grid size-5 shrink-0 place-items-center rounded-checkbox ${
             autoSuggest ? 'border border-line-strong' : 'bg-primary text-on-primary'
           }`}
         >
