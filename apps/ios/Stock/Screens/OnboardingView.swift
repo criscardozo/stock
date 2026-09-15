@@ -32,12 +32,12 @@ struct OnboardingView: View {
                         .autocorrectionDisabled()
                         .appFont(16, .semibold)
                         .padding(14)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Theme.ground))
+                        .background(RoundedRectangle(cornerRadius: Radius.field).fill(Theme.ground))
                     PrimaryButton(title: "Unirme") { join() }
                         .disabled(code.trimmingCharacters(in: .whitespaces).isEmpty || busy)
                 }
                 .padding(16)
-                .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
+                .background(RoundedRectangle(cornerRadius: Radius.card).fill(Theme.surface))
 
                 VStack(alignment: .leading, spacing: 12) {
                     SectionLabel(text: "Empezar de cero")
@@ -45,7 +45,7 @@ struct OnboardingView: View {
                     LimitNote(value: name, limit: FieldLimits.householdName)
                         .appFont(16, .semibold)
                         .padding(14)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Theme.ground))
+                        .background(RoundedRectangle(cornerRadius: Radius.field).fill(Theme.ground))
                     Picker("Zona horaria", selection: $timezone) {
                         ForEach(timezones, id: \.self) { Text($0).tag($0) }
                     }
@@ -59,7 +59,7 @@ struct OnboardingView: View {
                             || FieldLimits.overBy(name, FieldLimits.householdName) > 0)
                 }
                 .padding(16)
-                .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
+                .background(RoundedRectangle(cornerRadius: Radius.card).fill(Theme.surface))
 
                 if let error {
                     Text(error).appFont(13).foregroundStyle(Theme.dangerDeep)

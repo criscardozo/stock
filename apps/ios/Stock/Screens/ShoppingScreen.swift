@@ -88,7 +88,7 @@ struct ShoppingScreen: View {
             .frame(height: 10)
         }
         .padding(16)
-        .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
+        .background(RoundedRectangle(cornerRadius: Radius.card).fill(Theme.surface))
         .padding(.horizontal, 16)
     }
 
@@ -112,7 +112,7 @@ struct ShoppingScreen: View {
             }
             .padding(16)
             .background(
-                RoundedRectangle(cornerRadius: 18)
+                RoundedRectangle(cornerRadius: Radius.card)
                     .stroke(Theme.lineStrong, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
             )
 
@@ -287,10 +287,10 @@ struct ShoppingRow: View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 Button(action: onToggle) {
-                    RoundedRectangle(cornerRadius: 8)
+                    RoundedRectangle(cornerRadius: Radius.checkbox)
                         .fill(entry.checked ? Theme.primary : .clear)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8)
+                            RoundedRectangle(cornerRadius: Radius.checkbox)
                                 .stroke(entry.checked ? .clear : Theme.lineStrong, lineWidth: 2)
                         )
                         .overlay(

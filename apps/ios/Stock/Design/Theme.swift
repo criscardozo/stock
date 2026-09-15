@@ -196,6 +196,35 @@ enum Theme {
 /// apps genuinely look like one product rather than two that agree on colours.
 /// Falls back to the system rounded face if the font ever fails to register,
 /// which is a wobble in tone rather than a broken screen.
+/// Corner radii, by ROLE — `Radius.card`, never a bare 18 at a call site.
+///
+/// GENERATED from design-system/tokens.json by design-system/emit.py. The two
+/// anchors are the only hand-written part: they say where generated code goes,
+/// which is a decision, and a decision belongs in the file it affects. The
+/// emitter replaces everything between them whole, so a second run writes the
+/// same bytes as the first.
+///
+/// Defining these was half the job; the call sites were the other half and are
+/// done — 19 of them, leaving only the watch's own two, which cannot use this
+/// enum because StockWatch compiles no phone code.
+///
+/// The sed that did those 19 also rewrote this very sentence, which used to
+/// name the literal form as the thing to replace. Fifth time in one day that a
+/// pattern matched prose instead of code, and the first that EDITED it rather
+/// than miscounting: the number was 19, the script said 20, and the extra one
+/// was a comment describing the thing being changed.
+enum Radius {
+    // kyber:radius start
+    static let card: CGFloat = 18
+    static let checkbox: CGFloat = 8
+    static let field: CGFloat = 10
+    static let nav: CGFloat = 12
+    static let panel: CGFloat = 18
+    static let segment: CGFloat = 3
+    static let sheet: CGFloat = 24
+// kyber:radius end
+}
+
 enum AppFont {
     /// The FAMILY, not a static weight.
     ///

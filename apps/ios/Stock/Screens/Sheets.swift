@@ -139,7 +139,7 @@ struct CookSheet: View {
                             .appFont(14)
                             .foregroundStyle(Theme.ink2)
                             .padding(16)
-                            .background(RoundedRectangle(cornerRadius: 18).fill(Theme.surface))
+                            .background(RoundedRectangle(cornerRadius: Radius.card).fill(Theme.surface))
                     } else {
                         Card {
                             ForEach(Array(linked.enumerated()), id: \.offset) { index, ingredient in

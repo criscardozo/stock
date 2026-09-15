@@ -268,9 +268,9 @@ struct SettingsScreen: View {
             .padding(.vertical, 13)
             .padding(.horizontal, 16)
             .background(
-                RoundedRectangle(cornerRadius: 18)
+                RoundedRectangle(cornerRadius: Radius.card)
                     .fill(Theme.surface)
-                    .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.line))
+                    .overlay(RoundedRectangle(cornerRadius: Radius.card).stroke(Theme.line))
             )
         }
         .buttonStyle(.plain)

@@ -171,7 +171,7 @@ struct LevelDial: View {
                         // separate control.
                         onChange?(level == step ? step - 1 : step)
                     } label: {
-                        RoundedRectangle(cornerRadius: 3)
+                        RoundedRectangle(cornerRadius: Radius.segment)
                             .fill(step <= level ? Theme.primary : Theme.track)
                             .frame(width: 14, height: 8)
                     }
@@ -212,9 +212,9 @@ struct Card<Content: View>: View {
         VStack(spacing: 0) { content }
             .padding(.horizontal, 18)
             .background(
-                RoundedRectangle(cornerRadius: 18)
+                RoundedRectangle(cornerRadius: Radius.card)
                     .fill(Theme.surface)
-                    .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.line))
+                    .overlay(RoundedRectangle(cornerRadius: Radius.card).stroke(Theme.line))
             )
     }
 }

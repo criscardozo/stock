@@ -52,10 +52,25 @@ WATCH = REPO / "apps/ios/StockWatch/WatchTheme.swift"
 WRAP_AT = 102
 
 sys.path.insert(0, str(REPO / "kyber" / "design"))
-from tokens import Destination, css_value, load, main  # noqa: E402
+from tokens import Block, Destination, css_value, load, main  # noqa: E402
+
+
+def is_colour(entry: dict) -> bool:
+    """A destination takes what it is FOR, and says so by type.
+
+    With one group this never came up — everything the walk produced was a
+    colour. Passing `groups=["color", "radius"]` feeds every token to every
+    destination, so each one declines what is not its own. By `$type` and not
+    by the shape of `$value`: a colour is a pair and a dimension is a string
+    TODAY, and reading the type asks the question the document answers rather
+    than one it happens to imply.
+    """
+    return entry.get("$type") == "color"
 
 
 def css_declarations(name: str, entry: dict) -> list[str]:
+    if not is_colour(entry):
+        return []
     lv = css_value(entry["$value"]["light"])
     dv = css_value(entry["$value"]["dark"])
     return [f"--{name}: {lv};", f"--{name}: {dv};", f"--{name}: {dv};"]
@@ -82,6 +97,8 @@ def swift_args(entry: dict) -> str | None:
 
 
 def swift_declarations(name: str, entry: dict) -> list[str]:
+    if not is_colour(entry):
+        return []
     args = swift_args(entry)
     if args is None:
         return []
@@ -93,6 +110,8 @@ def swift_declarations(name: str, entry: dict) -> list[str]:
 
 
 def swift_pattern(name: str, entry: dict) -> re.Pattern | None:
+    if not is_colour(entry):
+        return None
     ident = entry.get("$extensions", {}).get("swift")
     if ident is None:
         return None
@@ -104,6 +123,8 @@ def swift_pattern(name: str, entry: dict) -> re.Pattern | None:
 
 
 def watch_declarations(name: str, entry: dict) -> list[str]:
+    if not is_colour(entry):
+        return []
     ident = entry.get("$extensions", {}).get("swift")
     if ident is None:
         return []
@@ -114,10 +135,27 @@ def watch_declarations(name: str, entry: dict) -> list[str]:
 
 
 def watch_pattern(name: str, entry: dict) -> re.Pattern | None:
+    if not is_colour(entry):
+        return None
     ident = entry.get("$extensions", {}).get("swift")
     if ident is None:
         return None
     return re.compile(rf'    static let {re.escape(ident)} = Color\(hex: "#[0-9A-F]+"\)')
+
+
+def radius_declarations(name: str, entry: dict) -> list[str]:
+    """One `static let` per role, inside `enum Radius`.
+
+    CGFloat and not Double: every caller is a SwiftUI dimension, and a literal
+    that arrives as the wrong numeric type is a compile error at each of them
+    rather than here.
+    """
+    if entry.get("$type") != "dimension":
+        return []
+    value = entry["$value"]
+    if not value.endswith("px"):
+        raise ValueError(f"radius {name} is not in px: {value!r}")
+    return [f"    static let {name}: CGFloat = {value[:-2]}"]
 
 
 if __name__ == "__main__":
@@ -126,5 +164,15 @@ if __name__ == "__main__":
         Destination(CSS, css_declarations, css_pattern, label="globals.css"),
         Destination(SWIFT, swift_declarations, swift_pattern, label="Theme.swift"),
         Destination(WATCH, watch_declarations, watch_pattern, label="WatchTheme.swift", subset=True),
+        # A BLOCK and not a Destination: Theme.swift names no radius at all, so
+        # there is nothing for a pattern to find and swap. This one owns the
+        # region between two anchors and writes the whole set into it.
+        Block(
+            SWIFT,
+            radius_declarations,
+            "// kyber:radius start",
+            "// kyber:radius end",
+            label="Theme.swift · Radius",
+        ),
     ]
-    sys.exit(main(doc, destinations))
+    sys.exit(main(doc, destinations, groups=["color", "radius"]))

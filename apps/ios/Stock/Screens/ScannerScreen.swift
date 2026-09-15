@@ -137,7 +137,7 @@ struct ScannerScreen: View {
             }
             .padding(20)
             .background(
-                RoundedRectangle(cornerRadius: 24).fill(Theme.surface)
+                RoundedRectangle(cornerRadius: Radius.sheet).fill(Theme.surface)
                     .shadow(color: Theme.ink.opacity(0.14), radius: 24, y: 12)
             )
             .padding(16)
