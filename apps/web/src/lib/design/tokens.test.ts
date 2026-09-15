@@ -197,6 +197,30 @@ describe('the watch is the fourth copy, and nothing was holding it', () => {
     expect(onWatch).toEqual(phone)
   })
 
+  /**
+   * WHICH tokens the watch carries, pinned here and nowhere else.
+   *
+   * This is the half kyber's `subset=True` deliberately cannot answer: reading
+   * membership from the file makes a token the watch GAINS get adopted, but a
+   * token it LOSES looks identical to a subset declining one. The file cannot
+   * say which it meant. Measured, after that flag went in: deleting `ink3` from
+   * WatchTheme.swift left `emit.py --verify` green at 151 and the whole suite
+   * passing. The watch would have silently lost a colour.
+   *
+   * EXACT, and the branch is deliberate: the population is closed by this test,
+   * which is the point. The watch subset is a design decision — these roles and
+   * not others — so changing it should be an act that touches this list, not
+   * something that drifts. The emitter follows the file so VALUES never
+   * diverge; this holds MEMBERSHIP so it cannot change by accident. That split
+   * is why the list being here is not the list that was wrong in emit.py.
+   */
+  it('the watch declares the tokens it is supposed to carry', () => {
+    const declared = [...watch.matchAll(/static let (\w+) = Color\(hex:/g)].map((m) => m[1])
+    expect(declared.sort()).toEqual(
+      ['ground', 'ink', 'ink2', 'ink3', 'onPrimary', 'primary', 'primaryDeep', 'surface'].sort()
+    )
+  })
+
   it('every watch token is the dark half of the phone token', () => {
     const phone = swiftTokens()
     const wrong: string[] = []
