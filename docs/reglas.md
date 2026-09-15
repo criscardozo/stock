@@ -67,13 +67,13 @@ plan y la derivación de la lista de compras: `shared/plan-period-vectors.json` 
 
 ## 7. Verificar, no suponer
 
-- Un cambio visual se **mide o se mira** (captura, overflow en píxeles), no se
-  deduce del CSS.
-- Un test de regresión vale lo que atrapa: **reintroducir el bug** y ver el test
-  fallar antes de darlo por bueno.
-- Si algo no se pudo verificar, **decirlo** en el reporte. "Compila" no es
-  "funciona".
-- Lo que dice un paso de CI en verde no reemplaza mirar el artefacto.
+→ [`kyber/docs/guardas.md`](../kyber/docs/guardas.md)
+
+Kyber lleva mucho más que las cuatro reglas originales: un catálogo medido de
+formas concretas en que una guarda queda verde sin sostener nada (la garantía
+adentro de un `for` que genera tests, un relay que hereda confianza ajena sin
+mirar la fuente, simular en vez de correr lo real, un fixture que reproduce el
+mecanismo pero no la forma). Todo lo de acá está ahí, y superconjunto.
 
 ## 8. Secretos
 
