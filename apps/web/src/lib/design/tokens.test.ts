@@ -215,7 +215,13 @@ describe('the watch is the fourth copy, and nothing was holding it', () => {
     // line the day the literals went from `0x…` to `"#…"`: both tests here went
     // red on the shape, reporting `checked: 0`, instead of agreeing that zero
     // tokens all matched.
-    expect({ checked, wrong }).toEqual({ checked: 8, wrong: [] })
+    //
+    // A FLOOR, not the exact 8 it was: the population is WatchTheme.swift, a
+    // file outside this test that can legitimately gain a token, and freezing
+    // the number would make a correct addition fail with `expected 9 to equal
+    // 8`, naming nothing. Anything actually wrong is named by `wrong`.
+    expect(wrong).toEqual([])
+    expect(checked).toBeGreaterThan(5)
   })
 })
 
@@ -311,7 +317,12 @@ describe('tokens.json is extracted, not maintained', () => {
     // 25: the 6 core, 3 opaque accent, 3 mark, 3 opaque state, 2 member and 8
     // hue foregrounds. The whole `line` group and every `-soft` are alpha
     // pairs and are counted by the extractor test instead.
-    expect({ checked, wrong }).toEqual({ checked: 25, wrong: [] })
+    // Floor, same reasoning as the watch sweep above: the population is
+    // tokens.json, and a token added there correctly should flow through and
+    // be checked, not fail with `expected 26 to equal 25`. The exact 25
+    // described today rather than the rule.
+    expect(wrong).toEqual([])
+    expect(checked).toBeGreaterThan(15)
   })
 })
 
@@ -358,6 +369,12 @@ describe('every text-on-neutral pair clears WCAG AA', () => {
     }
     // The count is asserted because a renamed or removed token would
     // otherwise leave nothing to check and this would report a clean pass.
+    // EXACT, and the only exact count left in this file — deliberately, not by
+    // omission. The population is fixed by the test itself: three token names
+    // and two backgrounds, both written above. A floor here would let a seventh
+    // pair slip in unchecked, and there is no outside file that can grow to
+    // make 6 wrong. That is the line between the two: exact when the test
+    // decides the population, floor plus a name when it comes from a file.
     expect({ checked, wrong }).toEqual({ checked: 6, wrong: [] })
   })
 })
