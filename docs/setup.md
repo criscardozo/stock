@@ -339,8 +339,10 @@ El workflow del repo de backups lo corre los jueves a la mañana de Sídney, y
 **nunca corrió todavía**: se validó que el YAML parsea y que los secrets
 existen, que no es lo mismo que andar.
 
-No corre hasta el **01/10/2026**, cuando se reinicia el ciclo de facturación.
-Ese bloqueo sobrevive a que estos repos sean públicos: los minutos de un repo
+**No corre mientras la cuota de Actions de la cuenta esté agotada** (el ciclo
+se reinicia el 01/10/2026, pero la condición es la cuota, no la fecha: escrito
+al revés, este párrafo se vuelve falso solo el 2 de octubre). Ese bloqueo
+sobrevive a que estos repos sean públicos: los minutos de un repo
 público no facturan, pero el workflow no vive acá — vive en
 `my-apps-backups`, que es **privado**, así que sus minutos salen de la cuota
 de la cuenta y la cuota está agotada. El efecto secundario bueno es que, desde
@@ -353,12 +355,14 @@ contraste que lo cierra corrió en la misma ventana: el CI de este repo, ya
 público, tenía `runner_id=1000001645` y 16 pasos. O sea que la cuota la fija
 la visibilidad del repo **donde corre el job**, no la de los que checkoutea.
 
-**Su primera corrida real del 01/10 sigue siendo la medición que falta, y
+**La primera corrida que llegue a ejecutar un paso es la medición que falta, y
 conviene mirarla a propósito** en vez de leer el color: el camino sano ejercita
 el workflow entero, así que a diferencia de una guarda que pasa sin hacer nada,
-acá un verde significa algo. Lo que sigue sin medirse —el intento del 16/09
-murió antes del primer paso, así que no tocó nada de esto—, nombrado para que
-quien mire sepa qué mirar:
+acá un verde significa algo. Para saber si ya ocurrió, `gh run list --repo
+criscardozo/my-apps-backups` y mirar si alguna corrida tiene pasos — no la
+fecha. Lo que sigue sin medirse —el intento del 16/09 murió antes del primer
+paso, así que no tocó nada de esto—, nombrado para que quien mire sepa qué
+mirar:
 
 - **El checkout de este repo desde allá.** Se escribió sin token a propósito,
   contando con que estos repos fueran públicos. Desde el 16/09/2026 lo son, o
@@ -368,8 +372,9 @@ quien mire sepa qué mirar:
   (`max-parallel: 1`) y el paso de commit hace `pull --rebase` antes del push,
   pero ninguna de las dos defensas se ejercitó nunca.
 
-**Y si el 01/10 el cron no corre, hay DOS explicaciones y se parecen.** Una es
-la cuota; la otra apareció el 16/09 y no se habría visto hasta ese día: GitHub
+**Y si el cron no corrió —cualquier jueves, no sólo el primero— hay DOS
+explicaciones y se parecen.** Una es la cuota; la otra apareció el 16/09 y no
+se habría visto hasta octubre: GitHub
 **no tenía registrado** el workflow. El archivo estaba en `main` y la API lo
 devolvía entero, pero `actions/workflows` daba `total_count: 0` y el dispatch
 404 — llegó en un push que no lo modificaba (secuela del force push que
