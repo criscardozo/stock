@@ -16,10 +16,20 @@ concurrency:
 # Ubuntu only, by design. macOS runners bill at a 10x minute multiplier, so
 # there is no iOS job here and no iOS workflow anywhere: that app is built and
 # tested on a simulator before each change lands (see CLAUDE.md for the
-# xcodebuild line). The whole project runs on $0 of infrastructure, and this
-# repo is private — 2000 Actions minutes a month, shared with Gastos Diarios,
-# which uses about 340 of them. Two jobs at ~2.5 minutes keeps the pair well
-# inside the free tier; adding a macOS job would not.
+# xcodebuild line). The whole project runs on $0 of infrastructure.
+#
+# This repo is private, and the sentence is on one line on purpose: it is the
+# claim that stops being true the moment somebody flips visibility, so it has
+# to be findable by the grep that person will run. Wrapped across two lines,
+# which is how it was written, a grep for that phrase returned nothing — and
+# the phrase is not repeated here, because a comment that spells out the
+# needle becomes a second hit and sends the reader to the wrong line.
+#
+# Being private is what makes the minutes finite — 2000 a month, shared with
+# Gastos Diarios, which uses about 340 of them. Two jobs at ~2.5 minutes keeps
+# the pair well inside the free tier; adding a macOS job would not. A PUBLIC
+# repo bills no minutes for standard runners at all, so this whole paragraph
+# is about a constraint that would simply stop existing.
 #
 # Vercel already builds every push, so `build` here is not about the deploy: it
 # is about catching a broken build on a PR before it becomes a red deploy.
