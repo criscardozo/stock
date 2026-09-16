@@ -298,18 +298,25 @@ Firestore no tiene export gestionado gratis (eso necesita Blaze), así que
 `pnpm backup` vuelca el proyecto entero —hogares con todas sus subcolecciones,
 `users`, `invites`— a un JSON con timestamp en `backups/` (gitignored).
 
-**Para que el backup semanal corra hace falta un paso de consola, una sola vez:**
+**El backup semanal NO corre desde este repo**, y la ausencia es deliberada.
+Vive en `criscardozo/my-apps-backups`, que es privado y se queda privado: corre
+el mismo `kyber/scripts/backup.mjs`, chequeando out este repo con submódulos
+para que cada app la respalde el kyber que **ella** pinea, y commitea el volcado
+adentro de ese repo en vez de dejarlo como artifact.
 
-1. Firebase console → Project settings → **Service accounts** → *Generate new
-   private key*. Guardala **fuera del repo** (o en `firebase/service-account.json`,
-   que está gitignoreado).
-2. GitHub → Settings → Secrets and variables → Actions → **New repository
-   secret**, nombre `FIREBASE_SERVICE_ACCOUNT`, y pegá el JSON entero.
+Las dos razones, en orden de peso:
 
-Sin ese secret el workflow **falla en el primer paso con un mensaje explícito**
-en vez de correr y no guardar nada.
+1. **Las credenciales de service account no pueden vivir en un repo que va a
+   ser público.** Son admin de producción. Ésta sola justificaría la mudanza.
+2. Un artifact de workflow en un repo público **lo baja cualquiera**, y un
+   volcado de la base de producción es exactamente lo que no puede pasar.
 
-De a ratos, a mano: `GOOGLE_APPLICATION_CREDENTIALS=/ruta/key.json pnpm backup`.
+Así que acá no hay ningún secret de Firebase, y no hay que crear ninguno. La
+key va como `FIREBASE_SERVICE_ACCOUNT_STOCK` en el repo de backups.
+
+**A mano, que es el camino que sigue siendo de acá:**
+
+`GOOGLE_APPLICATION_CREDENTIALS=firebase/service-account.json pnpm backup`.
 Contra el emulador, para ensayar sin tocar producción:
 `FIRESTORE_EMULATOR_HOST=127.0.0.1:8280 BACKUP_PROJECT_ID=demo-stock pnpm backup`.
 
@@ -327,10 +334,14 @@ tipees el project id; un dump sin `source` (los anteriores a este campo) se
 rechaza con instrucciones en vez de asumir, porque asumir «producción» dejaría
 pasar justo los ensayos y asumir «emulador» bloquearía los backups reales.
 
-`.github/workflows/backup.yml` lo corre los jueves a la mañana de Sídney (el
-cron está en UTC y tiene el offset explicado al lado) y guarda el dump como
-artifact por 90 días, que es el techo del tier gratuito. Cuesta un par de los
-2000 minutos mensuales.
+El workflow del repo de backups lo corre los jueves a la mañana de Sídney.
+Hasta el 01/10/2026 no corre por nada: los 2000 minutos del mes están agotados.
+Y **nunca corrió todavía** — se validó que el YAML parsea y que los secrets
+existen, no que ande. Su primera corrida del 01/10 es una medición de verdad y
+conviene mirarla a propósito, porque el camino sano ejercita todo el workflow:
+las dos fallas que nadie vio son el checkout de este repo (que sólo funciona
+cuando sea público, a propósito: no hay token configurado) y las dos ramas de
+la matriz compitiendo al pushear.
 
 **El mismo job chequea que las reglas desplegadas coincidan con el repo**
 (`kyber/scripts/check-rules-drift.mjs`). Las reglas son el único límite de seguridad
