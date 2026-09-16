@@ -72,6 +72,38 @@ normal:
 **El orden importa**: sin el paso 1 (Firestore creada, reglas deployadas, Google
 habilitado), la web deploya perfecto y después no deja entrar a nadie.
 
+### Sólo `main` deploya: `apps/web/vercel.json`
+
+Los previews estaban prendidos y no se usaban, así que cada push y cada PR
+levantaba un deploy que nadie miraba. `apps/web/vercel.json` los apaga. Va en
+`apps/web/` y no en la raíz porque **Vercel lee el `vercel.json` del Root
+Directory**, y el de este proyecto es `apps/web` (verificado con
+`vercel project inspect stock --scope merlines`, no leído de acá: este archivo
+puede envejecer y esa respuesta no).
+
+El archivo es JSON estricto y no admite comentarios, así que las dos razones
+por las que está escrito exactamente así viven acá:
+
+1. **No es `"deploymentEnabled": false` a secas.** Los docs ofrecen esa forma
+   para «apagar todos los despliegues automáticos» y apaga **también
+   producción**. Lo que se usa en su lugar es una regla explícita de los mismos
+   docs: *«If a branch matches multiple rules and at least one rule is `true`,
+   a deployment will occur»*. Así `main` matchea las dos entradas y gana el
+   `true`; cualquier otra rama matchea sólo la primera.
+
+2. **El patrón elegido no es cosmético**: es `**`, no `*`. Los
+   patrones son [minimatch](https://github.com/isaacs/minimatch), donde `*`
+   **no cruza la barra**. Medido con el minimatch del propio lockfile: `*`
+   matchea `main` y `fix-typo` pero **no** `feature/login` ni
+   `dependabot/npm_and_yarn/next-16`. Y como el default de una rama que no
+   matchea ninguna regla es `true`, con `*` las ramas de Dependabot habrían
+   seguido deployando — que es justo la fuente más frecuente de previews en
+   este repo. `**` sí las matchea.
+
+La mitad que la forma equivocada rompe es que `main` siga deployando, así que
+esa es la que hay que mirar en el próximo merge, no sólo que los previews
+desaparezcan.
+
 ### Dominio `stock.cardozo.dev`
 
 El apex `cardozo.dev` está registrado en Namecheap.
