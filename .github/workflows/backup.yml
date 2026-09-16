@@ -5,6 +5,29 @@ name: Backup
 # (kyber/scripts/backup.mjs), run somewhere that is always on — which a laptop
 # is not. GitHub Actions is that somewhere: a scheduled run costs a couple of
 # the 2,000 free minutes a month, and the dump is kept as a build artifact.
+#
+# ── Gap on purpose, 16/09/2026 to 01/10/2026 ──
+#
+# That "couple of minutes" assumes there are minutes. On 15/09/2026 the account
+# hit the 2,000 — 2382 used, almost all of it by a sibling repo — and with a $0
+# budget and stop-usage set, Actions simply stops: jobs start and finish in two
+# seconds having run zero steps. So THIS WORKFLOW DID NOT RUN on 16/09, and
+# will not on 23/09 or 30/09. The cycle resets on 01/10 and it resumes by
+# itself; nothing here needs changing.
+#
+# Cristian's call, asked directly with the numbers: leave the window uncovered.
+# Two manual production dumps were taken by hand (15/09 and 16/09, 41 items and
+# 2 mealPlans each, `format: 1`, `source: production`) and the household is two
+# people whose data moves slowly. The alternative on the table was a local
+# scheduled job, and the cost of that is a piece of machine state somebody has
+# to remember to remove on 01/10 or it duplicates this cron.
+#
+# Written down because an accepted gap and an unnoticed one look identical in a
+# month. The risk being accepted, named: an accidental deletion inside those
+# fifteen days has no automatic restore point newer than 16/09. To take one by
+# hand meanwhile:
+#   GOOGLE_APPLICATION_CREDENTIALS=firebase/service-account.json \
+#     node kyber/scripts/backup.mjs
 
 on:
   schedule:
