@@ -335,14 +335,30 @@ tipees el project id; un dump sin `source` (los anteriores a este campo) se
 rechaza con instrucciones en vez de asumir, porque asumir «producción» dejaría
 pasar justo los ensayos y asumir «emulador» bloquearía los backups reales.
 
-El workflow del repo de backups lo corre los jueves a la mañana de Sídney.
-Hasta el 01/10/2026 no corre por nada: los 2000 minutos del mes están agotados.
-Y **nunca corrió todavía** — se validó que el YAML parsea y que los secrets
-existen, no que ande. Su primera corrida del 01/10 es una medición de verdad y
-conviene mirarla a propósito, porque el camino sano ejercita todo el workflow:
-las dos fallas que nadie vio son el checkout de este repo (que sólo funciona
-cuando sea público, a propósito: no hay token configurado) y las dos ramas de
-la matriz compitiendo al pushear.
+El workflow del repo de backups lo corre los jueves a la mañana de Sídney, y
+**nunca corrió todavía**: se validó que el YAML parsea y que los secrets
+existen, que no es lo mismo que andar.
+
+No corre hasta el **01/10/2026**, cuando se reinicia el ciclo de facturación.
+Ese bloqueo sobrevive a que estos repos sean públicos: los minutos de un repo
+público no facturan, pero el workflow no vive acá — vive en
+`my-apps-backups`, que es **privado**, así que sus minutos salen de la cuota
+de la cuenta y la cuota está agotada. El efecto secundario bueno es que, desde
+que Stock y Gastos son públicos, esa cuota la gasta sólo ese repo.
+
+**Su primera corrida del 01/10 es la medición que falta, y conviene mirarla a
+propósito** en vez de leer el color: el camino sano ejercita el workflow
+entero, así que a diferencia de una guarda que pasa sin hacer nada, acá un
+verde significa algo. Lo que sigue sin medirse, nombrado para que quien mire
+sepa qué mirar:
+
+- **El checkout de este repo desde allá.** Se escribió sin token a propósito,
+  contando con que estos repos fueran públicos. Desde el 16/09/2026 lo son, o
+  sea que la condición está cumplida — lo que no está probado es que el paso
+  funcione, que es otra cosa.
+- **Las dos ramas de la matriz compitiendo al pushear.** Van en serie
+  (`max-parallel: 1`) y el paso de commit hace `pull --rebase` antes del push,
+  pero ninguna de las dos defensas se ejercitó nunca.
 
 **El mismo job chequea que las reglas desplegadas coincidan con el repo**
 (`kyber/scripts/check-rules-drift.mjs`). Las reglas son el único límite de seguridad
