@@ -76,18 +76,46 @@ async function iconsOnPage(page: Page) {
 
 const SCREENS = ['/stock', '/falta-comprar', '/plan', '/recetas', '/ajustes'] as const
 
-for (const screen of SCREENS) {
-  test(`every icon on ${screen} is a glyph, not its own name`, async ({ page }) => {
-    await signIn(page, screen)
+/**
+ * `zz-` IS THE POINT, not untidiness. Playwright orders files by path, so this
+ * name is what makes a read-only check run AFTER the specs that depend on
+ * seeded state. Rename it to `icons.spec.ts` and the suite starts failing
+ * intermittently again — measured, three runs each way.
+ *
+ * Why it has to be last: signing in leaves a session with live Firestore
+ * listeners, and the emulator does not let go fast enough for the next spec's
+ * write to land. `plan.spec.ts`'s cooking test is the one that pays — it sat
+ * waiting 20.8s and then reported the deduction never happened.
+ *
+ * ONE test, one sign-in, five navigations — not five tests signing in five
+ * times, which is how this was written first and what it cost.
+ *
+ * Measured: with the five-sign-in version in the suite, `plan.spec.ts`'s
+ * cooking test took 15.2 MINUTES and failed; without it, the same file passes
+ * in 5.7 seconds. Reproduced down to the minimal set — `icons + limits + plan`
+ * fails, `limits + plan` passes. Five authenticated sessions against one
+ * emulator leave enough behind that a later write never lands.
+ *
+ * Collapsing five sign-ins to one helped and did not fix it: still 1 failure
+ * in 2 runs. What fixed it was the ordering. The baseline was measured both
+ * ways before blaming this file — without it, 3 of 3 clean; with it first,
+ * intermittent; with it last, 3 of 3 clean at the same 17s.
+ *
+ * It was invisible for a day because CI died the same hour this landed, so the
+ * suite only ever ran here, one file at a time, where it looks fine.
+ */
+test('every icon on every screen is a glyph, not its own name', async ({ page }) => {
+  await signIn(page, SCREENS[0])
+
+  for (const screen of SCREENS) {
+    await page.goto(screen)
     const icons = await iconsOnPage(page)
 
-    // A screen that rendered no icons proves nothing, and every one of these
-    // has several — the tab bar alone is five.
     expect(icons.length, `${screen} rendered no icons at all`).toBeGreaterThan(3)
 
     const unresolved = icons
       .filter((icon) => icon.width / icon.size > WIDEST_A_GLYPH_CAN_BE)
-      .map((icon) => `${icon.name} (${(icon.width / icon.size).toFixed(1)} em wide)`)
+      .map((icon) => `${screen} · ${icon.name} (${(icon.width / icon.size).toFixed(1)} em wide)`)
 
     // "The font never arrived" and "this glyph is not in the subset" are
     // different failures with different owners, and a guard that reports the
@@ -109,5 +137,5 @@ for (const screen of SCREENS) {
     ).toBe(true)
 
     expect(unresolved).toEqual([])
-  })
-}
+  }
+})
