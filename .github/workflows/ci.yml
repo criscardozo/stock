@@ -13,9 +13,16 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Ubuntu only, and this is the one place that says why. The other three that
-# used to say it in their own words now point here — same fact, four wordings,
-# and no grep could ever have found all four.
+# Ubuntu only, and this is the one place that says why. The files that used to
+# say it in their own words now point here instead — one fact that had been
+# paraphrased into several, which is the kind of duplicate no grep finds,
+# because the copies do not share a string to search for.
+#
+# Deliberately without a count. The first version of this line said "the other
+# three" and "four wordings", written before a second sweep with a differently
+# built pattern turned up a fifth copy using `×` instead of `x`. The number was
+# wrong within the hour, in the comment whose whole subject is copies that go
+# stale quietly.
 #
 # THERE IS NO iOS JOB HERE AND NO iOS WORKFLOW ANYWHERE, and that is a
 # decision, not only a bill. The bill: a PRIVATE repo bills macOS runners at a
