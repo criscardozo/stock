@@ -97,12 +97,45 @@ jobs:
         id: stamp
         run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
 
+      # Before anything is uploaded, not after. The dump is the entire
+      # production database, and a workflow artifact on a PUBLIC repository is
+      # downloadable by anyone who can see the run — no account needed.
+      #
+      # Nothing announces this. Flipping visibility is two clicks in a settings
+      # page that says nothing about the dumps already sitting in Actions, and
+      # the ones uploaded afterwards look identical to the ones before. Neither
+      # a history secret-scan nor a log review can see it: an artifact is
+      # neither a commit nor a log. Measured here on 16/09/2026 while costing a
+      # move to public — two live dumps of the real household, retention into
+      # December — and found only because somebody went looking outside the
+      # object store.
+      #
+      # Fails closed. The visibility comes from the API rather than from the
+      # event payload, so an empty answer stops the job instead of reading as
+      # "not public".
+      #
+      # This repo does not call kyber's reusable backup workflow, it has its
+      # own, so kyber's copy of this guard does NOT apply here and moving the
+      # submodule pointer would not bring it. Same guard, second place.
+      - name: Refuse to upload a database dump from a public repo
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          visibility=$(gh api "repos/$GITHUB_REPOSITORY" --jq .visibility)
+          if [ "$visibility" != "private" ]; then
+            echo "::error::Repository visibility is '${visibility:-unknown}', not 'private'."
+            echo "::error::This job uploads a full Firestore dump as an artifact, which anyone could download."
+            echo "::error::Send the dump somewhere else before making this repo public."
+            exit 1
+          fi
+
       - uses: actions/upload-artifact@v7
         with:
           name: firestore-backup-${{ steps.stamp.outputs.date }}
           path: backups/*.json
-          # The ceiling on a free private repo. Roughly the last three months
-          # of Thursdays are downloadable at any time.
+          # The ceiling on the free tier. Roughly the last three months of
+          # Thursdays are downloadable at any time — by anyone, if this repo
+          # ever stops being private, which is what the step above refuses.
           retention-days: 90
           if-no-files-found: error
 
