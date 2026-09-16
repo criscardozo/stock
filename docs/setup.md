@@ -230,9 +230,10 @@ open Stock.xcodeproj
 
 - Requiere Xcode 16+. Las dependencias (Firebase, GoogleSignIn) resuelven por SPM
   al abrir.
-- **No hay CI de iOS, a propósito.** Los runners de macOS facturan a 10x y la
-  regla es que Actions no cueste nada, así que se compila y testea local antes de
-  cada cambio:
+- **No hay CI de iOS, y es una decisión, no sólo una factura.** El porqué
+  completo está en la cabecera de `.github/workflows/ci.yml` y no se repite acá.
+  Lo que hay que saber para trabajar: se compila y testea local antes de cada
+  cambio, que es además donde viven el teléfono y la identidad de firma:
   `xcodebuild test -project Stock.xcodeproj -scheme Stock -destination 'platform=iOS Simulator,name=<iPhone>' -only-testing:StockTests`.
 - **Firma**: equipo personal gratuito `FA737M2U79` (el mismo de Gastos
   Diarios), fijado en `project.yml` para que Xcode no reescriba el proyecto

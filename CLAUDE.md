@@ -158,8 +158,10 @@ before inventing a pattern this project has already met.**
   `pnpm build && pnpm --filter web exec next start -p 3113`. Port 3113 and not 3112 because
   Gastos Diarios runs the same check on 3112.
 - CI runs the web checks, the rules tests, the E2E suite and the PWA check on every push
-  (`.github/workflows/ci.yml`). Ubuntu only: a macOS runner bills at 10x, so **the iOS tests
-  are not in CI** and have to be run locally before a change lands.
+  (`.github/workflows/ci.yml`). Ubuntu only, and **the iOS tests are not in CI** — they run
+  locally before a change lands. That is a decision and not only a billing one; the reasoning
+  lives in the header of `ci.yml` and is not repeated here, because the same fact written in
+  four wordings is four copies no grep can find.
 - `pnpm emulators` — local emulator suite in its own block: Auth **9280**, Firestore **8280**
   (websocket **9380**), UI **4280**, hub **4680**, logging **4780**. Not one of them is a Firebase
   default, on purpose. Measured on 2026-09-07: an SSH forward on this machine holds 4000, 8080,

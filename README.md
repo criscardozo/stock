@@ -183,7 +183,7 @@ which is the whole point of not rebuilding the list from scratch.
 | Product data | [Open Food Facts](https://world.openfoodfacts.org) — free, no API key — to fill in name/brand/size from a scanned barcode. Optional: an unknown code still saves, and the household's own catalogue recognises it next time |
 | Hosting | Vercel Hobby, `stock.cardozo.dev` |
 | Testing | `@firebase/rules-unit-testing` + emulator (vitest), Playwright E2E against the emulators, XCTest, shared vectors run by both platforms |
-| CI | GitHub Actions, Ubuntu only — macOS runners bill at 10×, so iOS is verified locally |
+| CI | GitHub Actions, Ubuntu only — iOS is verified locally, on purpose (why: header of `ci.yml`) |
 
 **No backend, on purpose.** Both clients talk straight to Firebase. Cloud
 Functions require the paid Blaze plan and are therefore out of the question;

@@ -445,9 +445,10 @@ workflow de sideload semanal documentado. Se difiere hasta que la app se pruebe 
   configurable) y `shopping-vectors.json` (sugerencias: mínimos, faltantes del plan, ítems de
   nivel, snooze, y la exclusión de lo que ya tiene fila en la lista).
 - **Web**: `pnpm typecheck && pnpm lint && pnpm build`; E2E con Playwright contra el emulator
-  suite; preview deploy en Vercel.
-- **iOS**: build + `xcodebuild test` en simulador, local (no hay CI de iOS: los runners de macOS
-  facturan 10×).
+  suite. Vercel deploya **sólo `main`**: los previews están apagados en `vercel.json` porque
+  nadie los miraba.
+- **iOS**: build + `xcodebuild test` en simulador, local. No hay CI de iOS a propósito; el
+  porqué está en la cabecera de `.github/workflows/ci.yml`.
 - **De punta a punta**: crear hogar en la web → unirse desde iOS con el código → planear la
   semana en la web → ver el faltante en el teléfono → tildar en el súper sin señal → reconectar
   → el stock aparece actualizado en la web → cocinar y ver bajar las cantidades.

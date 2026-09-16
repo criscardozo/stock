@@ -6,30 +6,34 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Two pushes a minute apart used to run twice. The minutes are shared with
-# Gastos Diarios out of one 2,000-a-month allowance, so the older run is
-# cancelled rather than raced.
+# Two pushes a minute apart used to run twice, so the older run is cancelled
+# rather than raced. Worth doing whatever the allowance is: a superseded run
+# tells you about a commit nobody is waiting on any more.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Ubuntu only, by design. macOS runners bill at a 10x minute multiplier, so
-# there is no iOS job here and no iOS workflow anywhere: that app is built and
-# tested on a simulator before each change lands (see CLAUDE.md for the
-# xcodebuild line). The whole project runs on $0 of infrastructure.
+# Ubuntu only, and this is the one place that says why. The other three that
+# used to say it in their own words now point here — same fact, four wordings,
+# and no grep could ever have found all four.
 #
-# This repo is private, and the sentence is on one line on purpose: it is the
-# claim that stops being true the moment somebody flips visibility, so it has
-# to be findable by the grep that person will run. Wrapped across two lines,
-# which is how it was written, a grep for that phrase returned nothing — and
-# the phrase is not repeated here, because a comment that spells out the
-# needle becomes a second hit and sends the reader to the wrong line.
+# THERE IS NO iOS JOB HERE AND NO iOS WORKFLOW ANYWHERE, and that is a
+# decision, not only a bill. The bill: a PRIVATE repo bills macOS runners at a
+# 10x minute multiplier against one monthly allowance shared with Gastos
+# Diarios, and a single iOS job eats it in an afternoon. The decision: iOS is
+# built, tested on a simulator and sideloaded from the machine where the phone
+# is, before each change lands (CLAUDE.md has the xcodebuild line) — that is
+# where an Apple toolchain belongs for this project, and it is where the
+# signing identity and the device live.
 #
-# Being private is what makes the minutes finite — 2000 a month, shared with
-# Gastos Diarios, which uses about 340 of them. Two jobs at ~2.5 minutes keeps
-# the pair well inside the free tier; adding a macOS job would not. A PUBLIC
-# repo bills no minutes for standard runners at all, so this whole paragraph
-# is about a constraint that would simply stop existing.
+# Written this way on purpose, because the bill EXPIRES and the decision does
+# not. The day this repo becomes public the multiplier stops applying to it,
+# and none of the sentences above become false: the reason to keep iOS local
+# is still there, and adding a macOS job would still be a change worth asking
+# about rather than a free lunch. The alternative was to write it as "this
+# repo is private, so ..." and leave somebody to edit four files on the day
+# somebody flips a switch — which is the shape that quietly goes stale,
+# because the edit depends on remembering at the exact moment nobody does.
 #
 # Vercel already builds every push, so `build` here is not about the deploy: it
 # is about catching a broken build on a PR before it becomes a red deploy.
@@ -66,7 +70,7 @@ jobs:
       - run: pnpm --filter web lint
       # Includes the shared-vector tests, which are the contract with the Swift
       # side. A vector added here and not implemented there fails locally on
-      # iOS, not in CI — that asymmetry is the price of having no macOS runner,
+      # iOS, not in CI — that asymmetry follows from there being no iOS job,
       # and it is why the vectors are committed before either implementation.
       - run: pnpm --filter web test
       - run: pnpm --filter web build
