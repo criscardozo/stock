@@ -117,6 +117,28 @@ jobs:
       # This repo does not call kyber's reusable backup workflow, it has its
       # own, so kyber's copy of this guard does NOT apply here and moving the
       # submodule pointer would not bring it. Same guard, second place.
+      #
+      # Which is a debt, recorded rather than left to be discovered: nothing
+      # couples the two copies, so a case added to kyber's does not reach this
+      # one. It is written here and not removed because kyber has two adoption
+      # paths — the reusable workflow and the scripts under kyber/scripts/ —
+      # and this repo takes the second, so a green submodule pointer answers a
+      # different question from the one being asked. When the Actions minutes
+      # come back on 01/10/2026, the move worth evaluating is calling the
+      # reusable workflow: this file becomes about ten lines and the guard
+      # arrives through the gitlink like everything else. Not done now on
+      # purpose — migrating a workflow that cannot be run is the worst pairing.
+      #
+      # And the thing to watch on its first real run: IN A PRIVATE REPO THIS
+      # STEP PASSES WITHOUT DOING ANYTHING, which is indistinguishable from it
+      # not being here. Green says the job ran, not that the guard was
+      # exercised. The only run that measures it is one against a public repo,
+      # and by then it is the run that matters. What was measured instead, on
+      # 16/09/2026 and locally: the same three lines against a real public repo
+      # exited 1 naming the visibility, against this repo exited 0, and an
+      # empty API answer read as "unknown" and stopped. That is a control, not
+      # a CI result, and it is the strongest thing available while the minutes
+      # are gone.
       - name: Refuse to upload a database dump from a public repo
         env:
           GH_TOKEN: ${{ github.token }}
