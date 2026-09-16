@@ -120,4 +120,12 @@ for f in "$IOS"/*.png "$WATCH"/appicon-1024.png; do
   magick "$f" -background "$LIGHT_BG_TO" -alpha remove -alpha off "$f"
 done
 
+# /favicon.ico, from the same two PNGs rendered above rather than a separate
+# drawing. The sibling app paid for the alternative: PNGs made on the side sat
+# three weeks with the old artwork.
+#
+# public/ and not app/ — see tools/icons/pack-ico.py for what the build does to
+# an app/favicon.ico.
+python3 tools/icons/pack-ico.py "$WEB/favicon-16.png" "$WEB/favicon-32.png" apps/web/public/favicon.ico
+
 echo "listo"
