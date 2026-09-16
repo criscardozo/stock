@@ -72,14 +72,24 @@ normal:
 **El orden importa**: sin el paso 1 (Firestore creada, reglas deployadas, Google
 habilitado), la web deploya perfecto y después no deja entrar a nadie.
 
-### Sólo `main` deploya: `apps/web/vercel.json`
+### Sólo `main` deploya: `vercel.json` (en la RAÍZ)
 
 Los previews estaban prendidos y no se usaban, así que cada push y cada PR
-levantaba un deploy que nadie miraba. `apps/web/vercel.json` los apaga. Va en
-`apps/web/` y no en la raíz porque **Vercel lee el `vercel.json` del Root
-Directory**, y el de este proyecto es `apps/web` (verificado con
-`vercel project inspect stock --scope merlines`, no leído de acá: este archivo
-puede envejecer y esa respuesta no).
+levantaba un deploy que nadie miraba. `vercel.json` los apaga.
+
+**Va en la raíz del repo, no en `apps/web/`, y eso es contraintuitivo acá.** El
+Root Directory de este proyecto es `apps/web` (`vercel project inspect stock
+--scope merlines`) y Vercel lee de ahí las opciones de **build**. Pero
+`git.deploymentEnabled` no la contesta el build: la contesta la integración de
+Git al decidir si crea un deployment, antes de resolver ningún Root Directory.
+Así que el archivo tiene que estar donde mira ese paso.
+
+**Los docs no dicen esto, y la forma equivocada falla en silencio**: el archivo
+existe, es JSON válido, la clave está bien escrita, y no hace absolutamente
+nada. Medido acá el 16/09/2026 con una rama descartable: con el archivo en
+`apps/web/` el push creó un preview igual; con el mismo archivo en la raíz, el
+segundo push de la misma rama no creó ninguno. Un solo deployment para dos
+commits, que es la diferencia que no se ve leyendo el archivo.
 
 El archivo es JSON estricto y no admite comentarios, así que las dos razones
 por las que está escrito exactamente así viven acá:
