@@ -121,6 +121,34 @@ const nextConfig: NextConfig = {
    * So there are two options, not three: stop proxying the handler, or accept
    * `'unsafe-inline'` permanently. Gastos reached the same wall from the other
    * side and chose to have no policy at all rather than guess at one.
+   *
+   * ── And a SECOND thing, which this comment used to miss entirely ──
+   *
+   * Everything above analyses `/__/auth/handler`, which is a top-level
+   * navigation. `frame-ancestors 'none'`, further down in this same policy, is
+   * not about that page: it is about `/__/auth/iframe`, the route next to it,
+   * which the Firebase SDK loads IN AN IFRAME from this same origin. A
+   * `frame-ancestors` of `'none'` refuses the same origin too.
+   *
+   * The measurement above — "loading it standalone reports ZERO violations" —
+   * is true of the handler and says nothing about the neighbour, and the two
+   * are one word apart in the URL. That is what let this sit here unnoticed:
+   * not a claim written without measuring, a measurement of one half with the
+   * conclusion written over both.
+   *
+   * NOT MEASURED HERE, and deliberately not written as if it were: a sibling
+   * app hit exactly this in production, serving `X-Frame-Options: DENY`, and
+   * sign-in had nowhere to return to. This repo never served that header and
+   * its CSP is Report-Only, so nothing is blocked TODAY — which is the only
+   * reason this is a note and not a bug. But Report-Only exists in order to be
+   * promoted, and promoting it is what arms this.
+   *
+   * Their fix, for whoever does that: `frame-ancestors 'self'` (or
+   * `X-Frame-Options: SAMEORIGIN`) scoped to `/__/auth/*`, in a rule AFTER the
+   * general one, because the last rule to set a key wins. And it can only be
+   * verified in production: `next start` does not apply config headers to a
+   * rewritten route and Vercel does, so a local `curl` returns Firebase's own
+   * response carrying none of this and reassures you for the wrong reason.
    */
   async headers() {
     // The emulators, and only when pointed at them. Measured: with a real
