@@ -346,11 +346,19 @@ público no facturan, pero el workflow no vive acá — vive en
 de la cuenta y la cuota está agotada. El efecto secundario bueno es que, desde
 que Stock y Gastos son públicos, esa cuota la gasta sólo ese repo.
 
-**Su primera corrida del 01/10 es la medición que falta, y conviene mirarla a
-propósito** en vez de leer el color: el camino sano ejercita el workflow
-entero, así que a diferencia de una guarda que pasa sin hacer nada, acá un
-verde significa algo. Lo que sigue sin medirse, nombrado para que quien mire
-sepa qué mirar:
+El 16/09/2026 se lo disparó a mano para medir el bloqueo en vez de deducirlo.
+**Los dos jobs de la matriz murieron en 2 y 4 segundos con cero pasos**,
+`runner_id=0` y sin nombre de runner, que es la firma de la cuota agotada. El
+contraste que lo cierra corrió en la misma ventana: el CI de este repo, ya
+público, tenía `runner_id=1000001645` y 16 pasos. O sea que la cuota la fija
+la visibilidad del repo **donde corre el job**, no la de los que checkoutea.
+
+**Su primera corrida real del 01/10 sigue siendo la medición que falta, y
+conviene mirarla a propósito** en vez de leer el color: el camino sano ejercita
+el workflow entero, así que a diferencia de una guarda que pasa sin hacer nada,
+acá un verde significa algo. Lo que sigue sin medirse —el intento del 16/09
+murió antes del primer paso, así que no tocó nada de esto—, nombrado para que
+quien mire sepa qué mirar:
 
 - **El checkout de este repo desde allá.** Se escribió sin token a propósito,
   contando con que estos repos fueran públicos. Desde el 16/09/2026 lo son, o
@@ -359,6 +367,19 @@ sepa qué mirar:
 - **Las dos ramas de la matriz compitiendo al pushear.** Van en serie
   (`max-parallel: 1`) y el paso de commit hace `pull --rebase` antes del push,
   pero ninguna de las dos defensas se ejercitó nunca.
+
+**Y si el 01/10 el cron no corre, hay DOS explicaciones y se parecen.** Una es
+la cuota; la otra apareció el 16/09 y no se habría visto hasta ese día: GitHub
+**no tenía registrado** el workflow. El archivo estaba en `main` y la API lo
+devolvía entero, pero `actions/workflows` daba `total_count: 0` y el dispatch
+404 — llegó en un push que no lo modificaba (secuela del force push que
+reescribió la historia de kyber) y por eso nunca se indexó. Se arregló con un
+push que sí lo toca.
+
+Las dos dan el mismo síntoma, «el cron no corrió», y se separan mirando otra
+cosa: la cuota produce **runs que existen** con cero pasos y `runner_id=0`; el
+workflow sin registrar no produce **ningún run**. Que un archivo esté en el
+repo no es que la plataforma lo haya registrado.
 
 **El mismo job chequea que las reglas desplegadas coincidan con el repo**
 (`kyber/scripts/check-rules-drift.mjs`). Las reglas son el único límite de seguridad
