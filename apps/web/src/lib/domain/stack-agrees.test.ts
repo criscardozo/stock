@@ -47,11 +47,31 @@ const catalog = (name: string) => {
   return workspace.match(new RegExp(`^\\s+["']?${escaped}["']?:\\s*(\\S+)`, 'm'))?.[1]
 }
 
+/**
+ * Every occurrence of a setup step's version, collapsed — and `undefined` if
+ * they disagree, which is a failure and not a missing declaration.
+ *
+ * A single `match` reads the FIRST hit, and this workflow sets `node-version:`
+ * once per job. Measured before changing it: with two jobs on 22 and one on 24
+ * the old form stayed green, because it never looked past line 71. That is the
+ * exact shape a half-finished bump leaves behind — somebody edits the job they
+ * were looking at and the guard agrees with them.
+ */
+const agreed = (haystack: string, re: RegExp): string | undefined => {
+  const found = [...haystack.matchAll(re)].map((m) => m[1])
+  if (found.length === 0) return undefined
+  const unique = [...new Set(found)]
+  // Disagreement is NOT reported as `undefined`. That would fail as "declared
+  // nowhere", which sends the reader to look for a missing line instead of at
+  // two lines that both exist and differ. It fails as a value that names both.
+  return unique.length === 1 ? unique[0] : `disagrees: ${unique.join(' vs ')}`
+}
+
 /** What this repo declares, per key in stack.json. `undefined` means "nowhere". */
 const declared: Record<string, string | undefined> = {
   pnpm: rootPkg.packageManager?.replace('pnpm@', ''),
-  node: ci.match(/node-version:\s*'?(\S+?)'?\s*$/m)?.[1],
-  java: ci.match(/java-version:\s*'?([^'\s]+)'?/)?.[1],
+  node: agreed(ci, /node-version:\s*'?(\S+?)'?\s*$/gm),
+  java: agreed(ci, /java-version:\s*'?([^'\s]+)'?/g),
   typescript: catalog('typescript'),
   vitest: catalog('vitest'),
   firebase: catalog('firebase'),
