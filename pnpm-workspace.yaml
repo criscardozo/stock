@@ -21,7 +21,7 @@ catalog:
   # seed written by one version and rules exercised by another is a
   # difference nothing would have reported.
   "@firebase/rules-unit-testing": ^5.0.2
-  vitest: ^4.1.11
+  vitest: ^5.0.1
 
 # Native/postinstall builds we explicitly trust. re2 is what firebase-tools uses
 # to evaluate the regexes in firestore.rules, so it has to actually build.
