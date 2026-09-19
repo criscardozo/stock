@@ -423,6 +423,24 @@ escribir nada. Con 166 → un solo commit (contar llamadas con un spy).
 
 ### 1.1 · No hay backup
 
+> **Hecho, y después SUPERADO — no sigas el «Cómo» de abajo.** El backup existe
+> y ya no vive acá: corre desde `criscardozo/my-apps-backups`, que es privado,
+> con la key como `FIREBASE_SERVICE_ACCOUNT_STOCK` **de aquel repo**. El estado
+> actual está en `docs/setup.md §8`; esto queda como la evidencia del día que se
+> escribió.
+>
+> Lo de abajo se deja sin editar porque es un registro, pero **una de sus
+> instrucciones se volvió peligrosa y no sólo vieja**: dice que hace falta una
+> service account como secret `FIREBASE_SERVICE_ACCOUNT` *en este repo*, y este
+> repo es **público** desde el 16/09/2026. Una credencial de administrador de
+> producción acá no es deuda técnica, es una filtración. El secret se borró; si
+> alguien lo repone siguiendo este párrafo, lo estaría creando en el único lugar
+> donde no puede estar.
+>
+> Los otros dos pasos también describen un diseño que ya no existe: el workflow
+> `backup.yml` se borró de este repo, y el artifact de 90 días se eliminó porque
+> en un repo público lo descarga cualquiera.
+
 **Evidencia.** `grep backup package.json` → nada. `.github/workflows/` tiene
 sólo `ci.yml`. **Todo el catálogo, las recetas y el plan del hogar viven en un
 solo proyecto Firebase sin ninguna copia.** Gastos Diarios tiene `pnpm backup`
