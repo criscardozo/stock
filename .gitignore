@@ -55,7 +55,23 @@ firebase/rules-tests/*-debug.log
 firebase/rules-tests/firebase-debug.log
 
 # XcodeGen output — project.yml is the source
-apps/ios/Stock.xcodeproj/
+# The generated Xcode project stays out — xcodegen rewrites its UUIDs on every
+# run and xcodebuild rewrites the schemes, so tracking it means two routine
+# commands dirty the tree with diffs that mean nothing.
+#
+# One file inside it is the exception: Package.resolved is the only record of
+# WHICH versions of the Swift packages went into the binary. `project.yml`
+# declares `from: 12.0.0`, which does not determine what gets built — the two
+# household apps resolved 12.19.2 and 12.18.0 from that same line. Re-including
+# it needs every parent un-ignored too, which is why this is five lines.
+apps/ios/Stock.xcodeproj/*
+!apps/ios/Stock.xcodeproj/project.xcworkspace/
+apps/ios/Stock.xcodeproj/project.xcworkspace/*
+!apps/ios/Stock.xcodeproj/project.xcworkspace/xcshareddata/
+apps/ios/Stock.xcodeproj/project.xcworkspace/xcshareddata/*
+!apps/ios/Stock.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+apps/ios/Stock.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/*
+!apps/ios/Stock.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
 # Design handoff bundle from Claude Design — regenerated on every export,
 # and large. Kept locally, not in the repo.
