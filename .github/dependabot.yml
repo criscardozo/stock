@@ -40,12 +40,26 @@ updates:
         patterns:
           - "*"
 
-  # NO hay bloque `swift` acá, y no es un olvido. Dependabot lee
-  # `Package.resolved`, que en este repo vive dentro de `Stock.xcodeproj/` —
-  # generado por XcodeGen desde `project.yml` y gitignoreado, así que no hay
-  # nada que Dependabot pueda leer. Las versiones de los SDK de Swift son los
-  # rangos `from:` de `project.yml` y se suben a mano, verificando que la app
-  # CORRA (ver el comentario al lado del pin de Firebase: compilar no alcanza
-  # para un SDK que maneja auth y todos los listeners).
+  # NO hay bloque `swift` acá, y ya NO es porque sea imposible. La razón
+  # original —«Package.resolved vive dentro del xcodeproj gitignoreado, así que
+  # no hay nada que Dependabot pueda leer»— dejó de ser cierta el 21/09/2026,
+  # cuando ese archivo pasó a trackearse (5c5cb36). Hoy el bloque funcionaría.
   #
-  # Gastos Diarios sí lo tiene y allá funciona, porque trackea su xcodeproj.
+  # Queda como decisión pendiente, no como imposibilidad, y lo que la decide es
+  # el costo de verificar: un PR de un SDK de Swift NO se puede verificar en
+  # CI —no hay runner de macOS ni lo va a haber— así que cada uno cuesta un
+  # build local y una corrida en el teléfono. Y no alcanza con que compile: el
+  # pin de Firebase tiene al lado el comentario de por qué un SDK que maneja
+  # auth y todos los listeners hay que verlo CORRER.
+  #
+  # Medido antes de escribir esto, y separa dos cosas que se confunden:
+  #   - actualizaciones: Gastos tiene el bloque y le produjo 6 PRs reales, o
+  #     sea que el mecanismo anda sobre esta misma forma de proyecto;
+  #   - alertas de vulnerabilidad: NO las compra. El grafo de dependencias de
+  #     Gastos lista siete manifiestos y ninguno es Swift, y sus alertas son
+  #     todas de npm. Trackear el Package.resolved no cambia eso.
+  #
+  # Así que los 16 paquetes que se compilan dentro del binario del teléfono
+  # siguen sin nadie que los mire por vulnerabilidades, con bloque o sin él.
+  # Mientras el bloque no esté, las versiones se suben a mano desde los rangos
+  # `from:` de `project.yml`.
