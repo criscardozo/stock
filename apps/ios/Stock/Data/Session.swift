@@ -10,6 +10,10 @@ import SwiftUI
 /// Google is the only provider on both platforms: mixing Apple and Google
 /// creates two distinct Firebase UIDs for the same person, and the household
 /// caps at two members.
+///
+/// Main-actor isolated: it is UI state, created as `@State` in the App and read
+/// only by views, and Firebase Auth calls its state listener on the main queue.
+@MainActor
 @Observable
 final class Session {
     private(set) var user: User?
@@ -20,7 +24,9 @@ final class Session {
     private var handle: AuthStateDidChangeListenerHandle?
 
     /// Pass `-useEmulators` (scheme argument) or set USE_FIREBASE_EMULATORS=1.
-    static var useEmulators: Bool {
+    /// `nonisolated` because it only reads the process's arguments, which are
+    /// fixed at launch — there is no state here for an actor to protect.
+    nonisolated static var useEmulators: Bool {
         ProcessInfo.processInfo.arguments.contains("-useEmulators")
             || ProcessInfo.processInfo.environment["USE_FIREBASE_EMULATORS"] == "1"
     }
@@ -49,11 +55,13 @@ final class Session {
         }
     }
 
-    deinit {
+    /// `isolated` because `handle` belongs to the main actor and a plain deinit
+    /// of a main-actor class runs nonisolated. Needs the iOS 18.4 runtime, which
+    /// the iOS 27 deployment target already guarantees.
+    isolated deinit {
         if let handle { Auth.auth().removeStateDidChangeListener(handle) }
     }
 
-    @MainActor
     func signIn() async {
         error = nil
         guard let clientID = FirebaseApp.app()?.options.clientID else {
@@ -88,7 +96,6 @@ final class Session {
     /// Emulator-only shortcut so screens can be driven without a Google account.
     /// It refuses to exist off the emulators, so there is no path into it from a
     /// real build.
-    @MainActor
     func devSignIn(email: String) async {
         guard Self.useEmulators else { return }
         do {

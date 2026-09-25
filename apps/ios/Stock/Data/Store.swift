@@ -8,6 +8,13 @@ import Observation
 /// All of them are bounded collections — the catalogue (~150 docs), the list
 /// (~30), the recipes, and a single plan document. `moves` is deliberately
 /// absent: it grows forever, so it is only ever read with a limit.
+///
+/// Main-actor isolated. Everything that reads or writes this is SwiftUI, and
+/// every Firestore listener below mutates it straight from its callback — which
+/// was correct only because Firestore delivers those on the main queue unless a
+/// `dispatchQueue` is configured, and none is. The annotation turns that into
+/// something the compiler checks rather than something that happens to hold.
+@MainActor
 @Observable
 final class Store {
     private(set) var householdId: String?
@@ -80,7 +87,7 @@ final class Store {
         // `@State` before the view is installed is exactly what SwiftUI warns
         // about, and this is the lifecycle point that already owns the listeners.
         Mutations.onWriteRejected = { [weak self] error in
-            Task { @MainActor in self?.writeError = error.localizedDescription }
+            self?.writeError = error.localizedDescription
         }
 
         clock = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in

@@ -45,19 +45,29 @@ enum Mutations {
     /// rules demand. That means the change the user just made is saved nowhere,
     /// while the local cache keeps showing it as applied. Reported instead of
     /// dropped, because otherwise the app lies for as long as it stays
-    /// installed. Wired to `Store.writeError` in StockApp.
-    static var onWriteRejected: ((Error) -> Void)?
+    /// installed. Wired to `Store.writeError` by `Store.start(uid:)`.
+    ///
+    /// Main-actor isolated, and so is the closure it holds, because the one
+    /// thing it does is set UI state. It used to be a plain global read from
+    /// Firestore's completion queue, which worked only because Firestore happens
+    /// to call completions on the main queue by default — an assumption nothing
+    /// here stated. Isolating it makes the compiler hold that line instead.
+    @MainActor static var onWriteRejected: (@MainActor (Error) -> Void)?
 
     /// Completion handler for every fire-and-forget write: reports a rejection
     /// and ignores success. The UI still does not WAIT for these — not awaiting
     /// and not catching are different things.
-    private static func reportRejection(_ error: Error?) {
+    ///
+    /// `@Sendable` because Firestore requires it of a completion. It captures
+    /// nothing and reads only `log`, and it reaches the main actor by hopping
+    /// rather than by assuming which queue it was called on.
+    @Sendable private static func reportRejection(_ error: Error?) {
         guard let error else { return }
         // Logged as well as alerted. The alert is for the person holding the
         // phone right now; the log is what a release build can still be asked
         // weeks later, when the only evidence is "it did not save that time".
         log.error("write rejected: \(error.localizedDescription, privacy: .public)")
-        onWriteRejected?(error)
+        Task { @MainActor in onWriteRejected?(error) }
     }
 
     private static let log = Logger(subsystem: "dev.cardozo.stock", category: "firestore")

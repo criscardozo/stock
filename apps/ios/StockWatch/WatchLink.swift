@@ -2,12 +2,22 @@ import Foundation
 import Observation
 import WatchConnectivity
 
-/// One row of the list, as the phone flattened it.
-struct WatchEntry: Identifiable, Equatable {
+/// One row of the list, as the phone flattened it. `Sendable` because it is
+/// built where WatchConnectivity delivers and handed to the main actor.
+struct WatchEntry: Identifiable, Equatable, Sendable {
     let id: String
     let label: String
     let detail: String?
     var checked: Bool
+}
+
+/// Everything a snapshot carries, already parsed — so the part that crosses
+/// from WatchConnectivity's queue to the main actor is Sendable, and the
+/// `[String: Any]` it came in never has to.
+private struct WatchSnapshot: Sendable {
+    let entries: [WatchEntry]
+    let today: String?
+    let todayNote: String?
 }
 
 /// Watch side of the relay.
@@ -18,6 +28,11 @@ struct WatchEntry: Identifiable, Equatable {
 /// the other person sees the tick immediately, and `transferUserInfo` when it
 /// is not — that one queues on disk and delivers even if the phone is asleep,
 /// which is what makes this work in a supermarket basement.
+///
+/// Main-actor isolated: it is the state the watch's views draw from. The
+/// WatchConnectivity delegate callbacks arrive on a background queue, so they
+/// are `nonisolated` and hand over a parsed snapshot instead of touching it.
+@MainActor
 @Observable
 final class WatchLink: NSObject {
     private(set) var entries: [WatchEntry] = []
@@ -56,19 +71,26 @@ final class WatchLink: NSObject {
         // failure — which covers the phone going out of range mid-send, not just
         // being out of range to begin with.
         if session.isReachable {
+            // The error handler runs on WatchConnectivity's queue, off the main
+            // actor, so it neither reaches into `self` nor captures `payload`:
+            // it rebuilds the fallback from two Sendable values.
+            let id = entry.id
             session.sendMessage(
                 payload,
                 replyHandler: nil,
-                errorHandler: { [weak self] _ in
-                    self?.session.transferUserInfo(payload)
+                errorHandler: { _ in
+                    WCSession.default.transferUserInfo(["entryId": id, "wantChecked": next])
                 })
         } else {
             session.transferUserInfo(payload)
         }
     }
 
-    private func apply(_ context: [String: Any]) {
-        guard let raw = context["entries"] as? [[String: Any]] else { return }
+    /// Parses where the context arrives, before anything crosses to the main
+    /// actor. `nil` means the context carried no list at all — which must not
+    /// count as "received", or an empty payload would read as an empty list.
+    nonisolated private static func parse(_ context: [String: Any]) -> WatchSnapshot? {
+        guard let raw = context["entries"] as? [[String: Any]] else { return nil }
         let received: [WatchEntry] = raw.compactMap { row in
             guard let id = row["id"] as? String, let label = row["label"] as? String
             else { return nil }
@@ -81,29 +103,39 @@ final class WatchLink: NSObject {
                 checked: row["checked"] as? Bool ?? false
             )
         }
-        let today = context["today"] as? String
-        let note = context["todayNote"] as? String
+        return WatchSnapshot(
+            entries: received,
+            today: context["today"] as? String,
+            todayNote: context["todayNote"] as? String
+        )
+    }
 
-        Task { @MainActor in
-            self.entries = received
-            self.today = today
-            self.todayNote = note
-            self.everReceived = true
-        }
+    private func assign(_ snapshot: WatchSnapshot) {
+        entries = snapshot.entries
+        today = snapshot.today
+        todayNote = snapshot.todayNote
+        everReceived = true
+    }
+
+    /// The one entry point from WatchConnectivity: parse off the main actor,
+    /// then hand over.
+    nonisolated private func deliver(_ context: [String: Any]) {
+        guard let snapshot = Self.parse(context) else { return }
+        Task { @MainActor in self.assign(snapshot) }
     }
 }
 
 extension WatchLink: WCSessionDelegate {
-    func session(
+    nonisolated func session(
         _ session: WCSession,
         activationDidCompleteWith activationState: WCSessionActivationState,
         error: Error?
     ) {
         // Whatever arrived while the app was closed is waiting right here.
-        apply(session.receivedApplicationContext)
+        deliver(session.receivedApplicationContext)
     }
 
-    func session(_ session: WCSession, didReceiveApplicationContext context: [String: Any]) {
-        apply(context)
+    nonisolated func session(_ session: WCSession, didReceiveApplicationContext context: [String: Any]) {
+        deliver(context)
     }
 }

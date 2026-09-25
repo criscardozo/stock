@@ -14,6 +14,16 @@ import Foundation
 /// gets "500 g", never `(500, .g)`, so the domain has exactly one implementation
 /// and the watch target needs none of it. Same shape as Gastos Diarios — see
 /// docs/reglas.md §10.
+///
+/// Main-actor isolated, and this is the one class where that fixed a real race
+/// rather than a warning. `householdId` and `uid` are written by the Store on
+/// the main thread and were read by `handle(_:)`, which WatchConnectivity calls
+/// on a BACKGROUND queue — an unsynchronised read of state another thread
+/// writes. The compiler only flagged `shared`; the race was in the instance.
+/// Now every delegate callback is `nonisolated`, pulls what it needs out of the
+/// payload where it arrives, and hops to the main actor carrying only Sendable
+/// values.
+@MainActor
 final class WatchSync: NSObject {
     static let shared = WatchSync()
 
@@ -80,46 +90,59 @@ final class WatchSync: NSObject {
     }
 
     #if canImport(WatchConnectivity)
+        /// Where a tick arrives, off the main actor. The payload is a
+        /// `[String: Any]` and cannot cross isolation, so the two values it
+        /// carries are read out here and only those travel.
+        nonisolated private func receive(_ payload: [String: Any]) {
+            guard let entryId = payload[Key.entryId] as? String,
+                let checked = payload[Key.wantChecked] as? Bool
+            else { return }
+            Task { @MainActor in self.handle(entryId: entryId, checked: checked) }
+        }
+
         /// A tick from the wrist. Writing `checked` to the value the watch asked
         /// for (rather than flipping what is there) makes a redelivered transfer
         /// harmless.
-        private func handle(_ payload: [String: Any]) {
-            guard let entryId = payload[Key.entryId] as? String,
-                let checked = payload[Key.wantChecked] as? Bool,
-                let householdId, let uid
-            else { return }
+        private func handle(entryId: String, checked: Bool) {
+            guard let householdId, let uid else { return }
             Mutations.setChecked(
                 householdId: householdId, uid: uid, entryId: entryId, checked: checked)
+        }
+
+        /// The snapshot that was waiting for the session to finish activating.
+        private func flushPending() {
+            guard let context = pending, let session else { return }
+            pending = nil
+            try? session.updateApplicationContext(context)
         }
     #endif
 }
 
 #if canImport(WatchConnectivity)
     extension WatchSync: WCSessionDelegate {
-        func session(
+        nonisolated func session(
             _ session: WCSession,
             activationDidCompleteWith activationState: WCSessionActivationState,
             error: Error?
         ) {
-            guard activationState == .activated, let context = pending else { return }
-            pending = nil
-            try? session.updateApplicationContext(context)
+            guard activationState == .activated else { return }
+            Task { @MainActor in self.flushPending() }
         }
 
-        func sessionDidBecomeInactive(_ session: WCSession) {}
+        nonisolated func sessionDidBecomeInactive(_ session: WCSession) {}
 
         /// Re-activate, so a re-paired or swapped watch keeps working.
-        func sessionDidDeactivate(_ session: WCSession) { session.activate() }
+        nonisolated func sessionDidDeactivate(_ session: WCSession) { session.activate() }
 
         /// The immediate path, taken whenever the phone is in range.
-        func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
-            handle(message)
+        nonisolated func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+            receive(message)
         }
 
         /// The queued path. Delivered even if the phone app was asleep when the
         /// watch sent it — what makes a tick survive a supermarket with no signal.
-        func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any]) {
-            handle(userInfo)
+        nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any]) {
+            receive(userInfo)
         }
     }
 #endif
