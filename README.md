@@ -11,7 +11,7 @@ constraint behind almost every decision below**.
 
 |  |  |
 | --- | --- |
-| 📱 `apps/ios` | SwiftUI app, iOS 17+, with a widget and a watchOS companion. Barcode scanning, expiry notifications. |
+| 📱 `apps/ios` | SwiftUI app, iOS 27+, with a widget and a watchOS companion. Barcode scanning, expiry notifications. |
 | 🌐 `apps/web` | Next.js App Router, fully client-rendered, an installable PWA. Where the week gets planned. |
 | 🔥 `firebase` | Security rules, indexes, emulator config, and the rules tests. The rules are the only security boundary. |
 | 🤝 `shared` | The cross-platform contract: the Firestore schema, the seed taxonomies, and the vectors both platforms run. |
@@ -177,7 +177,7 @@ which is the whole point of not rebuilding the list from scratch.
 
 | Piece | Choice |
 |---|---|
-| iOS | SwiftUI, iOS 17+, MVVM with `@Observable`, Firebase iOS SDK via SPM, Firestore offline persistence, VisionKit `DataScannerViewController` for EAN-13, local `UserNotifications` for expiry, WidgetKit |
+| iOS | SwiftUI, iOS 27+, MVVM with `@Observable`, Firebase iOS SDK via SPM, Firestore offline persistence, VisionKit `DataScannerViewController` for EAN-13, local `UserNotifications` for expiry, WidgetKit |
 | Web | Next.js (App Router) + TypeScript, Tailwind CSS, Firebase JS SDK (client-only, `onSnapshot`), installable PWA with its own service worker |
 | Data | Firebase Auth (Google only) + Cloud Firestore, Spark plan; rules and indexes versioned in `firebase/` |
 | Product data | [Open Food Facts](https://world.openfoodfacts.org) — free, no API key — to fill in name/brand/size from a scanned barcode. Optional: an unknown code still saves, and the household's own catalogue recognises it next time |

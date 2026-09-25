@@ -348,7 +348,7 @@ hogar.
 
 | Pieza | Elección |
 |---|---|
-| iOS | SwiftUI, iOS 17+, MVVM con `@Observable`, Firebase iOS SDK vía SPM, persistencia offline, VisionKit (escaneo), UserNotifications locales (vencimientos), WidgetKit |
+| iOS | SwiftUI, iOS 27+, MVVM con `@Observable`, Firebase iOS SDK vía SPM, persistencia offline, VisionKit (escaneo), UserNotifications locales (vencimientos), WidgetKit |
 | Web | Next.js (App Router) + TypeScript, Tailwind CSS, Firebase JS SDK (solo cliente, `onSnapshot`), **PWA** instalable con service worker propio. Sin librería de gráficos |
 | Datos | Firebase Auth (Google) + Cloud Firestore plan Spark, proyecto `qcris-stock`; rules e índices versionados en `firebase/` |
 | Datos de producto | Open Food Facts (gratis, sin API key), solo para precargar altas por código de barras |

@@ -33,7 +33,7 @@ A household pantry tracker for 2 users (Cristian + wife): what's in the house,
 how much is left, what has to be bought, plus a weekly/fortnightly meal plan
 that feeds the shopping list. Two clients, no custom backend:
 
-- `apps/ios/` — SwiftUI app (iOS 17+, MVVM with `@Observable`, Firebase iOS SDK via SPM),
+- `apps/ios/` — SwiftUI app (iOS 27+, MVVM with `@Observable`, Firebase iOS SDK via SPM),
   optimised for the checks done standing in front of the fridge and for the supermarket.
   Barcode scanning (VisionKit + Open Food Facts), local expiry notifications, widget.
 - `apps/web/` — Next.js App Router + TypeScript + Tailwind, fully client-rendered, deployed on
