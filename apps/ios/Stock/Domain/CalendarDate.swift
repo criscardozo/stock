@@ -16,7 +16,7 @@ enum CalendarDate {
 
     private static let utc = TimeZone(identifier: "UTC")!
 
-    private static var utcCalendar: Calendar = {
+    private static let utcCalendar: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = utc
         return calendar
