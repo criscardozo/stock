@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import {
   GoogleAuthProvider,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -19,6 +20,16 @@ interface AuthState {
   ready: boolean
   signIn: () => Promise<void>
   signOut: () => Promise<void>
+  /**
+   * Why the last redirect sign-in came back without a user, if it did.
+   *
+   * The installed PWA signs in by redirect, and a redirect that fails — an
+   * unauthorised domain, a blocked account — does not throw anywhere the login
+   * button can catch: the page reloads, `onAuthStateChanged` reports no user,
+   * and the person is back on the login screen with no idea why. Only
+   * `getRedirectResult` carries the error, so it is asked once on mount.
+   */
+  redirectError: string | null
   /**
    * Emulator-only shortcut, so screens can be driven and looked at without a
    * real Google account. It refuses to exist outside the emulators, so there is
@@ -51,6 +62,15 @@ export function isUserCancelled(error: unknown): boolean {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [ready, setReady] = useState(false)
+  const [redirectError, setRedirectError] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Resolves to null when no redirect was pending, which is every load but
+    // the one right after coming back from Google.
+    getRedirectResult(auth()).catch((error: unknown) =>
+      setRedirectError(error instanceof Error ? error.message : 'No se pudo entrar'),
+    )
+  }, [])
 
   useEffect(() => {
     return onAuthStateChanged(auth(), (next) => {
@@ -88,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     : null
 
   return (
-    <Ctx.Provider value={{ user, ready, signIn, signOut, devSignIn }}>{children}</Ctx.Provider>
+    <Ctx.Provider value={{ user, ready, signIn, signOut, redirectError, devSignIn }}>{children}</Ctx.Provider>
   )
 }
 

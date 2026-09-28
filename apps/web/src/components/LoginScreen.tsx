@@ -6,7 +6,7 @@ import { AppMark } from './AppMark'
 import { Icon, PrimaryAction } from './ui/primitives'
 
 export function LoginScreen() {
-  const { signIn, devSignIn } = useAuth()
+  const { signIn, devSignIn, redirectError } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
   return (
@@ -38,10 +38,10 @@ export function LoginScreen() {
           Continuar con Google
         </PrimaryAction>
 
-        {error && (
+        {(error ?? redirectError) && (
           <p className="flex items-center gap-2 text-sm text-danger-deep">
             <Icon name="error" size={18} />
-            {error}
+            {error ?? redirectError}
           </p>
         )}
 
