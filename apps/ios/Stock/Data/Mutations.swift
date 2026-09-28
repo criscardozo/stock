@@ -112,6 +112,15 @@ enum Mutations {
 
     /// Joining is a self-add update, not a query: rules cannot see the values in
     /// a `where` clause, so the invite code is the document id instead.
+    ///
+    /// It adds itself BLIND — `arrayUnion`, without reading the household
+    /// first. The read used to be here, to learn `memberIds`, and a non-member
+    /// cannot read a household, so joining failed at that read from the first
+    /// build until 28/09/2026. The rules do the checking the read was for:
+    /// `joiningSelf` only accepts the old members plus you, and only while there
+    /// is room; a retry by someone already in is an ordinary member edit. So a
+    /// refusal here means the household is full. Same sequence as the web's
+    /// `joinHousehold`, and firestore.rules tests it.
     static func joinHousehold(uid: String, displayName: String, code: String) async throws {
         let invite = try await db.collection("invites")
             .document(code.trimmingCharacters(in: .whitespacesAndNewlines))
@@ -120,16 +129,17 @@ enum Mutations {
             throw StockError.message("Ese código no existe")
         }
 
-        let snapshot = try await household(householdId).getDocument()
-        var memberIds = snapshot.data()?["memberIds"] as? [String] ?? []
-        if !memberIds.contains(uid) {
-            guard memberIds.count < 2 else { throw StockError.message("Ese hogar ya está completo") }
-            memberIds.append(uid)
+        do {
             try await household(householdId).updateData([
-                "memberIds": memberIds,
+                "memberIds": FieldValue.arrayUnion([uid]),
                 "members.\(uid)": ["displayName": displayName],
                 "updatedAt": FieldValue.serverTimestamp(),
             ])
+        } catch let error as NSError
+            where error.domain == FirestoreErrorDomain
+            && error.code == FirestoreErrorCode.permissionDenied.rawValue
+        {
+            throw StockError.message("Ese hogar ya está completo")
         }
 
         try await db.collection("users").document(uid).setData([

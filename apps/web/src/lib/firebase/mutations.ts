@@ -97,6 +97,15 @@ export async function createHousehold(
 /**
  * Joining is a self-add update, not a query: rules cannot see the values in a
  * `where` clause, so the invite code is the document id instead.
+ *
+ * It adds itself BLIND — `arrayUnion`, without reading the household first.
+ * The read used to be here, to learn `memberIds`, and a non-member cannot read
+ * a household, so joining failed at that read from the first build until
+ * 28/09/2026. The rules do the checking the read was for: `joiningSelf` only
+ * accepts the old members plus you, and only while there is room; a retry by
+ * someone already in is an ordinary member edit, since `arrayUnion` of a uid
+ * already present changes nothing. So a refusal here means the household is
+ * full. firestore.rules tests this exact sequence.
  */
 export async function joinHousehold(
   uid: string,
@@ -109,20 +118,18 @@ export async function joinHousehold(
   if (!invite.exists()) throw new Error('Ese código no existe')
 
   const householdId = invite.data().householdId as string
-  const household = await getDoc(doc(database, HOUSEHOLDS, householdId))
-  const memberIds: string[] = household.exists() ? (household.data().memberIds ?? []) : []
-
-  if (memberIds.includes(uid)) {
-    await setUserHousehold(uid, displayName, photoURL, householdId)
-    return householdId
+  try {
+    await updateDoc(doc(database, HOUSEHOLDS, householdId), {
+      memberIds: arrayUnion(uid),
+      [`members.${uid}`]: { displayName, ...(photoURL ? { photoURL } : {}) },
+      updatedAt: serverTimestamp(),
+    })
+  } catch (error) {
+    if ((error as { code?: string }).code === 'permission-denied') {
+      throw new Error('Ese hogar ya está completo')
+    }
+    throw error
   }
-  if (memberIds.length >= 2) throw new Error('Ese hogar ya está completo')
-
-  await updateDoc(doc(database, HOUSEHOLDS, householdId), {
-    memberIds: [...memberIds, uid],
-    [`members.${uid}`]: { displayName, ...(photoURL ? { photoURL } : {}) },
-    updatedAt: serverTimestamp(),
-  })
   await setUserHousehold(uid, displayName, photoURL, householdId)
   return householdId
 }

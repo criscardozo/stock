@@ -122,6 +122,7 @@ describe('every default follows firebase.json', () => {
     ['tools/seed-emulator.mjs', 'AUTH_EMULATOR_PORT', AUTH],
     ['apps/web/e2e/recipes.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
     ['apps/web/e2e/write-errors.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
+    ['apps/web/e2e/join.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
     ['apps/web/e2e/taxonomy.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
     ['apps/web/e2e/settings.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],
     ['apps/web/e2e/shopping.spec.ts', 'NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT', FIRESTORE],

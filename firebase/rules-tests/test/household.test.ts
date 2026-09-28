@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebase/rules-unit-testing'
 import {
+  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -243,6 +244,53 @@ describe('invite flow, end to end', () => {
 
   beforeEach(async () => {
     await seedHousehold(env, [ALICE])
+  })
+
+  // The sequence the CLIENTS run — web `joinHousehold` in mutations.ts and iOS
+  // `Mutations.joinHousehold` — kept here step for step, because a rules test
+  // cannot import either one. Change a client's join and this test with it.
+  //
+  // Both clients used to read the household before adding themselves, to learn
+  // `memberIds`. A stranger cannot read a household — `a stranger cannot`
+  // above says so — so joining failed at that read on both platforms from the
+  // first build. The test further down never noticed because it skipped the
+  // read and wrote a `memberIds` it already knew, which is not what a client
+  // can do. Measured: the read-first sequence came back `ok: false` at step 2.
+  it('joining the way the clients do: read the invite, add yourself blind', async () => {
+    await seedDoc(env, `invites/${CODE}`, { householdId: HID, createdBy: ALICE, createdAt: new Date() })
+    const invite = await assertSucceeds(getDoc(doc(db(BOB), 'invites', CODE)))
+    await assertSucceeds(
+      updateDoc(doc(db(BOB), 'households', invite.data()?.householdId as string), {
+        memberIds: arrayUnion(BOB),
+        [`members.${BOB}`]: { displayName: 'Bob' },
+        updatedAt: serverTimestamp(),
+      }),
+    )
+    await assertSucceeds(getDoc(doc(db(BOB), 'households', HID)))
+  })
+
+  it('joining again once already in is harmless', async () => {
+    // arrayUnion of a uid already there leaves memberIds as it was, so this is
+    // an ordinary member edit — the path a retry after a half-finished join takes.
+    await seedHousehold(env, [ALICE, BOB])
+    await assertSucceeds(
+      updateDoc(doc(db(BOB), 'households', HID), {
+        memberIds: arrayUnion(BOB),
+        [`members.${BOB}`]: { displayName: 'Bob' },
+        updatedAt: serverTimestamp(),
+      }),
+    )
+  })
+
+  it('the blind join still cannot make a third member', async () => {
+    await seedHousehold(env, [ALICE, BOB])
+    await assertFails(
+      updateDoc(doc(db(CAROL), 'households', HID), {
+        memberIds: arrayUnion(CAROL),
+        [`members.${CAROL}`]: { displayName: 'Carol' },
+        updatedAt: serverTimestamp(),
+      }),
+    )
   })
 
   it('a member creates an invite, a stranger reads it, joins, and the household is then full', async () => {
