@@ -143,6 +143,15 @@ extension Household {
             let memberIds = data["memberIds"] as? [String]
         else { return nil }
 
+        // Each map is cast loosely and each ENTRY individually. As
+        // `[String: [String: Any]]` one value that is not a map — a null —
+        // fails the whole cast, and the `?? [:]` below then empties every
+        // member, category or location at once. The same shape as the plan's
+        // days, and the same fix.
+        func entries(_ key: String) -> [String: [String: Any]] {
+            (data[key] as? [String: Any] ?? [:]).compactMapValues { $0 as? [String: Any] }
+        }
+
         func members(_ raw: [String: [String: Any]]) -> [String: Member] {
             raw.compactMapValues { entry in
                 guard let displayName = entry["displayName"] as? String else { return nil }
@@ -183,9 +192,9 @@ extension Household {
             timezone: data["timezone"] as? String ?? "Australia/Sydney",
             currency: data["currency"] as? String ?? "AUD",
             memberIds: memberIds,
-            members: members(data["members"] as? [String: [String: Any]] ?? [:]),
-            locations: locations(data["locations"] as? [String: [String: Any]] ?? [:]),
-            categories: categories(data["categories"] as? [String: [String: Any]] ?? [:]),
+            members: members(entries("members")),
+            locations: locations(entries("locations")),
+            categories: categories(entries("categories")),
             planConfig: PlanConfig(
                 length: PlanLength(rawValue: config["length"] as? String ?? "fortnightly") ?? .fortnightly,
                 startWeekday: config["startWeekday"] as? Int ?? 6

@@ -114,6 +114,22 @@ final class DocumentDecodingTests: XCTestCase {
         XCTAssertNil(members?["u1"]?.photoURL)
     }
 
+    /// One entry that is not a map must cost that entry, not the whole map.
+    /// Cast as `[String: [String: Any]]`, a single `NSNull` fails the entire
+    /// cast and the `?? [:]` fallback empties every member, category or
+    /// location at once — the same shape that emptied a whole fortnight when
+    /// one plan day was null, fixed for `mealPlans` further down this file.
+    func testOneBadEntryDoesNotEmptyTheWholeMap() {
+        var data = minimalHousehold
+        data["members"] = ["u1": ["displayName": "Cristian"], "u2": NSNull()]
+        data["categories"] = ["lacteos": ["name": "Lácteos"], "rota": NSNull()]
+        data["locations"] = ["heladera": ["name": "Heladera"], "rota": NSNull()]
+        let household = Household(id: "h1", data: data)
+        XCTAssertEqual(household?.members.keys.sorted(), ["u1"])
+        XCTAssertEqual(household?.categories.keys.sorted(), ["lacteos"])
+        XCTAssertEqual(household?.locations.keys.sorted(), ["heladera"])
+    }
+
     func testHouseholdNeedsANameAndMembers() {
         XCTAssertNil(Household(id: "h1", data: ["name": "Casa"]))
         XCTAssertNil(Household(id: "h1", data: ["memberIds": ["u1"]]))
