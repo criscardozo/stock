@@ -320,10 +320,14 @@ export default function SettingsPage() {
                 </>
               ) : (
                 <button
-                  onClick={async () => {
-                    const next = await createInvite(householdId, user.uid)
-                    if (codeKey) writeStoredValue(codeKey, next)
-                  }}
+                  // Reported, not bare-awaited: an awaited write that is never
+                  // caught is an unhandled rejection inside a click, and the
+                  // button just does nothing.
+                  onClick={() =>
+                    reportWrite(createInvite(householdId, user.uid).then((next) => {
+                      if (codeKey) writeStoredValue(codeKey, next)
+                    }))
+                  }
                   className="flex items-center gap-2 self-start rounded-full border border-line bg-surface px-4 py-2.5 text-[13px] font-bold text-ink"
                 >
                   <Icon name="person_add" size={18} />

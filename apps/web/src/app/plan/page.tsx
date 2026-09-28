@@ -37,8 +37,8 @@ export default function PlanPage() {
   // would write documents for weeks that never happened.
   useEffect(() => {
     if (!householdId || !planStart || plan || offset !== 0) return
-    void ensurePlan(householdId, planStart, length)
-  }, [householdId, planStart, plan, length, offset])
+    reportWrite(ensurePlan(householdId, planStart, length))
+  }, [householdId, planStart, plan, length, offset, reportWrite])
 
   // Past/future periods are read once, not listened to: you visit them, you
   // don't live in them. The result carries the period it belongs to, so

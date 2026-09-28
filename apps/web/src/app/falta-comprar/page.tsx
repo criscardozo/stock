@@ -272,7 +272,7 @@ export default function ShoppingPage() {
                       // called "Agregar", and the row text that tells them apart on
                       // screen is nothing at all to somebody not looking at it.
                       aria-label={`Agregar ${item.name}`}
-                      onClick={() => entry && addToList(householdId, user.uid, entry)}
+                      onClick={() => entry && reportWrite(addToList(householdId, user.uid, entry))}
                       className="rounded-full bg-primary-soft px-3 py-1.5 text-xs font-bold text-primary-deep"
                     >
                       Agregar

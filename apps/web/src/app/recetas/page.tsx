@@ -160,7 +160,7 @@ export default function RecipesPage() {
           recipes={recipes}
           onClose={() => setEditing(null)}
           onSave={({ $unset = [], ...fields }) => {
-            if (editing === 'new') createRecipe(householdId, fields)
+            if (editing === 'new') reportWrite(createRecipe(householdId, fields))
             else
               reportWrite(updateRecipe(householdId, editing.id, {
                 ...fields,
