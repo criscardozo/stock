@@ -89,12 +89,39 @@ export function ItemSheet({
       // which is the bug the reserve shipped with. Absent still reads as on, so
       // documents that predate the field are untouched.
       autoSuggest,
-      // Only the reserve. Switching tracking mode also leaves the other mode's
-      // fields behind, which predates this and is left alone on purpose: the
-      // rules accept them and the domain reads the active pair, so cleaning
-      // that up is a separate change with its own way of going wrong.
-      $unset: minSpare > 0 ? [] : ['spare', 'minSpare'],
+      $unset: removals(),
     })
+  }
+
+  /**
+   * Everything this edit takes OFF the document. An edit is an `updateDoc`,
+   * which merges, so a field the form stops sending is not removed — it stays.
+   * Each optional control needs its line here; adding one without the other is
+   * this bug again.
+   *
+   * This used to cover only the reserve, beside a comment saying the rules
+   * accepted the other mode's leftovers. They do not: `validTracking` refuses a
+   * document carrying both pairs, so switching an existing item between "Se
+   * cuenta" and "Por nivel" was refused by the server, and an emptied expiry
+   * date — never sent, so never removed — could not be taken off at all.
+   * Measured against the rules and in item-edit.spec.ts.
+   */
+  function removals(): string[] {
+    if (!item) return []
+    const had = (key: keyof Item) => item[key] !== undefined
+    const off: (keyof Item)[] = []
+    if (!nameEs.trim()) off.push('nameEs')
+    if (!brand.trim()) off.push('brand')
+    if (!packSize.trim()) off.push('packSize')
+    if (!expiresAt) off.push('expiresAt')
+    if (tracking === 'quantity') {
+      // The reserve only exists beside a level, so it goes with the level.
+      off.push('level', 'minLevel', 'spare', 'minSpare')
+    } else {
+      off.push('unit', 'quantity', 'minQuantity')
+      if (minSpare <= 0) off.push('spare', 'minSpare')
+    }
+    return off.filter(had)
   }
 
   return (

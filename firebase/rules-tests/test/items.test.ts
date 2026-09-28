@@ -3,6 +3,7 @@ import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebas
 import {
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDocs,
   serverTimestamp,
@@ -35,6 +36,46 @@ afterAll(async () => env?.cleanup())
 beforeEach(async () => {
   await env.clearFirestore()
   await seedHousehold(env, [ALICE, BOB])
+})
+
+// Switching how an existing item is measured. `validTracking` requires the
+// OTHER mode's fields to be gone, on the resulting document — and an update
+// merges, so they are gone only if the write deletes them. Both item forms used
+// to send just the new pair, and the web one carried a comment saying the rules
+// accepted the leftovers. They do not: this is what they do.
+describe('items: switching the tracking mode', () => {
+  it('counted → level refuses the leftover unit and quantities', async () => {
+    await seedDoc(env, `households/${HID}/items/i1`, { ...countedItem(ALICE), createdAt: new Date(), updatedAt: new Date() })
+    await assertFails(
+      updateDoc(item(BOB, 'i1'), {
+        tracking: 'level', level: 2, minLevel: 1, updatedAt: serverTimestamp(), updatedBy: BOB,
+      }),
+    )
+    await assertSucceeds(
+      updateDoc(item(BOB, 'i1'), {
+        tracking: 'level', level: 2, minLevel: 1,
+        unit: deleteField(), quantity: deleteField(), minQuantity: deleteField(),
+        updatedAt: serverTimestamp(), updatedBy: BOB,
+      }),
+    )
+  })
+
+  it('level → counted refuses the leftover levels', async () => {
+    await seedDoc(env, `households/${HID}/items/i2`, { ...levelItem(ALICE), createdAt: new Date(), updatedAt: new Date() })
+    await assertFails(
+      updateDoc(item(BOB, 'i2'), {
+        tracking: 'quantity', unit: 'unit', quantity: 3, minQuantity: 1,
+        updatedAt: serverTimestamp(), updatedBy: BOB,
+      }),
+    )
+    await assertSucceeds(
+      updateDoc(item(BOB, 'i2'), {
+        tracking: 'quantity', unit: 'unit', quantity: 3, minQuantity: 1,
+        level: deleteField(), minLevel: deleteField(),
+        updatedAt: serverTimestamp(), updatedBy: BOB,
+      }),
+    )
+  })
 })
 
 describe('items: access', () => {

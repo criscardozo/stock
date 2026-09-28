@@ -456,6 +456,21 @@ struct ItemSheet: View {
         }
 
         if let item {
+            // Everything this edit takes OFF the document. `updateData` merges,
+            // so a field the form stops sending is not removed — it stays. An
+            // emptied name or brand kept its old value, and switching how the
+            // item is measured left the other mode's pair behind, which
+            // `validTracking` refuses: the server rejected the edit. Same list
+            // as the web's ItemSheet `removals()`. Deleting a field that is not
+            // there is a no-op, so nothing here checks first.
+            var off: [String] = []
+            if nameEs.trimmingCharacters(in: .whitespaces).isEmpty { off.append("nameEs") }
+            if brand.trimmingCharacters(in: .whitespaces).isEmpty { off.append("brand") }
+            off += tracking == .quantity
+                ? ["level", "minLevel", "spare", "minSpare"]
+                : ["unit", "quantity", "minQuantity"]
+            for key in off where fields[key] == nil { fields[key] = FieldValue.delete() }
+
             Mutations.updateItem(
                 householdId: householdId, uid: uid, itemId: item.id, patch: fields)
         } else {
