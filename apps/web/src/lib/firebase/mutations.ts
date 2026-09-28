@@ -292,13 +292,22 @@ export function addManyToList(householdId: string, uid: string, entries: NewEntr
   })
 }
 
-/** A tick is just a tick: it strikes the row through and touches no stock. */
+/**
+ * A tick is just a tick: it strikes the row through and touches no stock.
+ *
+ * Unticking DELETES `checkedAt` and `checkedBy` rather than nulling them. The
+ * rules check `checkedBy is string` whenever the key is present, and a key set
+ * to null is present — so the null version was refused by the server from the
+ * first web build until 28/09/2026, while iOS, which deletes, worked. The
+ * schema's rule is "clients write absent", and this is that rule costing
+ * something when it is not followed.
+ */
 export function setChecked(householdId: string, uid: string, entryId: string, checked: boolean) {
   return updateDoc(doc(db(), HOUSEHOLDS, householdId, 'shoppingList', entryId), {
     checked,
     ...(checked
       ? { checkedAt: serverTimestamp(), checkedBy: uid }
-      : { checkedAt: null, checkedBy: null }),
+      : { checkedAt: deleteField(), checkedBy: deleteField() }),
   })
 }
 

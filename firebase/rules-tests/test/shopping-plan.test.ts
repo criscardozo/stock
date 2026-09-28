@@ -3,6 +3,7 @@ import { assertFails, assertSucceeds, type RulesTestEnvironment } from '@firebas
 import {
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDocs,
   serverTimestamp,
@@ -74,6 +75,21 @@ describe('shopping list: shared state, either member', () => {
         checkedBy: BOB,
       }),
     )
+  })
+
+  // Born green on purpose: this pins what the rules DEMAND, not a fix. Unticking
+  // has to delete `checkedAt`/`checkedBy`; nulling them leaves the keys present
+  // and `checkedBy is string` refuses the write. The web nulled them for six
+  // weeks and every untick there was rejected — caught by the e2e in
+  // write-errors.spec.ts, which is the guard that goes red if it comes back.
+  it('unticking deletes who ticked it — a null is refused', async () => {
+    const ticked = row(ALICE, { checked: true, checkedAt: serverTimestamp(), checkedBy: ALICE })
+    await assertSucceeds(setDoc(entry(ALICE, 'e1'), ticked))
+    await assertSucceeds(setDoc(entry(ALICE, 'e2'), ticked))
+    await assertSucceeds(
+      updateDoc(entry(BOB, 'e1'), { checked: false, checkedAt: deleteField(), checkedBy: deleteField() }),
+    )
+    await assertFails(updateDoc(entry(BOB, 'e2'), { checked: false, checkedAt: null, checkedBy: null }))
   })
 
   it('either member deletes a row — closing the shop deletes the ticked ones', async () => {

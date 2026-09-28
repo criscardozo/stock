@@ -39,6 +39,27 @@ async function loadRules(content: string) {
   if (!response.ok) throw new Error(`no pude cargar las reglas: ${response.status}`)
 }
 
+const DOCS =
+  `http://127.0.0.1:${FIRESTORE_PORT}/v1/projects/demo-stock/databases/` +
+  '(default)/documents/households/casa-cardozo'
+
+/**
+ * Whether a row is ticked ON THE SERVER. The screen cannot answer this: a tick
+ * applies to the local cache at once and a rejection only arrives later, so
+ * "the checkbox says unticked" is true in both worlds for a moment. The server
+ * is the one place where a refused write never shows up.
+ */
+async function checkedOnServer(entryId: string): Promise<boolean | undefined> {
+  const response = await fetch(`${DOCS}/shoppingList/${entryId}`, {
+    headers: { Authorization: 'Bearer owner' },
+  })
+  const body = (await response.json()) as { fields?: { checked?: { booleanValue?: boolean } } }
+  return body.fields?.checked?.booleanValue
+}
+
+/** Servilletas, in tools/seed-emulator.mjs. */
+const SERVILLETAS = 'e3'
+
 async function signIn(page: Page) {
   await page.goto('/falta-comprar')
   await page.getByRole('button', { name: 'Entrar como cristian' }).click()
@@ -78,10 +99,17 @@ test.describe('a refused write says so', () => {
     await signIn(page)
 
     await page.getByRole('checkbox', { name: 'Tildar Servilletas' }).click()
-    await expect(page.getByRole('checkbox', { name: 'Destildar Servilletas' })).toBeVisible()
+    await expect.poll(() => checkedOnServer(SERVILLETAS)).toBe(true)
     await expect(page.getByRole('alertdialog')).toBeHidden()
 
-    // Put it back for the specs that follow.
+    // And back. This used to be a bare "put it back for the specs that follow"
+    // with nothing asserted after it — which is exactly how unticking on the web
+    // shipped rejected by the rules for six weeks: the dialog appeared after the
+    // test's last line, and the next spec never looked at Servilletas. Unticking
+    // is a write like any other and is held to the same two questions.
     await page.getByRole('checkbox', { name: 'Destildar Servilletas' }).click()
+    await expect.poll(() => checkedOnServer(SERVILLETAS)).toBe(false)
+    await expect(page.getByRole('checkbox', { name: 'Tildar Servilletas' })).toBeVisible()
+    await expect(page.getByRole('alertdialog')).toBeHidden()
   })
 })

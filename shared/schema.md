@@ -159,7 +159,7 @@ which is what makes a tick in one aisle strike the row through in the other.
 | `source` | string | `"min" \| "plan" \| "manual"` — where the row came from |
 | `reason?` | string | **frozen when added** (`"quedan 2, mínimo 6"`). Not recomputed: it explains why the row got here, not what's true now |
 | `checked` | bool | ticked = struck through. The row stays visible so nobody buys it twice |
-| `checkedAt?` | timestamp, `checkedBy?` | uid |
+| `checkedAt?` | timestamp, `checkedBy?` | uid. Unticking **deletes** both — a `null` leaves the key present and the rules refuse it |
 | `addedAt` | timestamp, `addedBy` | uid |
 
 Adding is explicit — suggestions are computed on the client and written only when
