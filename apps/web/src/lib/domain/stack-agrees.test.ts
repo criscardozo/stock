@@ -15,7 +15,8 @@ import { describe, expect, it } from 'vitest'
  * suite green on both sides.
  *
  * The comparison is on the DECLARED string, not the resolved one: what a
- * lockfile settles on is each repo's own business and Dependabot moves it. Two
+ * lockfile settles on is each repo's own business, moved by hand since
+ * Dependabot was stopped on 2026-10-01. Two
  * repos agreeing on `^12.19.0` while their lockfiles sit on different patches
  * is the intended state.
  */
