@@ -84,3 +84,6 @@ docs/design/
 # Playwright run output (traces, error contexts). The specs are source; these are not.
 apps/web/test-results/
 apps/web/playwright-report/
+
+# Crash reports install-ios brings off the phone (kyber/scripts/install-ios.mjs).
+crash-logs/
