@@ -22,6 +22,7 @@
     "seed": "pnpm --filter tools seed",
     "backup": "node kyber/scripts/backup.mjs",
     "restore": "node kyber/scripts/restore.mjs",
+    "rules:drift": "node kyber/scripts/check-rules-drift.mjs",
     "round-trip": "node scripts/round-trip.mjs",
     "set-version": "node kyber/scripts/set-version.mjs",
     "install:ios": "node kyber/scripts/install-ios.mjs"
