@@ -23,15 +23,15 @@ import { spawnSync } from "node:child_process";
 import { readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { consumerRoot } from "./lib/consumer.mjs";
+import { projectRoot } from "./lib/project.mjs";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
-const repoRoot = consumerRoot();
+const repoRoot = projectRoot();
 
-// One place, so moving backup and restore into the submodule is one edit and
-// not five. They are spawned rather than imported on purpose: this rehearses
-// the scripts a person runs, not a copy of their internals.
+// One place, so moving backup and restore (into kyber and back out of it) was
+// one edit and not five. They are spawned rather than imported on purpose:
+// this rehearses the scripts a person runs, not a copy of their internals.
 const SCRIPTS = {
   backup: join(repoRoot, "scripts/backup.mjs"),
   restore: join(repoRoot, "scripts/restore.mjs"),
