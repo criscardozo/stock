@@ -85,5 +85,5 @@ docs/design/
 apps/web/test-results/
 apps/web/playwright-report/
 
-# Crash reports install-ios brings off the phone (kyber/scripts/install-ios.mjs).
+# Crash reports install-ios brings off the phone (scripts/install-ios.mjs).
 crash-logs/

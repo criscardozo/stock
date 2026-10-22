@@ -34,10 +34,6 @@ function ourScripts(): string[] {
   })
     .split('\n')
     .filter(Boolean)
-    // The submodule parses itself, and a clone without `--recurse-submodules`
-    // has an empty directory there — a sweep that read it would be reporting on
-    // whether somebody ran `git submodule update`.
-    .filter((path) => !path.startsWith('kyber/'))
     // `git ls-files` still lists a path staged as added and then deleted.
     .filter((path) => existsSync(join(root, path)))
 }

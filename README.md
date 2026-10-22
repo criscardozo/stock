@@ -15,8 +15,8 @@ constraint behind almost every decision below**.
 | 🌐 `apps/web` | Next.js App Router, fully client-rendered, an installable PWA. Where the week gets planned. |
 | 🔥 `firebase` | Security rules, indexes, emulator config, and the rules tests. The rules are the only security boundary. |
 | 🤝 `shared` | The cross-platform contract: the Firestore schema, the seed taxonomies, and the vectors both platforms run. |
-| 🧰 `tools` | Seeding the emulators, sideloading onto the phone, rebuilding the icons and this banner. |
-| 📐 `kyber` | Submodule: the tooling and the rules shared with the sibling apps. |
+| 🧰 `tools` | Seeding the emulators, the receipts report, rebuilding the icons and this banner. |
+| ⚙️ `scripts` | Backup and restore, the rules-drift check, the version bump, the phone install and the PWA check, with their tests. |
 | 📚 `docs` | The plan, the design system, the setup, and the rules with their reasoning. |
 
 ## What it does

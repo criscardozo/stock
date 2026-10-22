@@ -43,10 +43,11 @@ describe('one version, four copies', () => {
   })
 
   // The test that lived here coupled `IOS_TARGETS = 3` in this repo's own
-  // set-version.mjs to the real target count. That script moved to kyber and
-  // takes the NAMES from .kyber/config.json instead of carrying a constant, so
-  // there is no second copy left to hold — and the coupling that replaced it,
-  // config names against project.yml, is in kyber-config.test.ts. Deleted
+  // set-version.mjs to the real target count. That script went to kyber and
+  // came back (kyber was retired on 2026-10-22) taking the NAMES from
+  // scripts/project.json instead of carrying a constant, so there is no second
+  // copy left to hold — and the coupling that replaced it, config names against
+  // project.yml, is in project-config.test.ts. Deleted
   // rather than re-pointed: a guard whose subject no longer exists is the thing
   // this suite spends its time removing.
 
@@ -89,9 +90,7 @@ describe('one version, four copies', () => {
     //
     // Asked of git rather than listed, which is Gastos Diarios' form and the
     // stronger one: a literal list is complete only until the next workspace
-    // package, and the day it stops being complete it says nothing. The gitlink
-    // keeps kyber out by itself — `git ls-files` reports `kyber` as one entry
-    // and never matches `*package.json` inside it.
+    // package, and the day it stops being complete it says nothing.
     const manifests = execFileSync('git', ['ls-files', '*package.json'], {
       cwd: root,
       encoding: 'utf8',

@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 /**
  * The README's local references, and the banner it opens with.
  *
- * kyber's readmes.md is explicit that the only guard worth having here is this
+ * `docs/reglas/readmes.md` is explicit that the only guard worth having here is this
  * one: the wrong style breaks nothing, but a `src` pointing at a file somebody
  * moved breaks on its own, the day folders get reordered, and nobody reads the
  * README again until a stranger does.

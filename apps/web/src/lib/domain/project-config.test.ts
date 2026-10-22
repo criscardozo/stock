@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 /**
- * `.kyber/config.json` — what this repo tells the shared scripts about itself.
+ * `scripts/project.json` — what this repo tells its scripts about itself.
  *
  * Every value in it is a copy of something that already exists somewhere else:
  * the project id lives in three scripts, the emulator id in eleven files, the
@@ -35,7 +35,7 @@ const config = JSON.parse(read('scripts/project.json')) as {
   prePush: string[][]
 }
 
-/** Tracked and untracked-but-not-ignored files; never descends into a submodule. */
+/** Tracked and untracked-but-not-ignored files. */
 const sourceFiles = execFileSync('git', ['ls-files', '-co', '--exclude-standard'], {
   cwd: root,
   encoding: 'utf8',
@@ -56,7 +56,7 @@ function spellings(prefix: string): Record<string, string[]> {
   return found
 }
 
-describe('.kyber/config.json describes this repo', () => {
+describe('scripts/project.json describes this repo', () => {
   it('every `qcris-` id in code is the one the config declares', () => {
     // Not "the config value appears somewhere" — that passes while a second,
     // wrong spelling sits in the one script nobody opened.
@@ -118,7 +118,7 @@ describe('.kyber/config.json describes this repo', () => {
       claudeMd: read('CLAUDE.md').includes(`-p ${config.pwa.port}`),
       // The entry has to be one of the precached routes: the service worker
       // installs from there, so a shell that leaves it out caches everything
-      // except the door. kyber's rule, and this repo satisfies it.
+      // except the door.
       entryIsPrecached: config.pwa.precachedRoutes.includes(config.pwa.entry),
     }).toEqual({
       entryIsFirst: true,
@@ -133,7 +133,7 @@ describe('.kyber/config.json describes this repo', () => {
   it('prePush entries are argv arrays, never shell strings', () => {
     // The hook spawns these without a shell. They were plain strings run
     // through `eval` until a security review pointed out what that means:
-    // `.kyber/config.json` is tracked, so a branch that edits it runs whatever
+    // `scripts/project.json` is tracked, so a branch that edits it runs whatever
     // it likes on the next push by whoever checked that branch out — silently,
     // because nobody reads a hook before pushing. Argv arrays remove the
     // interpreter instead of trying to sanitise its input, and this keeps them
@@ -157,20 +157,3 @@ describe('.kyber/config.json describes this repo', () => {
   })
 })
 
-describe('the submodule is actually here', () => {
-  it('kyber has content, not just a gitlink', () => {
-    // An uninitialised submodule is an empty directory, and everything that
-    // points into it goes quiet rather than loud: `@kyber/docs/*` in CLAUDE.md
-    // imports nothing, and the scripts fail with ERR_MODULE_NOT_FOUND far from
-    // the cause. This is the one place that says the real reason.
-    const missing = [
-      'kyber/README.md',
-      'kyber/scripts/lib/consumer.mjs',
-      'kyber/docs/publicar.md',
-    ].filter((path) => !existsSync(join(root, path)))
-    expect({ missing, hint: 'git submodule update --init' }).toEqual({
-      missing: [],
-      hint: 'git submodule update --init',
-    })
-  })
-})

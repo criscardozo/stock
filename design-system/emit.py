@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-"""Generate Stock's colour declarations from tokens.json.
+"""Generate Stock's colour declarations, and the iOS radii, from tokens.json.
 
-Re-pointed at kyber's `design/tokens.py`, once Gastos Diarios generated too and
-kyber's filter — a shared thing enters only once it is won in two projects —
-was satisfied. What moved there is the machinery both consumers had written
-separately, down to the same reasoning in the comments: walking the token
-document, spelling a value, rewriting a declaration WHERE IT ALREADY SITS, and
-the verify/write pair with its reporting.
+The walking-the-document, spelling-a-value, rewrite-in-place and verify/write
+machinery lives in `tokens.py` beside this file. It used to be shared with
+Gastos Diarios through the kyber repo (retired on 2026-10-22), because both
+projects had written the same thing separately, down to the same reasoning in
+the comments.
 
-What stays here is SPELLING, on purpose, and it is not a thin wrapper around
-identical logic — it is the one part kyber's own doc says will never move:
-"what a destination's declaration LOOKS like is that project's business."
-Three things below are Stock's alone:
+What stays HERE is SPELLING, on purpose, and it is not a thin wrapper around
+identical logic: what a destination's declaration LOOKS like is this
+project's business. Three things below are Stock's alone:
 
 - CSS writes BOTH light and dark, always, even when they are equal
   (`--mark-glyph`) — every colour token appears exactly 3 times in
@@ -21,14 +19,14 @@ Three things below are Stock's alone:
   disk before this number was chosen (see the git history on this file).
 - WatchTheme.swift carries a SUBSET, dark half only, in its own `init(hex:)`,
   because the watch target compiles no phone code. WHICH tokens is read from
-  the file by kyber's `subset=True`, not listed here — this file typed out
-  eight identifiers once and the file grew a ninth, which then sat outside the
+  the file by `subset=True`, not listed here — this file typed out eight
+  identifiers once and the file grew a ninth, which then sat outside the
   generator and drifted. What that flag cannot answer is whether a token is
   MISSING from the watch; `tokens.test.ts` holds that.
 
-Radius and type stay hand-written, matching kyber's own decision on radius —
-Stock names radii by ROLE (`--radius-card`), Gastos by value (`r18`), and iOS
-has no radius tokens at all yet. Reconciling that is a second pass.
+The CSS radii and the type scale stay hand-written. Stock names radii by ROLE
+(`--radius-card`), Gastos by value (`r18`); only the iOS side is generated,
+into the block between the `tokens:radius` markers in Theme.swift.
 
   python3 design-system/emit.py            print what each platform should say
   python3 design-system/emit.py --verify   compare against the files on disk

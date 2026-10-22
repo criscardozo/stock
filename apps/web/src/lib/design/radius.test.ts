@@ -91,8 +91,9 @@ describe('every radius on iOS comes from a token too', () => {
    * matching. The emitter checks what it WROTE; a number typed somewhere else
    * is not its question.
    *
-   * kyber's `Block` docstring says this straight out — defining the constants
-   * is half, and the guard for the other half belongs to the consumer. This is
+   * The `Block` docstring in `design-system/tokens.py` says this straight out —
+   * defining the constants is half, and the guard for the other half belongs to
+   * the project. This is
    * that guard, and it is the reason the web one was written before its tokens
    * existed: a scale that names 8 makes `rounded-[8px]` correct-looking, so the
    * check that catches a casual number has to outlive the moment the number

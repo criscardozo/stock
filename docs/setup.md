@@ -155,18 +155,6 @@ Exige **un cambio de consola por dominio** ⏳:
 `localhost` no necesita nada: `next dev` aplica el mismo rewrite y ya está
 autorizado.
 
-### El submódulo `kyber` y Vercel
-
-Nada que configurar: **kyber es público**, así que Vercel lo clona sin
-credencial y el bundle puede importar de ahí.
-
-Mientras fue privado no podía, y no por permisos — la documentación de build de
-Vercel dice que un submódulo se despliega sólo si es accesible públicamente por
-HTTP. El deploy quedaba **verde** con `kyber/` vacío y una sola línea de
-`Warning: Failed to fetch one or more git submodules` entre el clon y la
-compilación. Queda escrito porque es la forma de falla que no cambia el color de
-nada, y porque si algún día kyber vuelve a ser privado, vuelve ese techo.
-
 ## 4. Instalar la PWA en el iPhone
 
 Es como la app se queda en el teléfono para siempre — a diferencia del build
@@ -188,20 +176,14 @@ Las dos leen los mismos datos, así que se usan indistintamente.
 
 ## 5. Desarrollo local
 
-Este repo tiene un submódulo, [`kyber`](https://github.com/criscardozo/kyber),
-con las herramientas que comparte con Gastos Diarios y la tercera app. Al clonar:
+Los scripts (backup, restore, versión, instalación en el teléfono, chequeo de
+la PWA) viven en `scripts/` y leen lo que necesitan del proyecto en
+`scripts/project.json`. Hasta el 22/10/2026 venían del submódulo kyber,
+compartido con Gastos Diarios; ya no hay submódulo, así que alcanza con clonar:
 
 ```sh
-git clone --recurse-submodules git@github.com:criscardozo/stock.git
-# si ya lo tenías clonado:
-git submodule update --init
-# y una vez, para que `git pull` mueva también el contenido y no sólo el puntero:
-git config submodule.recurse true
+git clone git@github.com:criscardozo/stock.git
 ```
-
-Sin ese último paso, `git pull` deja el submódulo en el commit viejo sin decir
-nada: los scripts compartidos siguen corriendo la versión anterior y no hay
-error que lo indique. `git submodule status` lo muestra con un `+` adelante.
 
 ```sh
 pnpm install
@@ -301,8 +283,7 @@ Firestore no tiene export gestionado gratis (eso necesita Blaze), así que
 
 **El backup semanal NO corre desde este repo**, y la ausencia es deliberada.
 Vive en `criscardozo/my-apps-backups`, que es privado y se queda privado: corre
-el mismo `kyber/scripts/backup.mjs`, chequeando out este repo con submódulos
-para que cada app la respalde el kyber que **ella** pinea, y commitea el volcado
+el `pnpm backup` de este repo, chequeándolo out, y commitea el volcado
 adentro de ese repo en vez de dejarlo como artifact.
 
 Las dos razones, en orden de peso:
@@ -387,7 +368,7 @@ workflow sin registrar no produce **ningún run**. Que un archivo esté en el
 repo no es que la plataforma lo haya registrado.
 
 **El mismo job chequea que las reglas desplegadas coincidan con el repo**
-(`kyber/scripts/check-rules-drift.mjs`). Las reglas son el único límite de seguridad
+(`pnpm rules:drift`). Las reglas son el único límite de seguridad
 del proyecto y se despliegan a mano, así que un arreglo escrito, revisado,
 mergeado y nunca desplegado se lee como hecho en todos los lugares donde alguien
 miraría. Una diferencia **falla el job**, que es lo que manda el mail.

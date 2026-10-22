@@ -8,15 +8,20 @@ recoge además las de **proceso** —las que no viven en el código— y explica
 *por qué* de cada una, que es lo que hace que se puedan aplicar a un caso nuevo
 en vez de repetirlas de memoria.
 
+Las reglas generales —las que este proyecto compartía con Gastos Diarios por el
+submódulo kyber, retirado el 22/10/2026— viven en `docs/reglas/` y cada sección
+de acá apunta a la suya. Las menciones a Kyber más abajo cuentan lo que pasó
+cuando todavía existía, y se dejan por eso.
+
 ---
 
 ## 1. Publicar
 
-→ [`kyber/docs/publicar.md`](../kyber/docs/publicar.md)
+→ [`docs/reglas/publicar.md`](reglas/publicar.md)
 
 ## 2. Cero gastos, sin excepciones
 
-→ [`kyber/docs/costo-cero.md`](../kyber/docs/costo-cero.md)
+→ [`docs/reglas/costo-cero.md`](reglas/costo-cero.md)
 
 Acá la API de terceros que la regla contempla es **Open Food Facts**: un código
 de barras desconocido igual guarda el ítem, y el catálogo propio del hogar lo
@@ -24,7 +29,7 @@ reconoce la próxima vez.
 
 ## 3. Idiomas
 
-→ [`kyber/docs/idiomas.md`](../kyber/docs/idiomas.md)
+→ [`docs/reglas/idiomas.md`](reglas/idiomas.md)
 
 **La UI de Stock: sólo español.** Sin next-intl ni String Catalogs — fue una
 decisión explícita, y es donde este repo se aparta de Gastos: el contenido real
@@ -33,7 +38,7 @@ Si algún día hace falta inglés, se agrega entonces.
 
 ## 4. Los datos, antes que la pantalla
 
-→ [`kyber/docs/datos.md`](../kyber/docs/datos.md)
+→ [`docs/reglas/datos.md`](reglas/datos.md)
 
 La unidad base acá es la del ítem (`unit`, `g`, `ml`), y lo que no se cuenta en
 enteros usa el modo `level` — un dial de 0 a 3, no un decimal.
@@ -48,7 +53,7 @@ La línea no es "cuánto cuesta calcularlo", es **si alguien lo edita**.
 
 ## 5. Firestore: el free tier es parte del diseño
 
-→ [`kyber/docs/firestore-free-tier.md`](../kyber/docs/firestore-free-tier.md)
+→ [`docs/reglas/firestore-free-tier.md`](reglas/firestore-free-tier.md)
 
 Lo acotado, acá, son el catálogo del hogar (~150 docs) y la lista de compras
 (~30): se escuchan enteros, y ese listener es lo que hace que un tilde aparezca
@@ -59,7 +64,7 @@ hay señal.
 
 ## 6. Código
 
-→ [`kyber/docs/codigo.md`](../kyber/docs/codigo.md)
+→ [`docs/reglas/codigo.md`](reglas/codigo.md)
 
 Los dos casos de lógica duplicada de este repo son la aritmética de períodos del
 plan y la derivación de la lista de compras: `shared/plan-period-vectors.json` y
@@ -67,9 +72,9 @@ plan y la derivación de la lista de compras: `shared/plan-period-vectors.json` 
 
 ## 7. Verificar, no suponer
 
-→ [`kyber/docs/guardas.md`](../kyber/docs/guardas.md)
+→ [`docs/reglas/guardas.md`](reglas/guardas.md)
 
-Kyber lleva mucho más que las cuatro reglas originales: un catálogo medido de
+Ese archivo lleva mucho más que las cuatro reglas originales: un catálogo medido de
 formas concretas en que una guarda queda verde sin sostener nada (la garantía
 adentro de un `for` que genera tests, un relay que hereda confianza ajena sin
 mirar la fuente, simular en vez de correr lo real, un fixture que reproduce el
@@ -77,11 +82,11 @@ mecanismo pero no la forma). Todo lo de acá está ahí, y superconjunto.
 
 ## 8. Secretos
 
-→ [`kyber/docs/secretos.md`](../kyber/docs/secretos.md)
+→ [`docs/reglas/secretos.md`](reglas/secretos.md)
 
 ## 9. La máquina
 
-→ [`kyber/docs/maquina.md`](../kyber/docs/maquina.md)
+→ [`docs/reglas/maquina.md`](reglas/maquina.md)
 
 El puerto propio de este proyecto es **8280** para Firestore; el bloque entero
 está en `firebase/firebase.json` y `apps/web/src/lib/domain/ports.test.ts` lo
@@ -89,14 +94,14 @@ sostiene.
 
 ## Versiones
 
-→ [`kyber/docs/versiones.md`](../kyber/docs/versiones.md)
+→ [`docs/reglas/versiones.md`](reglas/versiones.md)
 
 `pnpm set-version x.y.z` mueve las cuatro copias juntas, y después hay que
 correr `xcodegen` para que el `Info.plist` las tome.
 
 ## 10. Familia con Gastos Diarios
 
-→ [`kyber/docs/interfaz.md`](../kyber/docs/interfaz.md)
+→ [`docs/reglas/interfaz.md`](reglas/interfaz.md)
 
 Lo que se refinó en una app vale en la otra, y las diez reglas que sobrevivieron
 medidas de los dos lados están ahí — **escritas como reglas y no como
@@ -574,7 +579,7 @@ que los tests le pasen los bytes y las fechas — por eso no pica. Los tests usa
   reinstalar el día 6 deja la app viva un día. Para renovar hay que borrar el
   perfil de `~/Library/Developer/Xcode/UserData/Provisioning Profiles` y
   recompilar con `-allowProvisioningUpdates`, que emite uno nuevo por 7 días.
-- **Usar `pnpm install:ios`** (kyber), que hace el procedimiento entero con sus
+- **Usar `pnpm install:ios`** (`scripts/install-ios.mjs`), que hace el procedimiento entero con sus
   guardas. Lo de abajo es el porqué, no una lista para seguir a mano.
 - **Instalar en el teléfono INCLUYE forzar la reemisión, siempre.** No es una
   decisión que se tome mirando cuántos días quedan: mirarlos es lo que lleva a

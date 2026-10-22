@@ -86,13 +86,6 @@ function fallbackIn(path: string, marker: string): number {
  * directory git already ignores. A list that duplicates `.gitignore` is a
  * second copy of the same decision, and the copies drift.
  *
- * It also settles the submodule without an exception. `git ls-files` reports a
- * gitlink as ONE entry and does not descend into it, so `kyber/` is outside the
- * sweep by construction rather than by a name somebody has to keep aligned with
- * `.gitmodules`. That matters more than tidiness here: a clone without
- * `--recurse-submodules` has an empty `kyber/`, so a sweep that read it would
- * pass or fail depending on the machine.
- *
  * `-co --exclude-standard` is tracked plus untracked-not-ignored, so a new
  * spec that nobody has `git add`ed yet is still swept — which is the case the
  * probe file in this suite's own controls exercises.

@@ -200,7 +200,7 @@ describe('the watch is the fourth copy, and nothing was holding it', () => {
   /**
    * WHICH tokens the watch carries, pinned here and nowhere else.
    *
-   * This is the half kyber's `subset=True` deliberately cannot answer: reading
+   * This is the half `tokens.py`'s `subset=True` deliberately cannot answer: reading
    * membership from the file makes a token the watch GAINS get adopted, but a
    * token it LOSES looks identical to a subset declining one. The file cannot
    * say which it meant. Measured, after that flag went in: deleting `ink3` from

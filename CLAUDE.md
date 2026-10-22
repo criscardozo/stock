@@ -152,6 +152,10 @@ before inventing a pattern this project has already met.**
 - `pnpm test:rules` — Firestore rules tests (spins up the emulator via `firebase emulators:exec`;
   needs a **JDK 21 or newer** — firebase-tools 15 dropped the older ones and refuses to start
   rather than warning).
+- `pnpm test:scripts` — the tests of `scripts/` (backup, restore, set-version, install-ios,
+  verify-pwa, the rules runner) and of `design-system/tokens.py`. What each script reads from
+  `scripts/project.json` is in `scripts/README.md`. Not in CI: adding
+  it was not asked for, and Gastos' is not either.
 - `pnpm test:e2e` — Playwright, against the emulators. Needs `pnpm emulators` AND `pnpm seed`
   running first: the suite drives the seeded household through `Cerrar compra`, which is the
   operation with the most consequences and the least readable from source.
@@ -195,8 +199,8 @@ before inventing a pattern this project has already met.**
   runs it without `--write` and fails if the file would change, which proves the tokens can be
   REBUILT rather than merely that they currently match.
 - `python3 design-system/emit.py [--write|--verify]` — the other direction: rewrites
-  `globals.css`, `Theme.swift` and `WatchTheme.swift` FROM `tokens.json`. Colour only —
-  radius and type stay hand-written until kyber's shared emitter takes them (`kyber/README`).
+  `globals.css`, `Theme.swift` and `WatchTheme.swift` FROM `tokens.json`: colour,
+  plus the iOS radius block; the CSS radii and the type scale stay hand-written.
   CI runs `--write` and requires `git diff --exit-code` on the three files, which is the
   stronger direction of the same proof: a hand-edited colour on either side of the loop
   breaks it, because it would have to coincidentally match what the other side derives.

@@ -22,13 +22,12 @@ import { describe, expect, it } from 'vitest'
 const root = join(__dirname, '../../../../..')
 
 /**
- * Our own sources, tracked AND untracked-but-not-ignored. The submodule holds
- * itself to this separately.
+ * Our own sources, tracked AND untracked-but-not-ignored.
  *
  * `-co --exclude-standard` and not a bare `ls-files`, which is what this swept
  * until a sibling repo's sweep walked the filesystem instead and ate its build
  * output — 2246 files where 53 were meant. The rule that came out of that cuts
- * both ways and is now in `kyber/docs/guardas.md`: the file set is PART of the
+ * both ways and is now in `docs/reglas/guardas.md`: the file set is PART of the
  * measurement and gets chosen for the question, because there is no default
  * that is right for every question.
  *
@@ -52,7 +51,7 @@ const ours = execFileSync('git', ['ls-files', '-co', '--exclude-standard'], {
   maxBuffer: 32 * 1024 * 1024,
 })
   .split('\n')
-  .filter((path) => /\.(mjs|js|ts|tsx|sh)$/.test(path) && !path.startsWith('kyber/'))
+  .filter((path) => /\.(mjs|js|ts|tsx|sh)$/.test(path))
   // `git ls-files` still lists a path that is staged-as-added and then deleted
   // from disk, which is what a half-cleaned probe leaves behind. Reading it
   // throws, and the failure looks like the sweep found something.
