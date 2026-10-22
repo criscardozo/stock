@@ -87,3 +87,6 @@ apps/web/playwright-report/
 
 # Crash reports install-ios brings off the phone (scripts/install-ios.mjs).
 crash-logs/
+
+# Python bytecode, written by running design-system/*.py and its tests.
+__pycache__/
