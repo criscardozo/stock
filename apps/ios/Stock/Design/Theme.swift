@@ -214,7 +214,7 @@ enum Theme {
 /// than miscounting: the number was 19, the script said 20, and the extra one
 /// was a comment describing the thing being changed.
 enum Radius {
-    // kyber:radius start
+    // tokens:radius start
     static let card: CGFloat = 18
     static let checkbox: CGFloat = 8
     static let field: CGFloat = 10
@@ -222,7 +222,7 @@ enum Radius {
     static let panel: CGFloat = 18
     static let segment: CGFloat = 3
     static let sheet: CGFloat = 24
-    // kyber:radius end
+    // tokens:radius end
 }
 
 enum AppFont {

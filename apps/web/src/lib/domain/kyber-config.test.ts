@@ -21,7 +21,7 @@ import { describe, expect, it } from 'vitest'
  */
 const root = join(__dirname, '../../../../..')
 const read = (path: string) => readFileSync(join(root, path), 'utf8')
-const config = JSON.parse(read('.kyber/config.json')) as {
+const config = JSON.parse(read('scripts/project.json')) as {
   name: string
   projectId: string
   rulesTestsProjectId: string

@@ -56,21 +56,23 @@ contracts in `shared/`.
 > — are collected in [`docs/reglas.md`](docs/reglas.md). This section stays the
 > authoritative short form for the technical ones.
 >
-> The ones shared with Gastos Diarios and the third app live in the `kyber`
-> submodule and are imported here. If these read as empty, the submodule is not
-> checked out: `git submodule update --init`.
+> The general working rules live in `docs/reglas/` and are imported here rather
+> than restated — a second copy of a rule is a rule that can disagree with
+> itself. They used to be shared with Gastos Diarios through the kyber
+> submodule, retired on 2026-10-22. A broken import here fails silently, so
+> `apps/web/src/lib/domain/claude-imports.test.ts` checks that each one resolves.
 >
-> @kyber/docs/publicar.md
-> @kyber/docs/costo-cero.md
-> @kyber/docs/idiomas.md
-> @kyber/docs/firestore-free-tier.md
-> @kyber/docs/codigo.md
-> @kyber/docs/secretos.md
-> @kyber/docs/versiones.md
-> @kyber/docs/datos.md
-> @kyber/docs/maquina.md
-> @kyber/docs/interfaz.md
-> @kyber/docs/guardas.md
+> @docs/reglas/publicar.md
+> @docs/reglas/costo-cero.md
+> @docs/reglas/idiomas.md
+> @docs/reglas/firestore-free-tier.md
+> @docs/reglas/codigo.md
+> @docs/reglas/secretos.md
+> @docs/reglas/versiones.md
+> @docs/reglas/datos.md
+> @docs/reglas/maquina.md
+> @docs/reglas/interfaz.md
+> @docs/reglas/guardas.md
 
 - **$0 infra budget.** Firebase Spark plan only — never introduce Cloud Functions (they require
   the paid Blaze plan). Vercel Hobby for web hosting. No paid services.

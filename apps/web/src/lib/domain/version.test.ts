@@ -23,7 +23,7 @@ const root = join(__dirname, '../../../../..')
 const read = (path: string) => readFileSync(join(root, path), 'utf8')
 
 const APP_WORKSPACE = (
-  JSON.parse(read('.kyber/config.json')) as { webWorkspace: string }
+  JSON.parse(read('scripts/project.json')) as { webWorkspace: string }
 ).webWorkspace
 const webVersion = (JSON.parse(read(`apps/${APP_WORKSPACE}/package.json`)) as { version: string })
   .version

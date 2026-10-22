@@ -21,21 +21,21 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-# The list lives in .kyber/config.json rather than here, because two copies of
+# The list lives in scripts/project.json rather than here, because two copies of
 # the same two lines is what this repo spent the day deleting.
 #
 # It is a list of ARGV ARRAYS, and each one is spawned without a shell. The
 # first version read strings and ran them through `eval`, which a security
-# review flagged and was right to: `.kyber/config.json` is a tracked file, so a
+# review flagged and was right to: `scripts/project.json` is a tracked file, so a
 # branch that edits it would run whatever it liked on the next push of whoever
 # checked that branch out — silently, since nobody reads a hook before pushing.
 # Argv arrays remove the interpreter rather than trying to sanitise its input.
 node -e '
   const { readFileSync } = require("node:fs");
   const { spawnSync } = require("node:child_process");
-  const checks = JSON.parse(readFileSync(".kyber/config.json", "utf8")).prePush;
+  const checks = JSON.parse(readFileSync("scripts/project.json", "utf8")).prePush;
   if (!Array.isArray(checks) || checks.length === 0) {
-    console.error("pre-push: .kyber/config.json has no prePush list.");
+    console.error("pre-push: scripts/project.json has no prePush list.");
     process.exit(1);
   }
   for (const argv of checks) {

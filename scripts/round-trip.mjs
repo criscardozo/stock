@@ -23,7 +23,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { consumerRoot } from "../kyber/scripts/lib/consumer.mjs";
+import { consumerRoot } from "./lib/consumer.mjs";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
@@ -33,8 +33,8 @@ const repoRoot = consumerRoot();
 // not five. They are spawned rather than imported on purpose: this rehearses
 // the scripts a person runs, not a copy of their internals.
 const SCRIPTS = {
-  backup: join(repoRoot, "kyber/scripts/backup.mjs"),
-  restore: join(repoRoot, "kyber/scripts/restore.mjs"),
+  backup: join(repoRoot, "scripts/backup.mjs"),
+  restore: join(repoRoot, "scripts/restore.mjs"),
 };
 const PROJECT = "demo-stock";
 const { emulators } = JSON.parse(readFileSync(join(repoRoot, "firebase/firebase.json"), "utf8"));

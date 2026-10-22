@@ -51,7 +51,7 @@ WATCH = REPO / "apps/ios/StockWatch/WatchTheme.swift"
 # one that was already wrapped is 105 (`lineSoft`). Nothing sits between them.
 WRAP_AT = 102
 
-sys.path.insert(0, str(REPO / "kyber" / "design"))
+sys.path.insert(0, str(ROOT))
 from tokens import Block, Destination, css_value, load, main  # noqa: E402
 
 
@@ -170,8 +170,8 @@ if __name__ == "__main__":
         Block(
             SWIFT,
             radius_declarations,
-            "// kyber:radius start",
-            "// kyber:radius end",
+            "// tokens:radius start",
+            "// tokens:radius end",
             label="Theme.swift · Radius",
         ),
     ]

@@ -101,7 +101,7 @@ describe('nothing hands a tracked value to a shell', () => {
 
   it('the hook spawns argv, and the config holds argv', () => {
     const hook = readFileSync(join(root, '.githooks/pre-push'), 'utf8')
-    const config = JSON.parse(readFileSync(join(root, '.kyber/config.json'), 'utf8')) as {
+    const config = JSON.parse(readFileSync(join(root, 'scripts/project.json'), 'utf8')) as {
       prePush: unknown[]
     }
     expect({
